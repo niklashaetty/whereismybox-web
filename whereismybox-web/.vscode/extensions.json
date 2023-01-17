@@ -1,3 +1,8 @@
 {
-  "recommendations": ["Vue.volar", "Vue.vscode-typescript-vue-plugin"]
+  "recommendations": [
+    "ms-azuretools.vscode-azurefunctions",
+    "ms-dotnettools.csharp",
+    "Vue.volar",
+    "Vue.vscode-typescript-vue-plugin"
+  ]
 }
