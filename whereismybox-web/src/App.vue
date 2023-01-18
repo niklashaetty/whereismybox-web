@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import { RouterLink, RouterView } from 'vue-router'
 import HelloWorld from './components/HelloWorld.vue'
 </script>
@@ -7,7 +7,7 @@ import HelloWorld from './components/HelloWorld.vue'
   <div>{{ message }}</div>
 </template>
 
-<script>
+<script >
 export default {
   name: "App",
   data() {
@@ -16,8 +16,9 @@ export default {
     };
   },
   async mounted() {
-    const { text } = await (await fetch("/api/helloworld")).json();
-    this.message = text;
+    
+    const answer = await (await fetch("/api/users/deadbea7-deaf-d00d-c0de-1337da7aba5e/boxes")).json();
+    this.message = answer
   }
 };
 </script>
