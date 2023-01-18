@@ -1,26 +1,19 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>{{ message }}</div>
+  <RouterView />
 </template>
 
-<script >
-export default {
-  name: "App",
-  data() {
-    return {
-      message: ""
-    };
-  },
-  async mounted() {
+<script setup lang="ts">
+import { ref } from 'vue';
+import { RouterView } from 'vue-router';
+const titel = "Titel";
+const message = ref(`Welcome to ${titel}`);
+
+  /* async mounted() {
     
     const answer = await (await fetch("/api/users/deadbea7-deaf-d00d-c0de-1337da7aba5e/boxes")).json();
     this.message = answer
-  }
-};
+  } */
+
 </script>
 
 <style scoped>

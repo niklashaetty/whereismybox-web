@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "swa": "swa start -a dist -i api/Functions",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",
@@ -10,6 +11,8 @@
     "type-check": "vue-tsc --noEmit"
   },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "axios": "^1.2.3",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
