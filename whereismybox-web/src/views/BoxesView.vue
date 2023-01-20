@@ -25,11 +25,8 @@ async function postBox(number: any, name: any, ){
 }
 
 onMounted(async () => {
-  await postBox(1, "My first box");
-  await postBox(2, "my second box");
   await getBoxes();
   console.log("this is the boxes: " + boxes.value)
-
 });
 
 </script>
