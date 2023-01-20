@@ -12,7 +12,7 @@ const router = createRouter({
     },
     {
       
-      path: '/users/:userId/boxes', 
+      path: '/users/:userId', 
       name: 'boxes', component: BoxesView},
     {
       path: '/about',

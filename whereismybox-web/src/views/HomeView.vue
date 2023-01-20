@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import router from '@/router';
 import axios from 'axios';
 import { ref } from 'vue';
 import TheWelcome from '../components/TheWelcome.vue'
@@ -11,14 +12,15 @@ let userId = ref("")
 function createUser(){
   const createUserRequest = { username: username.value };
   axios.post('/api/users', createUserRequest)
-      .then(response => userId.value = response.data.userId);
+      .then(response => router.push({path: `users/${response.data.userId}`}))
+
 }
 
 </script>
 
 <template>
   <main>
-    <h1>Titel</h1>
+    <h1>Where is my box?</h1>
     <p>Start by creating your own user</p>
     <div> 
        {{ newUser }}
@@ -27,10 +29,8 @@ function createUser(){
     </div>
     <div v-if="userId">
       
-       <p>Perfect {{username}}! The homepage for your user can be found here</p>
-      
-       <button @click="$router.push({path: `/users/${userId}/boxes`})">Go to your new homepage!</button>
-
+       <p>Welcome {{username}}!</p>
+       <button @click="$router.push({path: `/users/${userId}/boxes`})"> here </button>
        <p>Hint! Bookmark this page to be able to not lose access to your boxes:  </p>
       </div>
   

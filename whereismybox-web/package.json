@@ -13,6 +13,8 @@
   "dependencies": {
     "@types/axios": "^0.14.0",
     "axios": "^1.2.3",
+    "primeicons": "^6.0.1",
+    "primevue": "^3.22.3",
     "vue": "^3.2.45",
     "vue-router": "^4.1.6"
   },
