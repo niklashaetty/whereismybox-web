@@ -11,7 +11,7 @@ public class InMemoryBoxRepository : IBoxRepository
         {
             Guid.Parse("deadbea7-deaf-d00d-c0de-1337da7aba5e"), new List<Box>()
             {
-                new Box(Guid.Parse("deadbea7-deaf-d00d-c0de-000000000000"), 1, "My first testable box", new List<Item>()
+                new Box(Guid.Parse("deadbea7-deaf-d00d-c0de-000000000000"), Guid.Parse("deadbea7-deaf-d00d-c0de-1337da7aba5e"), 1, "My first testable box", new List<Item>()
                 {
                     new Item(Guid.NewGuid(), "Ski gloves", "Red ones"),
                     new Item(Guid.NewGuid(), "Glasögon", "Boss, svarta bågar"),

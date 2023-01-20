@@ -5,13 +5,15 @@ namespace Domain.Models;
 public class Box
 {
     [JsonProperty] public Guid BoxId { get; private set; }
+    [JsonProperty] public Guid UserId { get; private set; }
     [JsonProperty] public int Number { get; private set; }
     [JsonProperty] public string Name { get; private set; }
     [JsonProperty] public List<Item> Items { get; private set; }
 
-    public static Box Create(int boxNumber, string boxName)
+    public static Box Create(Guid userId, int boxNumber, string boxName)
     {
-        return new Box(Guid.NewGuid(), boxNumber, boxName, new List<Item>());
+        var boxId = Guid.NewGuid();
+        return new Box(boxId, userId, boxNumber, boxName, new List<Item>());
     }
     
     [JsonConstructor]
@@ -19,11 +21,12 @@ public class Box
     {
     }
     
-    public Box(Guid boxId, int number, string name, List<Item> items)
+    public Box(Guid boxId, Guid userId, int number, string name, List<Item> items)
     {
         ArgumentNullException.ThrowIfNull(name);
         ArgumentNullException.ThrowIfNull(items);
         BoxId = boxId;
+        UserId = userId;
         Number = number;
         Name = name;
         Items = items;

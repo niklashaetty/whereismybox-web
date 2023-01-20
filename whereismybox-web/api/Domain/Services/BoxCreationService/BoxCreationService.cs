@@ -25,7 +25,7 @@ public class BoxCreationService : IBoxCreationService
         {
             throw new NonUniqueBoxException($"User already have a box with number {boxNumber}");
         }
-        var box = Box.Create(boxNumber, boxName);
+        var box = Box.Create(userId, boxNumber, boxName);
         return await _boxRepository.Add(existingUser.UserId, box);
     }
 }

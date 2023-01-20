@@ -11,11 +11,14 @@ public class CosmosAwareUser : User
     [JsonProperty(PropertyName = "id")] 
     public string Id { get; set; } 
     
+    public string PartitionKey { get; set; }
+    
     public CosmosAwareUser(Guid userId, string userName) : base(userId, userName)
     {
         Id = userId.ToString();
+        PartitionKey = userId.ToString();
     }
-
+    
     public static CosmosAwareUser ToCosmosAware(User user)
     {
         return new CosmosAwareUser(user.UserId, user.UserName);
