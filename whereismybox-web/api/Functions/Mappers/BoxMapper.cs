@@ -11,6 +11,11 @@ public static class BoxMapper
     {
         ArgumentNullException.ThrowIfNull(box);
         return new BoxDto(box.BoxId, box.Name, box.Number,
-            box.Items.Select(i => new ItemDto(i.ItemId, i.Name, i.Description)).ToList());
+            box.Items.Select(i => i.ToApiModel()).ToList());
+    }
+
+    public static ItemDto ToApiModel(this Item item)
+    {
+        return new ItemDto(item.ItemId, item.Name, item.Description);
     }
 }

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "swa": "swa start -a dist -i api/Functions",
+    "swa": "swa start http://localhost:5173 --api-devserver-url http://localhost:7071",
+    "swadeployed": "swa start -a dist -i api/Functions",
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview",

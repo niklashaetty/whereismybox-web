@@ -26,7 +26,7 @@ public class DeleteItemFunction
 
     [OpenApiOperation(operationId: "DeleteItem", tags: new[] {"Items"}, Summary = "Remove item from box")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddItemRequest))]
-    [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(ItemDto))]
+    [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName("DeleteItemFunction")]

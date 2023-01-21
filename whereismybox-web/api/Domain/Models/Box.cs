@@ -47,4 +47,15 @@ public class Box
         var itemsRemoved = Items.RemoveAll(i => i.ItemId == itemId);
         return itemsRemoved > 0;
     }
+
+    public void UpdateItem(Item item)
+    {
+        var index = Items.FindIndex(i => i.ItemId == item.ItemId);
+        if (index == -1)
+        {
+            throw new InvalidOperationException($"Item {item.ItemId} not found");
+        }
+
+        Items[index] = item;
+    }
 }

@@ -2,7 +2,6 @@
 import router from '@/router';
 import axios from 'axios';
 import { ref } from 'vue';
-import TheWelcome from '../components/TheWelcome.vue'
 
 const username = ref("");
 const newUser = ref("");
@@ -11,6 +10,7 @@ let userId = ref("")
 
 function createUser(){
   const createUserRequest = { username: username.value };
+  
   axios.post('/api/users', createUserRequest)
       .then(response => router.push({path: `users/${response.data.userId}`}))
 
