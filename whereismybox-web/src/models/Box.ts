@@ -17,8 +17,13 @@ export default class Box{
         this.items.push(item);
     }
 
-    deleteItem(item:Item) {
-        this.items = this.items.filter(obj => obj.itemId !== item.itemId);
+    deleteItem(itemId:string) {
+        this.items = this.items.filter(obj => obj.itemId !== itemId);
+    }
+
+    getItem(itemId:string): Item {
+        // TODO prettier function
+        return this.items.filter(obj => obj.itemId !== itemId)[0];
     }
 
     editItem(item:Item) {

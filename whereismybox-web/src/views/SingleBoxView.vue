@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import router from '@/router';
-import axios from 'axios';
-import { onMounted, ref} from 'vue';
+import { onMounted, ref, type Ref} from 'vue';
 import Column from 'primevue/column';
 import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
@@ -14,13 +13,13 @@ import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
-let currentBox = ref(new Box("", 0, "", []));
-let newItemName = ref("");
-let newItemDescription = ref("");
+const currentBox = ref(new Box("", 0, "", []));
+const newItemName = ref("");
+const newItemDescription = ref("");
 const deleteItemDialog = ref(false);
-const itemToBeDeleted = ref();
-let currentUserId = ref("");
-let currentBoxId = ref("");
+const itemIdToBeDeleted = ref("")
+const currentUserId = ref("");
+const currentBoxId = ref("");
 
 async function updateCurrentBox(){
   BoxService.getBox(currentUserId.value, currentBoxId.value)
@@ -49,9 +48,14 @@ const onCellEditComplete = (event: { data: any; newValue: any; field: any; }) =>
     }
 };
 
-function openDeleteItemDialog(item:Item) {
-  itemToBeDeleted.value = item;
+function openDeleteItemDialog(itemId:string) {
+  itemIdToBeDeleted.value = itemId;
   deleteItemDialog.value = true;
+}
+
+function closeDeleteItemDialog() {
+  itemIdToBeDeleted.value = "";
+  deleteItemDialog.value = false;
 }
 
 function addItemToBox(name:string, description:string) {
@@ -69,12 +73,17 @@ function updateItem(updatedItem:Item){
     .then(() => currentBox.value.editItem(updatedItem))
 }
 
-function deleteItem(item:Item) {
-  BoxService.deleteItem(currentUserId.value, currentBoxId.value, item.itemId)
+function deleteSelectedItem() {
+  deleteItem(itemIdToBeDeleted.value);
+}
+
+function deleteItem(itemId:string) {
+  BoxService.deleteItem(currentUserId.value, currentBoxId.value, itemId)
   .then((response => {
-    currentBox.value.deleteItem(item);
+    let itemName = currentBox.value.getItem(itemId).name;
+    currentBox.value.deleteItem(itemId);
     deleteItemDialog.value = false;
-    showSuccess(`Removed ${item.name}`, 3000);
+    showSuccess(`Removed ${itemName}`, 3000);
   }))
 }
 
@@ -102,7 +111,7 @@ function showSuccess(message:string, life:number){
                 </Column>
                 <Column style="min-width:8rem">
                     <template #body="slotProps">
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="openDeleteItemDialog(new Item(slotProps.data.itemId,slotProps.data.name, slotProps.data.description))" />
+                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="openDeleteItemDialog(slotProps.data.itemId)" />
                     </template>
                 </Column>
       </DataTable>
@@ -124,11 +133,11 @@ function showSuccess(message:string, life:number){
   <Dialog v-model:visible="deleteItemDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
             <div class="confirmation-content">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="itemToBeDeleted">Are you sure you want to delete <b>{{itemToBeDeleted.name}}</b>?</span>
+                <span v-if="itemIdToBeDeleted">Are you sure you want to delete <b>{{currentBox.getItem(itemIdToBeDeleted).name}}</b>?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" class="p-button-text" @click="deleteItemDialog = false"/>
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteItem(itemToBeDeleted)" />
+                <Button label="No" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
             </template>
         </Dialog>
   </div>

@@ -7,7 +7,6 @@ const username = ref("");
 const newUser = ref("");
 let userId = ref("")
 
-
 function createUser(){
   const createUserRequest = { username: username.value };
   
@@ -17,7 +16,6 @@ function createUser(){
 }
 
 </script>
-
 <template>
   <main>
     <h1>Where is my box?</h1>
@@ -36,7 +34,5 @@ function createUser(){
   
   </main>
 </template>
-
 <style scoped>
-
 </style>
