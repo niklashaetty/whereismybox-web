@@ -6,12 +6,14 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
+import Skeleton from 'primevue/skeleton'
+import ProgressSpinner from 'primevue/progressspinner';
 
 let boxes = ref();
 const boxName = ref("");
 const boxNumber = ref(0);
 const userId = ref(router.currentRoute.value.params.userId);
-const boxId = ref("");
+const loadingBoxes = ref(false);
 
 async function getBoxes(){
   let boxesPath = `/api/users/${userId.value}/boxes`
@@ -28,23 +30,41 @@ async function createNewBox(){
 }
 
 onMounted(async () => {
+  loadingBoxes.value = true;
+  await new Promise(r => setTimeout(r, 3000));
   await getBoxes();
+  loadingBoxes.value = false;
 });
 
 </script>
 <template>
-  <div>
- 
+  <div class="wrapper">
     <h1>Boxes</h1>
-    <div class="boxwrapper"> 
-      <Card v-for="box in boxes" @click="$router.push({path: `/users/${userId}/boxes/${box.boxId}`})">
-        <template #title>
-            <div>{{box.number}} -  {{box.name}}</div>
+    <div v-if="loadingBoxes" class="boxescontainer"> 
+      <Card v-for="box in new Array(8)" class="boxcard">
+            <template #title>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
             </template>
-            <template #content>
-              <Message class="message">This box has {{ box.items.length }} items in it.</Message>
+            <template #subtitle>
+              <Skeleton width="10rem" class="mb-2"></Skeleton>
             </template>
       </Card>
+    </div>
+    <div v-else class="boxescontainer"> 
+      <Card v-for="box in boxes" @click="$router.push({path: `/users/${userId}/boxes/${box.boxId}`})" class="boxcard">
+            <template #title>
+              <p class="boxtitle">{{box.number}} -  {{box.name}}</p>
+            </template>
+            <template #subtitle>
+              {{ box.items.length }} items
+            </template>
+            <template #footer style="align-items: center;">
+              <div class="footer-button"><Button icon="pi pi-file-edit" /></div>
+              <div class="footer-button"><Button icon="pi pi-qrcode"/></div>
+               
+            </template>
+      </Card>
+      
     </div>
     <div v-focustrap class="card">
                 <div class="field">
@@ -59,28 +79,40 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-.boxwrapper {
-  /* We first create a flex layout context */
+
+.boxtitle {
+  font-size: medium;
+}
+.boxescontainer {
   display: flex;
-  padding: 10px;
-
-  /* Then we define the flow direction 
-     and if we allow the items to wrap 
-   * Remember this is the same as:
-   * flex-direction: row;
-   * flex-wrap: wrap;
-   */
-  flex-flow: row wrap;
-
-  /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
 }
 
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
+.wrapper {
+  align-items: center;
+}
+
+.footer-button {
+  display: inline-block;
+  justify-content: space-between;
+  padding:5px;
+  align-items: center;
+}
+
+.boxcard {
+  background-color: white;
+  border-radius: 25px;
+  width: 250px;
+  height: 200px;
+  padding-bottom: 10%; /* 32:18, i.e. 16:9 */
+  margin-bottom: 2%; /* (100-32*3)/2 */
+}
+
+
+.boxcard:hover {
+  background-color: #f3faff;
+  cursor: pointer;
 }
 </style>

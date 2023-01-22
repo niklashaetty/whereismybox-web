@@ -59,7 +59,7 @@ public class BoxRepository : IBoxRepository
         {
             results.AddRange(await iterator.ReadNextAsync());
         }
-
-        return results;
+    
+        return results.OrderBy(b => b.Number).ToList();
     }
 }

@@ -6,6 +6,7 @@ import DataTable from 'primevue/datatable';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
+import Skeleton from 'primevue/skeleton';
 import BoxService from '@/services/boxservice';
 import Item from '@/models/Item';
 import Box from '@/models/Box';
@@ -14,14 +15,17 @@ import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
 const currentBox = ref(new Box("", 0, "", []));
+const skeletonItems = ref(new Array(5))
 const newItemName = ref("");
 const newItemDescription = ref("");
+const loadingCurrentBox = ref(false);
 const deleteItemDialog = ref(false);
 const itemIdToBeDeleted = ref("")
 const currentUserId = ref("");
 const currentBoxId = ref("");
 
 async function updateCurrentBox(){
+  loadingCurrentBox.value = true;
   BoxService.getBox(currentUserId.value, currentBoxId.value)
   .then((response) => {
     let tmpItems:Item[] = [];
@@ -29,13 +33,18 @@ async function updateCurrentBox(){
       tmpItems.push(new Item(itemDto.itemId, itemDto.name, itemDto.description))
     });
     currentBox.value = new Box(response.data.boxId, response.data.number, response.data.name, tmpItems);
-  });
+  })
+  .catch((error) => console.log(error))
+  loadingCurrentBox.value = false;
 }
 
 onMounted(async () => {
   currentUserId.value = router.currentRoute.value.params.userId as string;
   currentBoxId.value =  router.currentRoute.value.params.boxId as string;
+  loadingCurrentBox.value = true;
+  await new Promise(r => setTimeout(r, 3000));
   await updateCurrentBox();
+  loadingCurrentBox.value = false;
 });
 
 const onCellEditComplete = (event: { data: any; newValue: any; field: any; }) => {
@@ -93,23 +102,36 @@ function showSuccess(message:string, life:number){
 </script>
 
 <template>
-  <div>
-    <Toast />
+  <div class="wrapper">
     <h1>{{currentBox.number}} - {{ currentBox.name }}</h1>
   	<div class="card">
-      <DataTable :value="currentBox.items" editMode="cell" dataKey="itemId" @cell-edit-complete="onCellEditComplete" >
-        <Column field="name" header="Name" style="width:50%" class="p-pluid">
+      <DataTable v-if="loadingCurrentBox" :value="skeletonItems">
+                <Column field="name" header="Name">
+                    <template #body>
+                        <Skeleton></Skeleton>
+                    </template>
+                </Column>
+                <Column field="description" header="Description">
+                    <template #body>
+                        <Skeleton></Skeleton>
+                    </template>
+                </Column>
+            </DataTable>
+
+      <DataTable v-else :value="currentBox.items" :rowHover="true" editMode="cell" dataKey="itemId" @cell-edit-complete="onCellEditComplete" >
+      
+        <Column field="name" header="Name" style="width:150px" class="p-pluid">
                     <template #editor="{ data, field }">
                         <InputText v-model="data[field]" autofocus />
                     </template>
                 </Column>
 
-                <Column field="description" header="Description" style="width:50%">
+                <Column field="description" header="Description" style="width:150px">
                     <template #editor="{ data, field }">
                         <InputText v-model="data[field]" autofocus />
                     </template>
                 </Column>
-                <Column style="min-width:8rem">
+                <Column style="width:30px">
                     <template #body="slotProps">
                         <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="openDeleteItemDialog(slotProps.data.itemId)" />
                     </template>
@@ -140,7 +162,7 @@ function showSuccess(message:string, life:number){
                 <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
             </template>
         </Dialog>
-  </div>
+</div>
 </template>
 
 <style scoped>
