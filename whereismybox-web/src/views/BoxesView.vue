@@ -7,13 +7,17 @@ import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton'
-import ProgressSpinner from 'primevue/progressspinner';
+import QrcodeVue from 'qrcode.vue'
+import Dialog from 'primevue/dialog'
 
 let boxes = ref();
 const boxName = ref("");
 const boxNumber = ref(0);
 const userId = ref(router.currentRoute.value.params.userId);
 const loadingBoxes = ref(false);
+const displayQrCodeDialog = ref(false)
+const qrCodeLink = ref("");
+
 
 async function getBoxes(){
   let boxesPath = `/api/users/${userId.value}/boxes`
@@ -31,10 +35,20 @@ async function createNewBox(){
 
 onMounted(async () => {
   loadingBoxes.value = true;
-  await new Promise(r => setTimeout(r, 3000));
   await getBoxes();
   loadingBoxes.value = false;
 });
+
+function closeQrCodeDialog() {
+  displayQrCodeDialog.value = false;
+}
+
+function openQrCodeDialog(boxId:string) {
+  console.log("älskar dig <3")
+  qrCodeLink.value = window.location.origin + router.currentRoute.value.path + "/boxes/" +  boxId;
+  console.log("älskar dig <3" + qrCodeLink.value)
+  displayQrCodeDialog.value = true;
+}
 
 </script>
 <template>
@@ -60,11 +74,17 @@ onMounted(async () => {
             </template>
             <template #footer style="align-items: center;">
               <div class="footer-button"><Button icon="pi pi-file-edit" /></div>
-              <div class="footer-button"><Button icon="pi pi-qrcode"/></div>
-               
+              <div class="footer-button"><Button @click.stop="openQrCodeDialog(box.boxId)" icon="pi pi-qrcode"/></div>
             </template>
       </Card>
-      
+      <Dialog v-model:visible="displayQrCodeDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
+            <div class="confirmation-content">
+              <qrcode-vue :value="qrCodeLink"></qrcode-vue>
+            </div>
+            <template #footer>
+                <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeQrCodeDialog"/>
+            </template>
+      </Dialog>
     </div>
     <div v-focustrap class="card">
                 <div class="field">

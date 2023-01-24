@@ -42,7 +42,6 @@ onMounted(async () => {
   currentUserId.value = router.currentRoute.value.params.userId as string;
   currentBoxId.value =  router.currentRoute.value.params.boxId as string;
   loadingCurrentBox.value = true;
-  await new Promise(r => setTimeout(r, 3000));
   await updateCurrentBox();
   loadingCurrentBox.value = false;
 });
@@ -161,7 +160,7 @@ function showSuccess(message:string, life:number){
                 <Button label="No" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
                 <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
             </template>
-        </Dialog>
+  </Dialog>
 </div>
 </template>
 
