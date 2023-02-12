@@ -32,14 +32,33 @@ public class Box
         Items = items;
     }
 
-    public void AddItem(Item item)
+    /// <summary>
+    /// Idempotently adds item
+    /// </summary>
+    /// <param name="item"></param>
+    /// <returns>true is item was added, false if it already exists</returns>
+    public bool AddItem(Item item)
     {
         ArgumentNullException.ThrowIfNull(item);
         if (Items.Any(i => i.ItemId == item.ItemId))
         {
-            throw new InvalidOperationException("item already exists");
+            return false;
         }
         Items.Add(item);
+        return true;
+    }
+    
+    public bool TryGetItem(Guid itemId, out Item item)
+    {
+        var existingItem =  Items.FirstOrDefault(i => i.ItemId == itemId);
+        if (existingItem is null)
+        {
+            item = null;
+            return false;
+        }
+
+        item = existingItem;
+        return true;
     }
 
     public bool RemoveItem(Guid itemId)

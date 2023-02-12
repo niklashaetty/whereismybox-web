@@ -1,5 +1,6 @@
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
+using InvalidOperationException = System.InvalidOperationException;
 using User = Domain.Models.User;
 
 namespace Infrastructure.UserRepository;
@@ -17,7 +18,7 @@ public class UserRepository : IUserRepository
     public async Task<User> Create(User user)
     {
         var cosmosAware = CosmosAwareUser.ToCosmosAware(user);
-        var response = await _container.CreateItemAsync(cosmosAware, new PartitionKey(cosmosAware.PartitionKey));
+        var response = await _container.CreateItemAsync(cosmosAware, cosmosAware.GetPartitionKey());
         return response.Resource;
     }
 
@@ -37,7 +38,7 @@ public class UserRepository : IUserRepository
 
         var cosmosResponse =
             await _container.ReplaceItemAsync(cosmosAwareUser, cosmosAwareUser.Id,
-                new PartitionKey(cosmosAwareUser.PartitionKey), new ItemRequestOptions()
+                cosmosAwareUser.GetPartitionKey(), new ItemRequestOptions()
                 {
                     IfMatchEtag = cosmosAwareUser.ETag
                 });

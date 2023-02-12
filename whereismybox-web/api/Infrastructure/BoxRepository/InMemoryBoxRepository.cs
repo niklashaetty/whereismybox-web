@@ -1,3 +1,5 @@
+using Domain;
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Repositories;
 using Infrastructure.UserRepository;
@@ -20,8 +22,7 @@ public class InMemoryBoxRepository : IBoxRepository
             }
         }
     };
-
-
+    
     public Task<Box> Add(Guid userId, Box box)
     {
         if (Boxes.ContainsKey(userId) is false)
@@ -34,6 +35,31 @@ public class InMemoryBoxRepository : IBoxRepository
         }
         
         return Task.FromResult(box);
+    }
+
+    public Task Delete(Guid userId, Guid boxId)
+    {
+        if (Boxes.ContainsKey(userId))
+        {
+            Boxes[userId].RemoveAll(b => b.BoxId == boxId);
+        }
+
+        return Task.CompletedTask;
+    }
+
+    public async Task<List<Item>> GetUnattachedItems(Guid userId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task PersistUpdateUnattachedItem(Guid userId, Item item)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task DeleteLooseItem(Guid userId, Item item)
+    {
+        throw new NotImplementedException();
     }
 
     public Task<Box> Get(Guid userId, Guid boxId)

@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Exceptions;
 using Domain.Services.BoxCreationService;
 using Functions.Mappers;
 using Infrastructure.UserRepository;
@@ -13,12 +14,15 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
+using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
 namespace Functions.HttpTriggers;
 
 public class CreateBoxFunction
 {
+    private const string OperationId = "CreateBox";
+    private const string FunctionName = OperationId + "Function";
     private readonly IBoxCreationService _boxCreationService;
 
     public CreateBoxFunction(IBoxCreationService boxCreationService)
@@ -27,12 +31,13 @@ public class CreateBoxFunction
         _boxCreationService = boxCreationService;
     }
 
-    [OpenApiOperation(operationId: "CreateBox", tags: new[] {"Boxes"}, Summary = "Creates a new box for a given user")]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Boxes"}, Summary = "Creates a new box for a given user")]
+    [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateBoxRequest))]
     [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(BoxDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
-    [FunctionName("CreateBoxFunction")]
+    [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Function, "post", Route = "users/{userId}/boxes")]
         HttpRequest req,

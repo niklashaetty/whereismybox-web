@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Repositories;
 using Newtonsoft.Json;

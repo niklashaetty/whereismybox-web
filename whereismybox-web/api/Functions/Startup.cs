@@ -6,8 +6,8 @@ using Domain.Services.ItemDeletionService;
 using Domain.Services.ItemEditingService;
 using Domain.Services.UserCreationService;
 using Functions;
-using Infrastructure;
 using Infrastructure.BoxRepository;
+using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +38,9 @@ namespace Functions
             builder.Services.AddSingleton(new UserRepositoryConfiguration(
                 config["CosmosConnectionString"], 
                 "WhereIsMyBox", "Users"));
+            builder.Services.AddSingleton(new UnattachedItemRepositoryRepositoryConfiguration(
+                config["CosmosConnectionString"], 
+                "WhereIsMyBox", "UnattachedItems"));
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();
@@ -49,6 +52,7 @@ namespace Functions
             builder.Services.AddSingleton<IItemAddingService, ItemAddingService>();
             builder.Services.AddSingleton<IItemDeletionService, ItemDeletionService>();
             builder.Services.AddSingleton<IItemEditingService, ItemEditingService>();
+            builder.Services.AddSingleton<IUnattachedItemRepository, UnattachedItemRepository>();
 
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {

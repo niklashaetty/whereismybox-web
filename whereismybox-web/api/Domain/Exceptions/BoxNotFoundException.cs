@@ -1,4 +1,4 @@
-namespace Infrastructure.BoxRepository;
+namespace Domain.Exceptions;
 
 public class BoxNotFoundException : Exception
 {

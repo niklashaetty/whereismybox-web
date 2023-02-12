@@ -6,6 +6,8 @@ public interface IBoxRepository
 {
     public Task<Box> Add(Guid userId, Box box);
     
+    public Task Delete(Guid userId, Guid boxId);
+
     /// <summary>
     /// Gets a box
     /// </summary>

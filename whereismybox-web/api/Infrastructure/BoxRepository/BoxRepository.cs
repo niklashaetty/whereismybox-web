@@ -11,6 +11,7 @@ public class BoxRepository : IBoxRepository
 
     public BoxRepository(BoxRepositoryConfiguration config)
     {
+        ArgumentNullException.ThrowIfNull(config);
         var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
@@ -18,8 +19,13 @@ public class BoxRepository : IBoxRepository
     public async Task<Box> Add(Guid userId, Box box)
     {
         var cosmosAware = CosmosAwareBox.ToCosmosAware(box);
-        var response = await _container.CreateItemAsync(cosmosAware, new PartitionKey(cosmosAware.PartitionKey));
+        var response = await _container.CreateItemAsync(cosmosAware, cosmosAware.GetPartitionKey());
         return response.Resource;
+    }
+
+    public async Task Delete(Guid userId, Guid boxId)
+    {
+        await _container.DeleteItemAsync<CosmosAwareBox>(boxId.ToString(), new PartitionKey(userId.ToString()));
     }
 
     public async Task<Box> Get(Guid userId, Guid boxId)
@@ -38,7 +44,7 @@ public class BoxRepository : IBoxRepository
 
         var cosmosResponse =
             await _container.ReplaceItemAsync(cosmosAwareBox, cosmosAwareBox.Id,
-                new PartitionKey(cosmosAwareBox.PartitionKey), new ItemRequestOptions()
+                cosmosAwareBox.GetPartitionKey(), new ItemRequestOptions()
                 {
                     IfMatchEtag = cosmosAwareBox.ETag
                 });

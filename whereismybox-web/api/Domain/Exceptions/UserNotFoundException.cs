@@ -1,4 +1,4 @@
-namespace Infrastructure.UserRepository;
+namespace Domain.Exceptions;
 
 public class UserNotFoundException : Exception
 {
