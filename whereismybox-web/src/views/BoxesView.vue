@@ -10,7 +10,7 @@ import Skeleton from 'primevue/skeleton'
 import QrcodeVue from 'qrcode.vue'
 import Dialog from 'primevue/dialog'
 import Item from '@/models/Item';
-import Box from '@/models/Box';
+import type Box from '@/models/Box';
 
 let boxes = ref<Box[]>([]);
 let filteredBoxes = ref();
