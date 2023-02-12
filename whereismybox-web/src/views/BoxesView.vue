@@ -6,30 +6,56 @@ import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import Skeleton from 'primevue/skeleton'
 import QrcodeVue from 'qrcode.vue'
 import Dialog from 'primevue/dialog'
 import Item from '@/models/Item';
 import type Box from '@/models/Box';
+import type UnattachedItem from '@/models/Box';
 
 let boxes = ref<Box[]>([]);
+let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
 const boxNumber = ref(0);
 const userId = ref(router.currentRoute.value.params.userId);
 const loadingBoxes = ref(false);
+const loadingUnattachedItems = ref(false);
 const displayQrCodeDialog = ref(false)
 const qrCodeLink = ref("");
 const filter = ref("");
 
 async function getBoxes() {
+  loadingBoxes.value = true;
+  console.log("Loading boxes")
   let boxesPath = `/api/users/${userId.value}/boxes`
-  await axios
+   axios
     .get(boxesPath)
     .then((response) => {
       boxes.value = response.data
       filteredBoxes.value = response.data;
     })
+    .then(() => {
+      loadingBoxes.value = false;
+      console.log("Loading boxes completed. value: " + loadingBoxes.value)
+    });
+}
+
+async function getUnattachedItems() {
+  loadingUnattachedItems.value = true;
+  console.log("Loading unattached items")
+  let path = `/api/users/${userId.value}/items`
+   axios
+    .get(path)
+    .then((response) => {
+      unattachedItems.value = response.data
+    })
+    .then(() => {
+      loadingUnattachedItems.value = false;
+      console.log("Loading boxes completed. value: " + loadingUnattachedItems.value)
+    });
 }
 
 async function createNewBox() {
@@ -40,9 +66,8 @@ async function createNewBox() {
 }
 
 onMounted(async () => {
-  loadingBoxes.value = true;
-  await getBoxes();
-  loadingBoxes.value = false;
+  getBoxes();
+  getUnattachedItems();
 });
 
 function closeQrCodeDialog() {
@@ -81,14 +106,16 @@ function trimString(text: string) {
 
 </script>
 <template>
-  <div class="wrapper">
-    <div class="searchbar">
-      <span class="p-input-icon-right p-input-icon-left ">
+<div class="container">
+  <div class="searchbar">
+    <h1>Search for items</h1>
+    <span class="p-input-icon-right p-input-icon-left ">
         <i class="pi pi-search" />
         <InputText type="text" v-model="filter" placeholder="Search" />
         <i v-if=filter class="pi pi-times" @click="clearFilter()" />
       </span>
-    </div>
+  </div>
+  <div class="boxes">
     <h1>Boxes</h1>
     <div v-if="loadingBoxes" class="boxescontainer">
       <Card v-for="box in new Array(8)" class="boxcard">
@@ -128,15 +155,35 @@ function trimString(text: string) {
         </template>
       </Dialog>
     </div>
-    <div class="card">
-      <div class="field">
-        <InputText v-model="boxName" type="text" placeholder="Name" />
-      </div>
-      <div class="field">
-        <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="Name" />
-      </div>
-      <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
+  </div>
+  <div class="unattacheditems">
+    <h1>Unattached items</h1>
+    <DataTable v-if="loadingUnattachedItems" :value=" new Array(10)">
+                <Column field="name" header="Name">
+                    <template #body>
+                        <Skeleton></Skeleton>
+                    </template>
+                </Column>
+            </DataTable>
+
+      <DataTable v-else :value="unattachedItems" :rowHover="true" dataKey="itemId">
+        <Column field="name" header="Name" style="width:150px" class="p-pluid"> </Column>
+        <Column style="width:30px">
+            <template #body="slotProps">
+                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" />
+            </template>
+        </Column>
+      </DataTable>
+  </div>
+</div>
+  <div class="card">
+    <div class="field">
+      <InputText v-model="boxName" type="text" placeholder="Name" />
     </div>
+    <div class="field">
+      <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="Name" />
+    </div>
+    <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
   </div>
 </template>
 
@@ -145,19 +192,30 @@ function trimString(text: string) {
   font-size: medium;
 }
 
+.container {  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 0.2fr 1.8fr 1fr;
+  gap: 0px 0px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "searchbar searchbar searchbar"
+    "boxes boxes unattacheditems"
+    ". . .";
+}
+
+.searchbar { grid-area: searchbar; }
+
+.boxes { grid-area: boxes; }
+
+.unattacheditems { grid-area: unattacheditems; }
+
+
+
 .boxescontainer {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-}
-
-.searchbar {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  width: 700px;
 }
 
 .searchfield {
