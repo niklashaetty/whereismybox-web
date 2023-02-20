@@ -7,11 +7,13 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import Skeleton from 'primevue/skeleton';
+import Menu from 'primevue/menu';
 import BoxService from '@/services/boxservice';
 import Item from '@/models/Item';
 import Box from '@/models/Box';
 import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
+
 
 const toast = useToast();
 const currentBox = ref(new Box("", 0, "", []));
@@ -23,6 +25,28 @@ const deleteItemDialog = ref(false);
 const itemIdToBeDeleted = ref("")
 const currentUserId = ref("");
 const currentBoxId = ref("");
+
+const menu: any = ref(null);
+const menuItems = ref([
+    {
+        label: 'Options',
+        items: [{label: 'Remove item', icon: 'pi pi-times-circle',
+        command: () => {
+              removeSelectedItemFromBox();
+            }
+        },
+        {label: 'Delete', icon: 'pi pi-trash',
+            command: () => {
+              openHardDeleteItemDialog()
+            }
+        }
+    ]}
+]);
+
+function showSuccess(message:string, life:number){
+  console.log("show success")
+  toast.add({severity:'success', summary: message, life: life});
+}
 
 async function updateCurrentBox(){
   loadingCurrentBox.value = true;
@@ -56,13 +80,13 @@ const onCellEditComplete = (event: { data: any; newValue: any; field: any; }) =>
     }
 };
 
-function openDeleteItemDialog(itemId:string) {
-  itemIdToBeDeleted.value = itemId;
+function openHardDeleteItemDialog() {
   deleteItemDialog.value = true;
 }
 
 function closeDeleteItemDialog() {
   itemIdToBeDeleted.value = "";
+  console.log("setting item to be deleted to nothing");
   deleteItemDialog.value = false;
 }
 
@@ -81,23 +105,33 @@ function updateItem(updatedItem:Item){
     .then(() => currentBox.value.editItem(updatedItem))
 }
 
-function deleteSelectedItem() {
-  deleteItem(itemIdToBeDeleted.value);
+function hardDeleteSelectedItem() {
+  deleteItem(itemIdToBeDeleted.value, true);
 }
 
-function deleteItem(itemId:string) {
-  BoxService.deleteItem(currentUserId.value, currentBoxId.value, itemId)
+function removeSelectedItemFromBox() {
+  deleteItem(itemIdToBeDeleted.value, false)
+}
+
+function deleteItem(itemId:string, hardDelete: boolean) {
+  BoxService.deleteItem(currentUserId.value, currentBoxId.value, itemId, hardDelete)
   .then((response => {
+    itemIdToBeDeleted.value = "";
     let itemName = currentBox.value.getItem(itemId).name;
     currentBox.value.deleteItem(itemId);
+
     deleteItemDialog.value = false;
+    
     showSuccess(`Removed ${itemName}`, 3000);
   }))
 }
 
-function showSuccess(message:string, life:number){
-  toast.add({severity:'success', summary: message, life: life});
-}
+
+
+function toggle(event: MouseEvent, itemId: string)  { 
+  console.log("setting item to be deleted to" + itemId)
+  itemIdToBeDeleted.value = itemId;
+  menu.value?.toggle(event);};
 </script>
 
 <template>
@@ -117,8 +151,8 @@ function showSuccess(message:string, life:number){
                 </Column>
             </DataTable>
 
-      <DataTable v-else :value="currentBox.items" :rowHover="true" editMode="cell" dataKey="itemId" @cell-edit-complete="onCellEditComplete" >
-      
+      <DataTable v-else :value="currentBox.items" :rowHover="true" editMode="cell" dataKey="itemId" @cell-edit-complete="onCellEditComplete">
+        
         <Column field="name" header="Name" style="width:150px" class="p-pluid">
                     <template #editor="{ data, field }">
                         <InputText v-model="data[field]" autofocus />
@@ -132,9 +166,12 @@ function showSuccess(message:string, life:number){
                 </Column>
                 <Column style="width:30px">
                     <template #body="slotProps">
-                        <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" @click="openDeleteItemDialog(slotProps.data.itemId)" />
+                        <Button icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggle($event, slotProps.data.itemId)" aria-haspopup="true" aria-controls="overlay_menu" />
+                        <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
                     </template>
                 </Column>
+
+                
       </DataTable>
       <br/>
       <div>
@@ -153,12 +190,14 @@ function showSuccess(message:string, life:number){
 
   <Dialog v-model:visible="deleteItemDialog" :style="{width: '450px'}" header="Confirm" :modal="true">
             <div class="confirmation-content">
+            
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem" />
-                <span v-if="itemIdToBeDeleted">Are you sure you want to delete <b>{{currentBox.getItem(itemIdToBeDeleted).name}}</b>?</span>
+                <span v-if="!!itemIdToBeDeleted">Are you sure you want to delete <b>{{currentBox.getItem(itemIdToBeDeleted).name}}</b>?</span>
             </div>
             <template #footer>
+        
                 <Button label="No" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
-                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="deleteSelectedItem" />
+                <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="hardDeleteSelectedItem" />
             </template>
   </Dialog>
 </div>

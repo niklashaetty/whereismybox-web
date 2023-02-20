@@ -1,5 +1,6 @@
 import type Item from '@/models/Item';
 import axios from 'axios';
+import { h } from 'vue';
 
 export default new class BoxService {
 
@@ -22,8 +23,13 @@ export default new class BoxService {
     axios.put(path, requestBody)
   }
 
-  async deleteItem(userId:string, boxId:string, itemId: string){
-    let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}`
+  async deleteItem(userId:string, boxId:string, itemId: string, hardDelete: boolean){
+    let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}?hardDelete=${hardDelete}`
+    axios.delete(path);
+  }
+
+  async deleteUnattachedItem(userId:string, itemId: string){
+    let path = `/api/users/${userId}/items/${itemId}`
     axios.delete(path);
   }
 }

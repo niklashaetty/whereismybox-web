@@ -23,7 +23,7 @@ export default class Box{
 
     getItem(itemId:string): Item {
         // TODO prettier function
-        return this.items.filter(obj => obj.itemId !== itemId)[0];
+        return this.items.filter(obj => obj.itemId == itemId)[0];
     }
 
     editItem(item:Item) {

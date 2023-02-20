@@ -4,6 +4,7 @@ import router from './router'
 import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import ToastService from 'primevue/toastservice';
+import ConfirmationService from 'primevue/confirmationservice';
 
 
 import './assets/main.css'
@@ -19,5 +20,7 @@ const app = createApp(App)
 app.use(router)
 app.use(PrimeVue);
 app.use(ToastService);
+app.use(ConfirmationService);
+
 app.component('Card', Card);
 app.mount('#app')

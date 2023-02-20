@@ -1,4 +1,5 @@
 using System.IO;
+using System.Net.Http.Formatting;
 using Domain.Repositories;
 using Domain.Services.BoxCreationService;
 using Domain.Services.ItemAddingService;
@@ -14,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 [assembly: FunctionsStartup(typeof(Startup))]
 namespace Functions
@@ -56,6 +58,10 @@ namespace Functions
 
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {
+                options.SerializerSettings.ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy()
+                };
                 options.SerializerSettings.Converters.Add(new StringEnumConverter());
                 options.SerializerSettings.DefaultValueHandling = DefaultValueHandling.Populate;
                 options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;

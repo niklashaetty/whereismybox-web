@@ -13,24 +13,31 @@ import QrcodeVue from 'qrcode.vue'
 import Dialog from 'primevue/dialog'
 import Item from '@/models/Item';
 import type Box from '@/models/Box';
-import type UnattachedItem from '@/models/Box';
+import type UnattachedItem from '@/models/UnattachedItem';
+import BoxService from '@/services/boxservice';
+import ConfirmPopup from 'primevue/confirmpopup';
+import { useToast } from "primevue/usetoast";
+import { useConfirm } from "primevue/useconfirm";
+
 
 let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
 const boxNumber = ref(0);
-const userId = ref(router.currentRoute.value.params.userId);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayQrCodeDialog = ref(false)
 const qrCodeLink = ref("");
 const filter = ref("");
+const currentUserId = ref(router.currentRoute.value.params.userId as string);
+
+const confirm = useConfirm();
+const toast = useToast();
 
 async function getBoxes() {
   loadingBoxes.value = true;
-  console.log("Loading boxes")
-  let boxesPath = `/api/users/${userId.value}/boxes`
+  let boxesPath = `/api/users/${currentUserId.value}/boxes`
    axios
     .get(boxesPath)
     .then((response) => {
@@ -39,14 +46,12 @@ async function getBoxes() {
     })
     .then(() => {
       loadingBoxes.value = false;
-      console.log("Loading boxes completed. value: " + loadingBoxes.value)
     });
 }
 
 async function getUnattachedItems() {
   loadingUnattachedItems.value = true;
-  console.log("Loading unattached items")
-  let path = `/api/users/${userId.value}/items`
+  let path = `/api/users/${currentUserId.value}/items`
    axios
     .get(path)
     .then((response) => {
@@ -54,13 +59,12 @@ async function getUnattachedItems() {
     })
     .then(() => {
       loadingUnattachedItems.value = false;
-      console.log("Loading boxes completed. value: " + loadingUnattachedItems.value)
     });
 }
 
 async function createNewBox() {
   const postBoxRequest = { Number: boxNumber.value, Name: boxName.value };
-  let boxesPath = `/api/users/${userId.value}/boxes`
+  let boxesPath = `/api/users/${currentUserId.value}/boxes`
   await axios.post(boxesPath, postBoxRequest)
     .then(getBoxes);
 }
@@ -74,6 +78,17 @@ function closeQrCodeDialog() {
   displayQrCodeDialog.value = false;
 }
 
+function removeUnattachedItemFromList(itemId:string){
+  unattachedItems.value = unattachedItems.value.filter(obj => obj.itemId !== itemId);
+}
+
+function deleteUnattachedItem(itemId:string) {
+  BoxService.deleteUnattachedItem(currentUserId.value, itemId)
+  .then((response => {
+    removeUnattachedItemFromList(itemId)
+  }))
+}
+
 function openQrCodeDialog(boxId: string) {
   qrCodeLink.value = window.location.origin + router.currentRoute.value.path + "/boxes/" + boxId;
   displayQrCodeDialog.value = true;
@@ -84,6 +99,23 @@ const filterBoxes = () => boxes.value.filter((box) => !filter.value || box.items
 function clearFilter() {
   filter.value = "";
 }
+
+const confirmDelete = (event: any, itemId: string) => {
+          
+            confirm.require({
+                target: event.currentTarget,
+                message: 'Are you sure you want to delete this item?',
+                icon: 'pi pi-info-circle',
+                acceptClass: 'p-button-danger',
+                accept: () => {
+                  deleteUnattachedItem(itemId);
+                    toast.add({severity:'info', summary:'Confirmed', detail:'Record deleted', life: 3000});
+                },
+                reject: () => {
+                    toast.add({severity:'error', summary:'Rejected', detail:'You have rejected', life: 3000});
+                }
+            });
+        }
 
 function showItemsMatchingFilter(items: any) {
   const maxLength = 8;
@@ -128,7 +160,7 @@ function trimString(text: string) {
       </Card>
     </div>
     <div v-else class="boxescontainer">
-      <Card v-for="box in filterBoxes()" @click="$router.push({ path: `/users/${userId}/boxes/${box.boxId}` })"
+      <Card v-for="box in filterBoxes()" @click="$router.push({ path: `/users/${currentUserId}/boxes/${box.boxId}` })"
         class="boxcard">
         <template #title>
           <p class="boxtitle">{{ box.number }} - {{ box.name }}</p>
@@ -158,6 +190,16 @@ function trimString(text: string) {
   </div>
   <div class="unattacheditems">
     <h1>Unattached items</h1>
+    <ConfirmPopup></ConfirmPopup>
+        <ConfirmPopup group="demo">
+            <template #message="slotProps">
+                <div class="flex p-4">
+                    <i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
+                    <p class="pl-2">{{slotProps.message.message}}</p>
+                </div>
+            </template>
+        </ConfirmPopup>
+        <Toast />
     <DataTable v-if="loadingUnattachedItems" :value=" new Array(10)">
                 <Column field="name" header="Name">
                     <template #body>
@@ -167,10 +209,11 @@ function trimString(text: string) {
             </DataTable>
 
       <DataTable v-else :value="unattachedItems" :rowHover="true" dataKey="itemId">
+        
         <Column field="name" header="Name" style="width:150px" class="p-pluid"> </Column>
         <Column style="width:30px">
             <template #body="slotProps">
-                <Button icon="pi pi-trash" class="p-button-rounded p-button-warning" />
+              <Button @click="confirmDelete($event, slotProps.data.itemId)" icon="pi pi-trash" class="p-button-rounded p-button-text"></Button>
             </template>
         </Column>
       </DataTable>
@@ -208,8 +251,6 @@ function trimString(text: string) {
 .boxes { grid-area: boxes; }
 
 .unattacheditems { grid-area: unattacheditems; }
-
-
 
 .boxescontainer {
   display: flex;
