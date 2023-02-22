@@ -1,6 +1,5 @@
 import type Item from '@/models/Item';
 import axios from 'axios';
-import { h } from 'vue';
 
 export default new class BoxService {
 
@@ -32,10 +31,10 @@ export default new class BoxService {
     let path = `/api/users/${userId}/items/${itemId}`
     axios.delete(path);
   }
+
+  async addBackUnattachedItem(userId:string, boxId:string, itemId: string){
+    let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}`
+    axios.post(path);
+  }
 }
 
-const response = {
-  Ok: 0,
-  BadRequest: 1,
-  InternalServerError: 2,
-};

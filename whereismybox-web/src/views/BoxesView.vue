@@ -11,6 +11,7 @@ import Column from 'primevue/column';
 import Skeleton from 'primevue/skeleton'
 import QrcodeVue from 'qrcode.vue'
 import Dialog from 'primevue/dialog'
+import Menu from 'primevue/menu';
 import Item from '@/models/Item';
 import type Box from '@/models/Box';
 import type UnattachedItem from '@/models/UnattachedItem';
@@ -18,12 +19,13 @@ import BoxService from '@/services/boxservice';
 import ConfirmPopup from 'primevue/confirmpopup';
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
-
+import Toast from 'primevue/toast'
 
 let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
+const selectedUnattachedItem = ref("");
 const boxNumber = ref(0);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
@@ -32,20 +34,37 @@ const qrCodeLink = ref("");
 const filter = ref("");
 const currentUserId = ref(router.currentRoute.value.params.userId as string);
 
-const confirm = useConfirm();
+const menu: any = ref(null);
+const menuItems = ref([
+    {
+        label: 'Options',
+        items: [{label: 'Add item back to the previous box', icon: 'pi pi-history',
+        command: () => {
+              addBackUnattachedItem(selectedUnattachedItem.value);
+          }
+        },
+        {label: 'Put item in box', icon: 'pi pi-trash',
+            command: () => {
+              deleteUnattachedItem(selectedUnattachedItem.value);
+            }
+        },
+        {label: 'Delete item', icon: 'pi pi-trash',
+            command: () => {
+              deleteUnattachedItem(selectedUnattachedItem.value);
+            }
+        }
+    ]}
+]);
+
 const toast = useToast();
 
 async function getBoxes() {
-  loadingBoxes.value = true;
   let boxesPath = `/api/users/${currentUserId.value}/boxes`
    axios
     .get(boxesPath)
     .then((response) => {
       boxes.value = response.data
       filteredBoxes.value = response.data;
-    })
-    .then(() => {
-      loadingBoxes.value = false;
     });
 }
 
@@ -70,7 +89,9 @@ async function createNewBox() {
 }
 
 onMounted(async () => {
+  loadingBoxes.value = true;
   getBoxes();
+  loadingBoxes.value = false;
   getUnattachedItems();
 });
 
@@ -89,6 +110,22 @@ function deleteUnattachedItem(itemId:string) {
   }))
 }
 
+function showSuccess(message:string, life:number){
+  toast.add({severity:'success', summary: message, life: life});
+}
+
+function addBackUnattachedItem(itemId:string) {
+  let unattachedItem = unattachedItems.value.find(e => e.itemId === itemId);
+  var box = boxes.value.find(b => b.boxId === unattachedItem!.previousBoxId);
+  BoxService.addBackUnattachedItem(currentUserId.value, unattachedItem!.previousBoxId, itemId)
+  .then((response => {
+    removeUnattachedItemFromList(itemId)
+  }))
+  .then(() => showSuccess(`Item ${unattachedItem?.name} added back to box ${box?.number}`, 3000))
+  .then(getBoxes)
+}
+
+
 function openQrCodeDialog(boxId: string) {
   qrCodeLink.value = window.location.origin + router.currentRoute.value.path + "/boxes/" + boxId;
   displayQrCodeDialog.value = true;
@@ -100,28 +137,16 @@ function clearFilter() {
   filter.value = "";
 }
 
-const confirmDelete = (event: any, itemId: string) => {
-          
-            confirm.require({
-                target: event.currentTarget,
-                message: 'Are you sure you want to delete this item?',
-                icon: 'pi pi-info-circle',
-                acceptClass: 'p-button-danger',
-                accept: () => {
-                  deleteUnattachedItem(itemId);
-                    toast.add({severity:'info', summary:'Confirmed', detail:'Record deleted', life: 3000});
-                },
-                reject: () => {
-                    toast.add({severity:'error', summary:'Rejected', detail:'You have rejected', life: 3000});
-                }
-            });
-        }
+function toggle(event: MouseEvent, itemId: string)  { 
+  selectedUnattachedItem.value = itemId;
+  menu.value?.toggle(event);
+}
+
 
 function showItemsMatchingFilter(items: any) {
   const maxLength = 8;
   let itemsMatchingFilter = items.filter((item: { name: string; }) => item.name.toLowerCase().includes(filter.value.toLowerCase()))
   if (itemsMatchingFilter.length > maxLength) {
-    console.log("Too many matches!")
     let overflowItems = itemsMatchingFilter.length - maxLength;
     const slicedArray = itemsMatchingFilter.slice(0, maxLength - 1);
     slicedArray.push(new Item("no-id", "  ", "..."));
@@ -139,6 +164,7 @@ function trimString(text: string) {
 </script>
 <template>
 <div class="container">
+  <Toast/>
   <div class="searchbar">
     <h1>Search for items</h1>
     <span class="p-input-icon-right p-input-icon-left ">
@@ -213,7 +239,8 @@ function trimString(text: string) {
         <Column field="name" header="Name" style="width:150px" class="p-pluid"> </Column>
         <Column style="width:30px">
             <template #body="slotProps">
-              <Button @click="confirmDelete($event, slotProps.data.itemId)" icon="pi pi-trash" class="p-button-rounded p-button-text"></Button>
+              <Button icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggle($event, slotProps.data.itemId)" aria-haspopup="true" aria-controls="overlay_menu" />
+              <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
             </template>
         </Column>
       </DataTable>
@@ -235,15 +262,18 @@ function trimString(text: string) {
   font-size: medium;
 }
 
-.container {  display: grid;
+.container {  
+  display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 0.2fr 1.8fr 1fr;
-  gap: 0px 0px;
+  gap: 10px 10px;
   grid-auto-flow: row;
   grid-template-areas:
     "searchbar searchbar searchbar"
     "boxes boxes unattacheditems"
     ". . .";
+  width: 1150px;
+  min-height: 1000px;
 }
 
 .searchbar { grid-area: searchbar; }
@@ -278,10 +308,9 @@ function trimString(text: string) {
 
 .boxcard {
   background-color: white;
-  border-radius: 25px;
+  border-radius: 10px;
   width: 250px;
   height: 200px;
-  padding-bottom: 10%;
   /* 32:18, i.e. 16:9 */
   margin-bottom: 2%;
   /* (100-32*3)/2 */

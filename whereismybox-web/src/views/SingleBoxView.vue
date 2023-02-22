@@ -14,7 +14,6 @@ import Box from '@/models/Box';
 import Toast from 'primevue/toast';
 import { useToast } from "primevue/usetoast";
 
-
 const toast = useToast();
 const currentBox = ref(new Box("", 0, "", []));
 const skeletonItems = ref(new Array(5))
@@ -44,7 +43,6 @@ const menuItems = ref([
 ]);
 
 function showSuccess(message:string, life:number){
-  console.log("show success")
   toast.add({severity:'success', summary: message, life: life});
 }
 
@@ -119,23 +117,20 @@ function deleteItem(itemId:string, hardDelete: boolean) {
     itemIdToBeDeleted.value = "";
     let itemName = currentBox.value.getItem(itemId).name;
     currentBox.value.deleteItem(itemId);
-
     deleteItemDialog.value = false;
-    
     showSuccess(`Removed ${itemName}`, 3000);
   }))
 }
 
-
-
 function toggle(event: MouseEvent, itemId: string)  { 
-  console.log("setting item to be deleted to" + itemId)
   itemIdToBeDeleted.value = itemId;
-  menu.value?.toggle(event);};
+  menu.value?.toggle(event);
+}
 </script>
 
 <template>
   <div class="wrapper">
+    <Toast/>
     <h1>{{currentBox.number}} - {{ currentBox.name }}</h1>
   	<div class="card">
       <DataTable v-if="loadingCurrentBox" :value="skeletonItems">
@@ -195,7 +190,6 @@ function toggle(event: MouseEvent, itemId: string)  {
                 <span v-if="!!itemIdToBeDeleted">Are you sure you want to delete <b>{{currentBox.getItem(itemIdToBeDeleted).name}}</b>?</span>
             </div>
             <template #footer>
-        
                 <Button label="No" icon="pi pi-times" class="p-button-text" @click="closeDeleteItemDialog"/>
                 <Button label="Yes" icon="pi pi-check" class="p-button-text" @click="hardDeleteSelectedItem" />
             </template>
@@ -209,7 +203,6 @@ function toggle(event: MouseEvent, itemId: string)  {
   display: inline-block;
   padding: 5px;
 }
-
 
 .boxwrapper {
   /* We first create a flex layout context */

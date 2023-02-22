@@ -33,7 +33,21 @@ public class ItemDeletionService : IItemDeletionService
         }
     }
 
+    public async Task DeleteUnattachedItem(Guid userId, Guid itemId)
+    {
+        var unattachedItems = await GetOrCreateUnattachedItems(userId);
+        unattachedItems.RemoveIfExists(itemId);
+        await _unattachedItemRepository.PersistUpdate(unattachedItems);
+    }
+
     private async Task AddItemToUnattached(Guid userId, Guid previousBoxId, Item item)
+    {
+        var unattachedItems = await GetOrCreateUnattachedItems(userId);
+        unattachedItems.Add(item, previousBoxId);
+        await _unattachedItemRepository.PersistUpdate(unattachedItems);
+    }
+
+    private async Task<UnattachedItemCollection> GetOrCreateUnattachedItems(Guid userId)
     {
         UnattachedItemCollection unattachedItems;
         try
@@ -44,7 +58,7 @@ public class ItemDeletionService : IItemDeletionService
         {
             unattachedItems = await _unattachedItemRepository.Create(UnattachedItemCollection.Create(userId));
         }
-        unattachedItems.Add(item, previousBoxId);
-        await _unattachedItemRepository.PersistUpdate(unattachedItems);
+
+        return unattachedItems;
     }
 }
