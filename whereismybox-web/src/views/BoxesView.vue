@@ -59,13 +59,15 @@ const menuItems = ref([
 const toast = useToast();
 
 async function getBoxes() {
+  loadingBoxes.value = true;
   let boxesPath = `/api/users/${currentUserId.value}/boxes`
    axios
     .get(boxesPath)
     .then((response) => {
       boxes.value = response.data
       filteredBoxes.value = response.data;
-    });
+    })
+    .then(() => loadingBoxes.value = false);
 }
 
 async function getUnattachedItems() {
@@ -89,9 +91,8 @@ async function createNewBox() {
 }
 
 onMounted(async () => {
-  loadingBoxes.value = true;
+ 
   getBoxes();
-  loadingBoxes.value = false;
   getUnattachedItems();
 });
 

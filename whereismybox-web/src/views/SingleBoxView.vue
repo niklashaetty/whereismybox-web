@@ -12,6 +12,7 @@ import BoxService from '@/services/boxservice';
 import Item from '@/models/Item';
 import Box from '@/models/Box';
 import Toast from 'primevue/toast';
+import Header from '@/components/Header.vue'
 import { useToast } from "primevue/usetoast";
 
 const toast = useToast();
@@ -129,6 +130,7 @@ function toggle(event: MouseEvent, itemId: string)  {
 </script>
 
 <template>
+  <Header :userId="currentUserId" />
   <div class="wrapper">
     <Toast/>
     <h1>{{currentBox.number}} - {{ currentBox.name }}</h1>
@@ -199,10 +201,7 @@ function toggle(event: MouseEvent, itemId: string)  {
 
 <style scoped>
 
-.inline-block-child {
-  display: inline-block;
-  padding: 5px;
-}
+
 
 .boxwrapper {
   /* We first create a flex layout context */
@@ -221,11 +220,4 @@ function toggle(event: MouseEvent, itemId: string)  {
   justify-content: space-around;
 }
 
-@media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-}
 </style>
