@@ -72,7 +72,7 @@ async function getBoxes() {
 
 async function getUnattachedItems() {
   loadingUnattachedItems.value = true;
-  let path = `/api/users/${currentUserId.value}/items`
+  let path = `/api/users/${currentUserId.value}/items`;
    axios
     .get(path)
     .then((response) => {
@@ -82,6 +82,7 @@ async function getUnattachedItems() {
       loadingUnattachedItems.value = false;
     });
 }
+
 
 async function createNewBox() {
   const postBoxRequest = { Number: boxNumber.value, Name: boxName.value };
@@ -233,17 +234,20 @@ function trimString(text: string) {
                         <Skeleton></Skeleton>
                     </template>
                 </Column>
+            
             </DataTable>
 
       <DataTable v-else :value="unattachedItems" :rowHover="true" dataKey="itemId">
         
         <Column field="name" header="Name" style="width:150px" class="p-pluid"> </Column>
+        <Column field="previousBoxNumber" header="Previous box"> </Column>
         <Column style="width:30px">
             <template #body="slotProps">
               <Button icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggle($event, slotProps.data.itemId)" aria-haspopup="true" aria-controls="overlay_menu" />
               <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
             </template>
         </Column>
+        
       </DataTable>
   </div>
 </div>

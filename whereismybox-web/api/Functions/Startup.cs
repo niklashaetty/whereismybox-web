@@ -5,6 +5,7 @@ using Domain.Services.BoxCreationService;
 using Domain.Services.ItemAddingService;
 using Domain.Services.ItemDeletionService;
 using Domain.Services.ItemEditingService;
+using Domain.Services.UnattachedItemFetchingService;
 using Domain.Services.UserCreationService;
 using Functions;
 using Infrastructure.BoxRepository;
@@ -55,6 +56,7 @@ namespace Functions
             builder.Services.AddSingleton<IItemDeletionService, ItemDeletionService>();
             builder.Services.AddSingleton<IItemEditingService, ItemEditingService>();
             builder.Services.AddSingleton<IUnattachedItemRepository, UnattachedItemRepository>();
+            builder.Services.AddSingleton<IUnattachedItemFetchingService, UnattachedItemFetchingService>();
 
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {

@@ -5,11 +5,16 @@ namespace Api;
 
 public class UnattachedItemDto : ItemDto
 {
-    [OpenApiProperty(Description = "The item it was previously located in. Optional")]
+    [OpenApiProperty(Description = "The box it was previously located in. Optional")]
     public Guid? PreviousBoxId { get; set; }
 
-    public UnattachedItemDto(Guid itemId, Guid? previousBoxId, string name, string description) : base(itemId, name, description)
+    [OpenApiProperty(Description = "The box number it was previously located in. Optional")]
+    public int? PreviousBoxNumber { get; set; }
+
+    public UnattachedItemDto(Guid itemId, string name, string description, Guid? previousBoxId, int? previousBoxNumber)
+        : base(itemId, name, description)
     {
         PreviousBoxId = previousBoxId;
+        PreviousBoxNumber = previousBoxNumber;
     }
 }

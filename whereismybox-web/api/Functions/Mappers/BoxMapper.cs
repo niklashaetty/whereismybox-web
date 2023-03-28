@@ -18,9 +18,10 @@ public static class BoxMapper
     {
         return new ItemDto(item.ItemId, item.Name, item.Description);
     }
-    
+
     public static UnattachedItemDto ToApiModel(this UnattachedItem item)
     {
-        return new UnattachedItemDto(item.ItemId, item?.PreviousBoxId, item.Name, item.Description);
+        return new UnattachedItemDto(item.ItemId, item.Name, item.Description, item.PreviousBoxId,
+            item.PreviousBoxNumber);
     }
 }

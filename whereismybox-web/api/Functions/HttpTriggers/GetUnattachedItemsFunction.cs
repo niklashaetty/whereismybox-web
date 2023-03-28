@@ -6,7 +6,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Exceptions;
-using Domain.Repositories;
+using Domain.Services.UnattachedItemFetchingService;
 using Functions.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,12 +22,12 @@ public class GetUnattachedItemsFunction
 {
     private const string OperationId = "GetUnattachedItems";
     private const string FunctionName = OperationId + "Function";
-    private readonly IUnattachedItemRepository _unattachedItemRepository;
+    private readonly IUnattachedItemFetchingService _unattachedItemFetchingService;
 
-    public GetUnattachedItemsFunction(IUnattachedItemRepository unattachedItemRepository)
+    public GetUnattachedItemsFunction(IUnattachedItemFetchingService unattachedItemFetchingService)
     {
-        ArgumentNullException.ThrowIfNull(unattachedItemRepository);
-        _unattachedItemRepository = unattachedItemRepository;
+        ArgumentNullException.ThrowIfNull(unattachedItemFetchingService);
+        _unattachedItemFetchingService = unattachedItemFetchingService;
     }
 
     [OpenApiOperation(operationId:OperationId, tags: new[] {"Items"},
@@ -45,7 +45,7 @@ public class GetUnattachedItemsFunction
     {
         try
         {
-            var unattachedItemCollection = await _unattachedItemRepository.Get(userId);
+            var unattachedItemCollection = await _unattachedItemFetchingService.Get(userId);
             return new OkObjectResult(unattachedItemCollection.UnattachedItems.Select(i  => i.ToApiModel()));
         }
         catch (UnattachedItemsNotFoundException)
