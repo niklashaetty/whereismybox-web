@@ -20,6 +20,8 @@ import ConfirmPopup from 'primevue/confirmpopup';
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
 import Toast from 'primevue/toast'
+import Header from '@/components/Header.vue'
+import BoxCard from '@/components/BoxCard.vue'
 
 let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
@@ -32,7 +34,7 @@ const loadingUnattachedItems = ref(false);
 const displayQrCodeDialog = ref(false)
 const qrCodeLink = ref("");
 const filter = ref("");
-const currentUserId = ref(router.currentRoute.value.params.userId as string);
+const currentUserId = ref("");
 
 const menu: any = ref(null);
 const menuItems = ref([
@@ -92,7 +94,7 @@ async function createNewBox() {
 }
 
 onMounted(async () => {
- 
+  currentUserId.value = router.currentRoute.value.params.userId as string;
   getBoxes();
   getUnattachedItems();
 });
@@ -165,7 +167,9 @@ function trimString(text: string) {
 
 </script>
 <template>
+<Header :userId="currentUserId" />
 <div class="container">
+
   <Toast/>
   <div class="searchbar">
     <h1>Search for items</h1>
@@ -188,24 +192,14 @@ function trimString(text: string) {
       </Card>
     </div>
     <div v-else class="boxescontainer">
-      <Card v-for="box in filterBoxes()" @click="$router.push({ path: `/users/${currentUserId}/boxes/${box.boxId}` })"
+      <BoxCard :boxNumber="box.number" :boxName="box.name" :boxItemCount="box.items.length" v-for="box in filterBoxes()" @click="$router.push({ path: `/users/${currentUserId}/boxes/${box.boxId}` })"
         class="boxcard">
-        <template #title>
-          <p class="boxtitle">{{ box.number }} - {{ box.name }}</p>
-        </template>
-        <template v-if=!filter #subtitle>
-          {{ box.items.length }} items
-        </template>
-
+        
         <template v-if=filter #content>
           <div class="matchingitemsbox" v-for="item in showItemsMatchingFilter(box.items)"> {{ trimString(item.name) }}
           </div>
         </template>
-
-        <template v-if=!filter #footer style="align-items: center;">
-          <div class="footer-button"><Button @click.stop="openQrCodeDialog(box.boxId)" icon="pi pi-qrcode" /></div>
-        </template>
-      </Card>
+      </BoxCard>
       <Dialog v-model:visible="displayQrCodeDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
         <div class="confirmation-content">
           <qrcode-vue :value="qrCodeLink"></qrcode-vue>
@@ -263,8 +257,12 @@ function trimString(text: string) {
 </template>
 
 <style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 .boxtitle {
   font-size: medium;
+}
+.h1{
+  font-family: 'Roboto', sans-serif;
 }
 
 .container {  
@@ -281,7 +279,10 @@ function trimString(text: string) {
   min-height: 1000px;
 }
 
-.searchbar { grid-area: searchbar; }
+.searchbar { 
+  grid-area: searchbar; 
+
+}
 
 .boxes { grid-area: boxes; }
 

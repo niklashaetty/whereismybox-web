@@ -10,7 +10,7 @@ import {PrimeIcons} from 'primevue/api';
 </script>
 
 <template>
-<div class="container">
+<div class="headercontainer">
   <div class="logo">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
@@ -22,7 +22,7 @@ import {PrimeIcons} from 'primevue/api';
 </template>
 
 <style scoped>
-.container {
+.headercontainer {
   display: grid; 
   grid-template-columns: 0.7fr 1.9fr 0.8fr; 
   grid-template-rows: 0.2fr 1.8fr 1fr; 
