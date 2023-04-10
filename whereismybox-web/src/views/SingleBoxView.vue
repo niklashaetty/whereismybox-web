@@ -130,7 +130,7 @@ function toggle(event: MouseEvent, itemId: string)  {
 </script>
 
 <template>
-  <Header :userId="currentUserId" />
+  <Header />
   <div class="wrapper">
     <Toast/>
     <h1>{{currentBox.number}} - {{ currentBox.name }}</h1>

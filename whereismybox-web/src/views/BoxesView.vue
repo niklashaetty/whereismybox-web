@@ -14,8 +14,10 @@ import Dialog from 'primevue/dialog'
 import Menu from 'primevue/menu';
 import Item from '@/models/Item';
 import type Box from '@/models/Box';
+import type User from '@/models/User';
 import type UnattachedItem from '@/models/UnattachedItem';
 import BoxService from '@/services/boxservice';
+import UserService from '@/services/userservice';
 import ConfirmPopup from 'primevue/confirmpopup';
 import { useToast } from "primevue/usetoast";
 import { useConfirm } from "primevue/useconfirm";
@@ -35,6 +37,7 @@ const displayQrCodeDialog = ref(false)
 const qrCodeLink = ref("");
 const filter = ref("");
 const currentUserId = ref("");
+const currentUser = ref()
 
 const menu: any = ref(null);
 const menuItems = ref([
@@ -84,7 +87,6 @@ async function getUnattachedItems() {
       loadingUnattachedItems.value = false;
     });
 }
-
 
 async function createNewBox() {
   const postBoxRequest = { Number: boxNumber.value, Name: boxName.value };
@@ -167,7 +169,7 @@ function trimString(text: string) {
 
 </script>
 <template>
-<Header :userId="currentUserId" />
+<Header />
 <div class="container">
 
   <Toast/>
@@ -175,7 +177,7 @@ function trimString(text: string) {
     <h1>Search for items</h1>
     <span class="p-input-icon-right p-input-icon-left ">
         <i class="pi pi-search" />
-        <InputText type="text" v-model="filter" placeholder="Search" />
+        <InputText class="searchinput" type="text" v-model="filter" placeholder="Search" />
         <i v-if=filter class="pi pi-times" @click="clearFilter()" />
       </span>
   </div>
@@ -192,9 +194,7 @@ function trimString(text: string) {
       </Card>
     </div>
     <div v-else class="boxescontainer">
-      <BoxCard :boxNumber="box.number" :boxName="box.name" :boxItemCount="box.items.length" v-for="box in filterBoxes()" @click="$router.push({ path: `/users/${currentUserId}/boxes/${box.boxId}` })"
-        class="boxcard">
-        
+      <BoxCard :userId="currentUserId" :boxId="box.boxId" :boxNumber="box.number" :boxName="box.name" :boxItemCount="box.items.length" v-for="box in filterBoxes()" class="boxcard">
         <template v-if=filter #content>
           <div class="matchingitemsbox" v-for="item in showItemsMatchingFilter(box.items)"> {{ trimString(item.name) }}
           </div>
@@ -269,22 +269,27 @@ function trimString(text: string) {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 0.2fr 1.8fr 1fr;
-  gap: 10px 10px;
+  gap: 30px 30px;
   grid-auto-flow: row;
   grid-template-areas:
     "searchbar searchbar searchbar"
     "boxes boxes unattacheditems"
     ". . .";
-  width: 1150px;
+  width: 1200px;
+  margin: auto;
   min-height: 1000px;
+  
 }
 
 .searchbar { 
+  margin-top: 30px;
   grid-area: searchbar; 
-
 }
 
-.boxes { grid-area: boxes; }
+.boxes { 
+  grid-area: boxes;
+
+}
 
 .unattacheditems { grid-area: unattacheditems; }
 
@@ -293,6 +298,12 @@ function trimString(text: string) {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  padding: 5px;
+}
+
+.searchinput {
+  width: 700px;
+  margin: auto;
 }
 
 .searchfield {

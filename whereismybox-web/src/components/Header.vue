@@ -1,12 +1,27 @@
-<script lang="ts">
-export default {
-  props: ['userId']
-}
-</script>
-
 <script setup lang="ts">
 
 import {PrimeIcons} from 'primevue/api';
+import { defineProps, computed, ref, onMounted} from 'vue'
+import router from '@/router';
+
+import UserService from '@/services/userservice';
+import Avatar from 'primevue/avatar';
+
+const userId = router.currentRoute.value.params.userId as string;
+const userName = ref(" ");
+const avatarLetter = ref(" ");
+
+function getCurrentUser() {
+  UserService.getUser(userId)
+  .then((response => {
+    userName.value = response.data.userName;
+    avatarLetter.value = Array.from(userName.value)[0];
+  }))
+}
+
+onMounted(async () => {
+  getCurrentUser();
+});
 </script>
 
 <template>
@@ -14,10 +29,13 @@ import {PrimeIcons} from 'primevue/api';
   <div class="logo">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
-    <h1> Where is my box?</h1>
+    <h1 style="margin-left: 10px"> Where is my box?</h1>
   </div>
   <div class="filler"></div>
-  <div class="username">{{ userId }}</div>
+  <div class="username"  @click="$router.push({ path: `/users/${userId}`})">
+    <Avatar :label="avatarLetter" class="mr-2" size="large" shape="circle" />
+    <p style="margin-left: 10px">{{ userName }} </p>
+  </div>
 </div>
 </template>
 
@@ -51,7 +69,14 @@ import {PrimeIcons} from 'primevue/api';
   padding-right: 5px;
 }
 
-.username { grid-area: username; }
+.username { 
+  grid-area: username; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  height: 60px;
+}
 .filler { grid-area: filler; }
 
 </style>

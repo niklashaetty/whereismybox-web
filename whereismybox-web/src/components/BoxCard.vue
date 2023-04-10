@@ -1,28 +1,109 @@
-<script lang="ts">
-export default {
-  props: ['boxNumber', 'boxName', 'boxItemCount']
-}
-</script>
-
 <script setup lang="ts">
+import { defineProps, computed} from 'vue'
 
+import ConfirmDialog from 'primevue/confirmdialog';
+import router from '@/router';
+import Button from 'primevue/button';
+import Menu from 'primevue/menu';
+import BoxService from '@/services/boxservice';
 import {PrimeIcons} from 'primevue/api';
+import { onMounted, ref } from 'vue';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+
+
+const props = defineProps({
+  boxId: {
+      type: String,
+      required: true
+    },
+    boxNumber: {
+      type: Number,
+      required: true
+    },
+    boxName: {
+      type: String,
+      required: true
+    },
+    boxItemCount: {
+      type: Number,
+      required: true
+    }
+});
+const userId = router.currentRoute.value.params.userId as string;
+const boxId = computed(() => props.boxId);
+const boxName = computed(() => props.boxName);
+const boxItemCount = computed(() => props.boxItemCount);
+const boxNumber = computed(() => props.boxNumber);
+
+const toast = useToast();
+const confirm = useConfirm();
+const menu: any = ref(null);
+const menuItems = ref([
+    {
+        label: 'Options',
+        items: [
+        {label: 'Show printable sticker', icon: 'pi pi-qrcode',
+        command: () => {
+            console.log("Not working currently!")
+          }
+        },
+        {label: 'Edit (not working currently)', icon: 'pi-file-edit',
+        command: () => {
+              console.log("Not working currently!")
+          }
+        },
+        {label: 'Delete', icon: 'pi pi-trash',
+            command: () => {
+              confirmDeleteBox()
+            }
+        }
+    ]}
+]);
+
+
+function confirmDeleteBox(){
+   
+    confirm.require({
+        message: `Are you sure you want to delete ${boxName.value}? This action cannot be undone, and all ${boxItemCount.value} items will be lost.`,
+        header: `Deleting box ${boxNumber.value}`,
+        icon: 'pi pi-info-circle',
+        acceptClass: 'p-button-danger',
+        accept: () => deleteBox(userId, boxId.value),
+        reject: () => {}
+    });
+};
+
+function toggleBoxMenu(event: MouseEvent)  { 
+  menu.value?.toggle(event);
+}
+
+function deleteBox(userId:string, boxId:string) {
+  BoxService.deleteBox(userId, boxId)
+  .then((response => {
+     toast.add({ severity: 'success', summary: 'Confirmed', detail: `Box ${boxName.value} deleted`, life: 3000 });
+  }))
+}
+
 </script>
 
 <template>
 <div class="boxcardcontainer">
-  <div class="boxnumber">
+  <div class="boxnumber" @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})">
     <p>{{ boxNumber }}</p>
   </div>
-  <div class="boxname">
+  <div class="boxname" @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})">
     <p>{{ boxName }}</p>
-    <div class="boxitemcount">
+    <div class="boxitemcount"  @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})">
       <p>{{boxItemCount}} items</p>
     </div>
   </div>
-  <div class="boxoptions">...</div>
-  <div class="footer"></div>
-  <div class="boxcontent"></div>
+  <div class="boxoptions">
+    <Button icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggleBoxMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
+  </div>
+  <div class="footer" @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})"> </div>
+  <div class="boxcontent" @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})"></div>
 </div>
 </template>
 

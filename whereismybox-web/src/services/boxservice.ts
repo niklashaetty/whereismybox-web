@@ -36,5 +36,10 @@ export default new class BoxService {
     let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}`
     axios.post(path);
   }
+
+  async deleteBox(userId:string, boxId:string){
+    let path = `/api/users/${userId}/boxes/${boxId}`
+    axios.delete(path);
+  }
 }
 
