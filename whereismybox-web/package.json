@@ -18,7 +18,7 @@
     "@types/axios": "^0.14.0",
     "axios": "^1.2.3",
     "primeicons": "^6.0.1",
-    "primevue": "^3.22.3",
+    "primevue": "^3.26.1",
     "qrcode.vue": "^3.3.3",
     "vue": "^3.2.45",
     "vue-qrcode": "^2.2.0",

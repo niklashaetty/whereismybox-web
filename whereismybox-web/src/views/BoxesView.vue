@@ -182,7 +182,13 @@ function trimString(text: string) {
       </span>
   </div>
   <div class="boxes">
-    <h1>Boxes</h1>
+    <div class="boxtitlecontainer">
+      <h1 class="boxtitle">Boxes</h1>
+    
+      <Button class="lol" label="Add new (does not work yet)" severity="danger" icon="pi pi-plus" text raised />
+
+    </div>
+    
     <div v-if="loadingBoxes" class="boxescontainer">
       <Card v-for="box in new Array(8)" class="boxcard">
         <template #title>
@@ -258,12 +264,23 @@ function trimString(text: string) {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-.boxtitle {
-  font-size: medium;
+.boxtitlecontainer {
+  display: flex;
 }
+
+.boxtitle {
+ width:83%
+}
+
+
+.boxtitlenewbox {
+  align-items: center;
+}
+
 .h1{
   font-family: 'Roboto', sans-serif;
 }
+
 
 .container {  
   display: grid;
@@ -338,7 +355,7 @@ function trimString(text: string) {
 }
 
 .boxcard:hover {
-  background-color: #f3faff;
+  background-color: #f3edea;
   cursor: pointer;
 }
 </style>

@@ -51,7 +51,7 @@ onMounted(async () => {
     ". . ."; 
   width: 100%;
   height:60px;
-  background-color: aliceblue;
+  background-color: #f2f1f0;
 
   border-bottom: 1px solid;
   border-color: white;
