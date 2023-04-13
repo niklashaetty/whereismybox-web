@@ -13,6 +13,7 @@ import 'primevue/resources/themes/saga-blue/theme.css'       //theme
 import 'primevue/resources/primevue.min.css'                 //core css
 import 'primeicons/primeicons.css'                           //icons
 import { library } from '@fortawesome/fontawesome-svg-core'
+import mitt from 'mitt'; 
 
 /* import font awesome icon component */
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -21,12 +22,17 @@ import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 library.add(faUserSecret)
 
+
 const app = createApp(App)
 
 app.use(router)
 app.use(PrimeVue);
 app.use(ToastService);
 app.use(ConfirmationService);
+
+const emitter = mitt(); 
+
+app.provide('emitter', emitter);       
 
 app.component('Card', Card);
 app.component('font-awesome-icon', FontAwesomeIcon)

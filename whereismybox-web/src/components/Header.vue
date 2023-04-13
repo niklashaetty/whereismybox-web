@@ -29,11 +29,11 @@ onMounted(async () => {
   <div class="logo">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
-    <h1 style="margin-left: 10px"> Where is my box?</h1>
+    <h2 style="margin-left: 5px"> Boxio</h2>
   </div>
   <div class="filler"></div>
   <div class="username"  @click="$router.push({ path: `/users/${userId}`})">
-    <Avatar :label="avatarLetter" class="mr-2" size="large" shape="circle" />
+    <Avatar :label="avatarLetter"  style="background-color: #b5c99a" class="mr-2"  shape="circle" />
     <p style="margin-left: 10px">{{ userName }} </p>
   </div>
 </div>
@@ -51,10 +51,8 @@ onMounted(async () => {
     ". . ."; 
   width: 100%;
   height:60px;
-  background-color: #f2f1f0;
 
-  border-bottom: 1px solid;
-  border-color: white;
+
 }
 .logo { 
   display: flex;
@@ -65,7 +63,8 @@ onMounted(async () => {
 }
 
 .boxlogo {
-  font-size: 2rem;
+  color: #718355;
+  font-size: 1rem;
   padding-right: 5px;
 }
 

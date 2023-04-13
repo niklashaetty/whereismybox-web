@@ -17,9 +17,11 @@
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@types/axios": "^0.14.0",
     "axios": "^1.2.3",
+    "mitt": "^3.0.0",
     "primeicons": "^6.0.1",
     "primevue": "^3.26.1",
     "qrcode.vue": "^3.3.3",
+    "tiny-emitter": "^2.1.0",
     "vue": "^3.2.45",
     "vue-qrcode": "^2.2.0",
     "vue-router": "^4.1.6"

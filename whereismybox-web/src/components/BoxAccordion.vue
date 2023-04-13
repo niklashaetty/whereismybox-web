@@ -1,0 +1,211 @@
+<script setup lang="ts">
+import { defineProps, computed} from 'vue'
+
+import ConfirmDialog from 'primevue/confirmdialog';
+import router from '@/router';
+import Button from 'primevue/button';
+import Menu from 'primevue/menu';
+import BoxService from '@/services/boxservice';
+import Box from '@/models/Box';
+import {PrimeIcons} from 'primevue/api';
+import { onMounted, ref } from 'vue';
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
+import ItemAccordion from '@/components/ItemAccordion.vue'
+import ItemAccordionDescription from '@/components/ItemAccordionDescription.vue'
+import eventbus from '@/services/eventbus';
+import Skeleton from 'primevue/skeleton';
+
+const props = defineProps(
+  {
+    box:  {
+        type: Box,
+        required: true
+    },
+    isLoading: {
+      type: Boolean,
+      required: false
+    }
+  }
+);
+
+const toast = useToast();
+const confirm = useConfirm();
+const expanded = ref(false);
+const isFullyLoaded = computed(() => !props.isLoading);
+const userId = router.currentRoute.value.params.userId as string;
+const box = computed(() => props.box);
+
+const menu: any = ref(null);
+const menuItems = ref([
+    {
+        label: 'Options',
+        items: [
+        {label: 'Show printable sticker', icon: 'pi pi-qrcode',
+        command: () => {
+            console.log("Not working currently!")
+          }
+        },
+        {label: 'Edit (not working currently)', icon: 'pi-file-edit',
+        command: () => {
+              console.log("Not working currently!")
+          }
+        },
+        {label: 'Delete', icon: 'pi pi-trash',
+            command: () => {
+              confirmDeleteBox()
+            }
+        }
+    ]}
+]);
+
+function confirmDeleteBox(){
+   
+   confirm.require({
+       message: `Are you sure you want to delete ${box.value.name}? This action cannot be undone, and all ${box.value.items.length} items will be lost.`,
+       header: `Deleting box ${box.value.number}`,
+       icon: 'pi pi-info-circle',
+       acceptClass: 'p-button-danger',
+       accept: () => deleteBox(userId, box.value.boxId),
+       reject: () => {}
+   });
+};
+
+function deleteBox(userId:string, boxId:string) {
+  BoxService.deleteBox(userId, boxId)
+  .then((response => {
+     toast.add({ severity: 'success', summary: 'Confirmed', detail: `Box ${box.value.name} deleted`, life: 3000 });
+  }))
+}
+
+function expandBox(){
+  expanded.value = !expanded.value;
+}
+
+function toggleBoxMenu(event: MouseEvent)  { 
+  menu.value?.toggle(event);
+}
+
+function trimString(maxLength: number, text: string) {
+  return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
+}
+</script>
+
+<template>
+<div v-if="isFullyLoaded" class="accordion-container">
+  <div class="accordion-icon" @click="expandBox">
+    <i v-if="expanded" class="pi pi-angle-down" style="color: slateblue; padding-right: 5px;"></i>
+    <i v-else class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+  </div>
+  <div class="accordion-number" @click="expandBox">
+    <p> {{ box.number }}</p>
+  </div>
+  <div class="accordion-name" @click="expandBox">
+    <p>{{ box.name }}</p>
+  </div>
+  
+  <div class="accordion-itemcount" @click="expandBox">
+    <p>{{ box.items.length  }} items</p>
+  </div>
+  <div class="accordion-options">
+    <Button style="color: #718355; " icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggleBoxMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
+  </div>
+</div>
+
+<div v-else class="accordion-container">
+  <div class="accordion-icon">
+    <i class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+  </div>
+  <div class="accordion-number">
+   <Skeleton />
+  </div>
+  <div class="accordion-name">
+    <Skeleton />
+  </div>
+  
+  <div class="accordion-itemcount">
+    <Skeleton />
+  </div>
+  <div class="accordion-options">
+  
+  </div>
+</div>
+
+<div v-if="expanded" class="accordion-content">
+    <ItemAccordionDescription />
+    <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in box.items">
+      <template #name> <p title="{{ item.name }}"> {{trimString(40, item.name)}}</p></template>
+      <template #description> <p>{{trimString(50, item.description)}} </p></template>
+    </ItemAccordion>
+</div>
+</template>
+
+<style scoped>
+.accordion-container {  
+  /* grid props */
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 0.4fr 0.4fr 2.9fr 1.1fr 0.4fr;
+  grid-template-rows: 0.1fr;
+  gap: 0px 10px;
+  grid-auto-flow: row;
+  grid-template-areas:
+    "icon number name itemcount options";
+
+  background-color: white;
+
+  box-shadow:
+  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
+  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
+  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
+  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
+  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
+
+  background-color: white;
+  border-radius: 3px;
+  height: 40px;
+  margin: 5px;
+  align-items: center;
+}
+
+.accordion-container:hover {  
+  background-color: #f2f2f2;
+}
+
+
+.accordion-content {  
+  margin: 5px;
+  margin-left: 20px;
+  background-color: white;
+  border-radius: 3px;
+}
+
+.accordion-icon { 
+  grid-area: icon; 
+  margin: 0;
+  left: 25%;
+}
+
+.accordion-number { 
+
+  grid-area: number;
+  align-items: center;
+ }
+
+.accordion-name { 
+  grid-area: name; 
+  align-items: center;
+}
+
+.accordion-itemcount {
+   grid-area: itemcount;
+   align-items: center; 
+  }
+
+.accordion-options { 
+  height: 40px;
+  grid-area: options; 
+}
+
+</style>

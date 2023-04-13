@@ -99,7 +99,7 @@ function deleteBox(userId:string, boxId:string) {
     </div>
   </div>
   <div class="boxoptions">
-    <Button icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggleBoxMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <Button style="color: #718355; " icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggleBoxMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
     <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
   </div>
   <div class="footer" @click="$router.push({ path: `/users/${userId}/boxes/${boxId}`})"> </div>
@@ -110,7 +110,8 @@ function deleteBox(userId:string, boxId:string) {
 <style scoped>
   @import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
 
-.boxcardcontainer {  display: grid;
+.boxcardcontainer {  
+  display: grid;
   grid-template-columns: 0.7fr 2.4fr 0.3fr; 
   grid-template-rows: 0.7fr 0.1fr 2.9fr 0.3fr; 
   gap: 0px 0px; 
