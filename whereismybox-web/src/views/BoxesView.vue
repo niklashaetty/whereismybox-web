@@ -105,7 +105,6 @@ EventBus.on(BoxEvents.ITEM_CHANGED,  (value) => {
 
 
 EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  (value) => { 
-    console.log("received event that unattached items changed")
     getUnattachedItems(false);
     getBoxes(false);
 });
@@ -182,7 +181,7 @@ function trimString(maxLength: number, text: string) {
     <div v-if="loadingBoxes" class="accordioncontainer">
     </div>
     <div class="accordioncontainer">
-      <BoxAccordion v-if="loadingBoxes" :box="box" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
+      <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
       <BoxAccordion v-else :box="box" v-for="box in filterBoxes()" />
     </div>
     <div class="addnewbox">
@@ -217,13 +216,13 @@ function trimString(maxLength: number, text: string) {
         <Toast />
 
     <!-- Skeleton -->
-    <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="x in Array(4)"  :unattachedItem="x" :isLoading=loadingUnattachedItems >
+    <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
       <template #name> <Skeleton style="position: relative; top: 50%;" height="0.6rem"></Skeleton></template>
     </UnattachedItemAccordion>
   
     <!-- Unattached items -->
     <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
-      <template #name> <p> {{ trimString(40, unattachedItem.name) }}</p></template>
+      <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
       <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
     </UnattachedItemAccordion>
 

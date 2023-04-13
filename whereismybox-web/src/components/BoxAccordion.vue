@@ -19,7 +19,7 @@ import Skeleton from 'primevue/skeleton';
 const props = defineProps(
   {
     box:  {
-        type: Box,
+        type: Object, // TODO why do we get a warning if type is box?
         required: true
     },
     isLoading: {
@@ -46,7 +46,7 @@ const menuItems = ref([
             console.log("Not working currently!")
           }
         },
-        {label: 'Edit (not working currently)', icon: 'pi-file-edit',
+        {label: 'Edit (not working currently)', icon: 'pi pi-file-edit',
         command: () => {
               console.log("Not working currently!")
           }
@@ -62,7 +62,7 @@ const menuItems = ref([
 function confirmDeleteBox(){
    
    confirm.require({
-       message: `Are you sure you want to delete ${box.value.name}? This action cannot be undone, and all ${box.value.items.length} items will be lost.`,
+       message: `Are you sure you want to delete ${box.value.name}? This action cannot be undone, and all ${box.value.items.length} item(s) will be lost.`,
        header: `Deleting box ${box.value.number}`,
        icon: 'pi pi-info-circle',
        acceptClass: 'p-button-danger',
@@ -135,8 +135,8 @@ function trimString(maxLength: number, text: string) {
 <div v-if="expanded" class="accordion-content">
     <ItemAccordionDescription />
     <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in box.items">
-      <template #name> <p title="{{ item.name }}"> {{trimString(40, item.name)}}</p></template>
-      <template #description> <p>{{trimString(50, item.description)}} </p></template>
+      <template #name> <p :title="item.name"> {{trimString(40, item.name)}}</p></template>
+      <template #description> <p :title="item.description">{{trimString(50, item.description)}} </p></template>
     </ItemAccordion>
 </div>
 </template>

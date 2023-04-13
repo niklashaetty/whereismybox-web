@@ -18,7 +18,7 @@ import { inject } from 'vue'
 
 const props = defineProps({
   item:  {
-      type: Item,
+      type: Object,  // TODO why do we get a warning if type is Item?
       required: true
   },
   boxId: {
@@ -79,10 +79,7 @@ function removeSelectedItemFromBox(userId: string, boxId: string, itemId: string
 }
 
 function deleteItem(userId: string, boxId: string, itemId: string, hardDelete: boolean) {
-  BoxService.deleteItem(userId, boxId, itemId, hardDelete)
-  .then((response => {
-    EventService.BoxItemsChanged(boxId);
-  }))
+  BoxService.deleteItem(userId, boxId, itemId, hardDelete);
 }
 
 function toggleItemMenu(event: MouseEvent)  { 

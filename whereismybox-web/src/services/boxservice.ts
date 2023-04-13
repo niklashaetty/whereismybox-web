@@ -28,21 +28,28 @@ export default new class BoxService {
   async deleteItem(userId:string, boxId:string, itemId: string, hardDelete: boolean){
     let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}?hardDelete=${hardDelete}`
     axios.delete(path)
-    .then(() => EventService.BoxItemsChanged(boxId))
-    .then(() => EventService.UnattachedItemsChanged);
+    .then(() => {
+      console.log("Just deletedItem. Hard? " + hardDelete);
+      EventService.BoxItemsChanged(boxId);
+      if(hardDelete == false){
+        EventService.UnattachedItemsChanged();
+      }
+    })
   }
 
   async deleteUnattachedItem(userId:string, itemId: string){
     let path = `/api/users/${userId}/items/${itemId}`
     axios.delete(path)
-    .then(() => EventService.UnattachedItemsChanged);
+    .then(() => EventService.UnattachedItemsChanged());
   }
 
   async addBackUnattachedItem(userId:string, boxId:string, itemId: string){
     let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}`
     axios.post(path)
-    .then(() => EventService.BoxItemsChanged(boxId))
-    .then(() => EventService.UnattachedItemsChanged);
+    .then(() =>{
+      EventService.BoxItemsChanged(boxId)
+    })
+    .then(() => EventService.UnattachedItemsChanged());
   }
 
   async deleteBox(userId:string, boxId:string){

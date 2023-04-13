@@ -15,6 +15,7 @@ BoxDeleted(boxId: string) {
 
 BoxAdded(boxId: string) {
   EventBus.emit(BoxEvents.ADDED, boxId);
+
 }
 
 BoxItemsChanged(boxId: string) {

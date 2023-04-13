@@ -19,7 +19,7 @@ import UnattachedItem from '@/models/UnattachedItem';
 
 const props = defineProps({
   unattachedItem:  {
-      type: UnattachedItem,
+      type: Object,  // TODO why do we get a warning if type is UnattachedItem?
       required: true
   },
   isLoading: {
@@ -50,9 +50,10 @@ const menuItems = ref([
     ]}
 ]);
 
+
 function addBackUnattachedItem(itemId:string) {
   BoxService.addBackUnattachedItem(userId, unattachedItem.value.previousBoxId, itemId)
-    .then(() => showSuccess(`Item ${unattachedItem.value.name} added back to box ${unattachedItem.value.name}`, 3000))
+    .then(() => showSuccess(`Item ${trimString(30, unattachedItem.value.name)} added back to box ${unattachedItem.value.previousBoxNumber}`, 3000))
 }
 
 function deleteUnattachedItem(itemId:string) {
@@ -68,7 +69,9 @@ function toggleItemMenu(event: MouseEvent)  {
   menu.value?.toggle(event);
 }
 
-
+function trimString(maxLength: number, text: string) {
+  return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
+}
 </script>
 
 <template>
