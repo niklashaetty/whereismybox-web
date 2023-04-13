@@ -2,29 +2,19 @@
 import router from '@/router';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
-import Card from 'primevue/card';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Button from 'primevue/button';
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
 import Skeleton from 'primevue/skeleton'
-import QrcodeVue from 'qrcode.vue'
 import Dialog from 'primevue/dialog'
-import Menu from 'primevue/menu';
 import Item from '@/models/Item';
 import type Box from '@/models/Box';
-import type User from '@/models/User';
 import type UnattachedItem from '@/models/UnattachedItem';
-import BoxService from '@/services/boxservice';
-import EventService, { BoxEvents } from '@/services/eventservice';
-import UserService from '@/services/userservice';
+import { BoxEvents } from '@/services/eventservice';
 import ConfirmPopup from 'primevue/confirmpopup';
 import { useToast } from "primevue/usetoast";
-import { useConfirm } from "primevue/useconfirm";
 import Toast from 'primevue/toast'
 import Header from '@/components/Header.vue'
-import BoxCard from '@/components/BoxCard.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
@@ -34,19 +24,12 @@ let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
-const selectedUnattachedItem = ref("");
 const boxNumber = ref(0);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
-const displayQrCodeDialog = ref(false)
 const displayCreateBoxDialog = ref(false)
-const qrCodeLink = ref("");
 const filter = ref("");
 const currentUserId = ref("");
-const currentUser = ref()
-
-
-const toast = useToast();
 
 async function getBoxes(showLoading: boolean) {
   if(showLoading){
@@ -91,27 +74,24 @@ onMounted(async () => {
 
 
 /* Events */
-EventBus.on(BoxEvents.ADDED,  (value) => {  
+EventBus.on(BoxEvents.ADDED,  () => {  
       getBoxes(false);
 });
 
-EventBus.on(BoxEvents.DELETED,  (value) => { 
+EventBus.on(BoxEvents.DELETED,  () => { 
       getBoxes(false);
 });
 
-EventBus.on(BoxEvents.ITEM_CHANGED,  (value) => { 
+EventBus.on(BoxEvents.ITEM_CHANGED,  () => { 
       getBoxes(false);
 });
 
 
-EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  (value) => { 
+EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => { 
     getUnattachedItems(false);
     getBoxes(false);
 });
 
-function closeQrCodeDialog() {
-  displayQrCodeDialog.value = false;
-}
 
 function closeDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = false;
@@ -121,15 +101,8 @@ function openDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = true;
 }
 
-function showSuccess(message:string, life:number){
-  toast.add({severity:'success', summary: message, life: life});
-}
 
 
-function openQrCodeDialog(boxId: string) {
-  qrCodeLink.value = window.location.origin + router.currentRoute.value.path + "/boxes/" + boxId;
-  displayQrCodeDialog.value = true;
-}
 
 const filterBoxes = () => boxes.value.filter((box) => !filter.value || box.items.some((item: any) => item.name.toLowerCase().includes(filter.value.toLowerCase())))
 
@@ -138,18 +111,6 @@ function clearFilter() {
 }
 
 
-function showItemsMatchingFilter(items: any) {
-  const maxLength = 8;
-  let itemsMatchingFilter = items.filter((item: { name: string; }) => item.name.toLowerCase().includes(filter.value.toLowerCase()))
-  if (itemsMatchingFilter.length > maxLength) {
-    let overflowItems = itemsMatchingFilter.length - maxLength;
-    const slicedArray = itemsMatchingFilter.slice(0, maxLength - 1);
-    slicedArray.push(new Item("no-id", "  ", "..."));
-    slicedArray.push(new Item("no-id", `${overflowItems} items not shown...`, "..."));
-    return slicedArray;
-  }
-  return itemsMatchingFilter;
-}
 
 function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
@@ -241,7 +202,6 @@ function trimString(maxLength: number, text: string) {
  font-family: 'Roboto', sans-serif;
  padding-left: 10px;
 }
-
 
 .boxtitlenewbox {
   align-items: center;

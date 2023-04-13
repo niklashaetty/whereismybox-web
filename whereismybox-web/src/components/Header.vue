@@ -1,7 +1,6 @@
 <script setup lang="ts">
 
-import {PrimeIcons} from 'primevue/api';
-import { defineProps, computed, ref, onMounted} from 'vue'
+import { ref, onMounted} from 'vue'
 import router from '@/router';
 
 import UserService from '@/services/userservice';

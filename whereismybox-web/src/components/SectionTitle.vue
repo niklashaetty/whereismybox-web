@@ -1,9 +1,6 @@
 <script setup lang="ts">
 
-import {PrimeIcons} from 'primevue/api';
-import { defineProps, computed, ref, onMounted} from 'vue'
-import router from '@/router';
-
+import { defineProps, computed} from 'vue'
 
 const props = defineProps({
   title: {
@@ -12,7 +9,6 @@ const props = defineProps({
     }
   }
 );
-const userId = router.currentRoute.value.params.userId as string;
 const title = computed(() => props.title);
 
 </script>

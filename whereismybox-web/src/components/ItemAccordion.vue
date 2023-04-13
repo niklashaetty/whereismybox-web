@@ -2,19 +2,12 @@
 
 import { defineProps, computed} from 'vue'
 
-import ConfirmDialog from 'primevue/confirmdialog';
 import router from '@/router';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import BoxService from '@/services/boxservice';
-import EventService from '@/services/eventservice';
-import Item from '@/models/Item';
-import {PrimeIcons} from 'primevue/api';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
-import { inject } from 'vue'
-
 
 const props = defineProps({
   item:  {
@@ -28,15 +21,12 @@ const props = defineProps({
 }
 );
 
-const toast = useToast();
 const confirm = useConfirm();
 const userId = router.currentRoute.value.params.userId as string;
 const item = computed(() => props.item);
 const boxId = computed(() => props.boxId);
-const shortItemName = shortenedName(item.value.name);
 
 const menu: any = ref(null);
-
 const menuItems = ref([
     {
         label: 'Options',
@@ -52,15 +42,6 @@ const menuItems = ref([
         }
     ]}
 ]);
-
-function shortenedName(fullName: String){
-    const maxLength = 50;
-    let shortenedName =fullName;
-    if(fullName.length > maxLength){
-      shortenedName = fullName.substring(0, 8) + "..."
-    }
-    return shortenedName;
-}
 
 function confirmHardDeleteItem(userId: string, boxId: string, itemId: string) {
 

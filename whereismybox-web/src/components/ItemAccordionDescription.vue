@@ -1,17 +1,4 @@
 <script setup lang="ts">
-import { defineProps, computed} from 'vue'
-
-import ConfirmDialog from 'primevue/confirmdialog';
-import router from '@/router';
-import Button from 'primevue/button';
-import Menu from 'primevue/menu';
-import BoxService from '@/services/boxservice';
-import Item from '@/models/Item';
-import {PrimeIcons} from 'primevue/api';
-import { onMounted, ref } from 'vue';
-import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
-
 
 </script>
 
@@ -29,7 +16,6 @@ import { useToast } from "primevue/usetoast";
 </template>
 
 <style scoped>
-
 
 .itemaccordion-container-description {  display: grid;
   grid-template-columns: 1fr 1.7fr 0.3fr;
