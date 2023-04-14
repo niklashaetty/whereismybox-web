@@ -95,10 +95,12 @@ function toggleItemMenu(event: MouseEvent)  {
   grid-auto-flow: row;
   grid-template-areas:
     "name description options";
-  
+  background-color: white;
   height: 25px;
-  border-bottom: 1px solid;
+  border-bottom: px solid;
   border-color: #e9f5db;
+  border-radius: 2px;
+  margin: 1px;
   font-size: 12px;
   padding: 2px;
   padding-left: 10px;

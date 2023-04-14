@@ -2,19 +2,14 @@
 
 import { defineProps, computed} from 'vue'
 
-import ConfirmDialog from 'primevue/confirmdialog';
 import router from '@/router';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import BoxService from '@/services/boxservice';
-import EventService from '@/services/eventservice';
-import Item from '@/models/Item';
-import {PrimeIcons} from 'primevue/api';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-import { inject } from 'vue'
-import UnattachedItem from '@/models/UnattachedItem';
+
 
 
 const props = defineProps({
@@ -112,7 +107,7 @@ function trimString(maxLength: number, text: string) {
   0 10.8px 8.4px rgba(0, 0, 0, 0.086);
 
   background-color: white;
-  border-radius: 3px;
+  border-radius: 2px;
   height: 25px;
   margin: 5px;
   border-color: #e9f5db;

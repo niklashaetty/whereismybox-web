@@ -1,19 +1,15 @@
 <script setup lang="ts">
 import { defineProps, computed} from 'vue'
 
-import ConfirmDialog from 'primevue/confirmdialog';
 import router from '@/router';
 import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import BoxService from '@/services/boxservice';
-import Box from '@/models/Box';
-import {PrimeIcons} from 'primevue/api';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import ItemAccordion from '@/components/ItemAccordion.vue'
 import ItemAccordionDescription from '@/components/ItemAccordionDescription.vue'
-import eventbus from '@/services/eventbus';
 import Skeleton from 'primevue/skeleton';
 
 const props = defineProps(
@@ -133,11 +129,13 @@ function trimString(maxLength: number, text: string) {
 </div>
 
 <div v-if="expanded" class="accordion-content">
-    <ItemAccordionDescription />
+
+    <ItemAccordionDescription :boxId="box.boxId" />
     <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in box.items">
       <template #name> <p :title="item.name"> {{trimString(40, item.name)}}</p></template>
       <template #description> <p :title="item.description">{{trimString(50, item.description)}} </p></template>
     </ItemAccordion>
+    <br/>
 </div>
 </template>
 
@@ -177,7 +175,7 @@ function trimString(maxLength: number, text: string) {
 .accordion-content {  
   margin: 5px;
   margin-left: 20px;
-  background-color: white;
+  margin-right: 20px;
   border-radius: 3px;
 }
 

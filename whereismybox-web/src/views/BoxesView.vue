@@ -4,15 +4,13 @@ import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
-import Button from 'primevue/button';
 import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
-import Item from '@/models/Item';
+import Button from 'primevue/button'
 import type Box from '@/models/Box';
 import type UnattachedItem from '@/models/UnattachedItem';
 import { BoxEvents } from '@/services/eventservice';
 import ConfirmPopup from 'primevue/confirmpopup';
-import { useToast } from "primevue/usetoast";
 import Toast from 'primevue/toast'
 import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
@@ -24,7 +22,7 @@ let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
-const boxNumber = ref(0);
+const boxNumber = ref(null);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
@@ -102,14 +100,11 @@ function openDisplayCreateBoxDialog() {
 }
 
 
-
-
 const filterBoxes = () => boxes.value.filter((box) => !filter.value || box.items.some((item: any) => item.name.toLowerCase().includes(filter.value.toLowerCase())))
 
 function clearFilter() {
   filter.value = "";
 }
-
 
 
 function trimString(maxLength: number, text: string) {
@@ -126,9 +121,7 @@ function trimString(maxLength: number, text: string) {
     <SectionTitle title="Search" />
     
     <span class="p-input-icon-right p-input-icon-left testt">
-       
         <InputText class="searchinput" type="text" v-model="filter" placeholder="Type something to start filter" />
-       
         <i  v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
         <i v-else class="pi pi-search" style="width: 10px;" />
       </span>
@@ -136,24 +129,19 @@ function trimString(maxLength: number, text: string) {
 
   </div>
   <div class="boxes">
+    <div class="myboxestitle"> 
       <SectionTitle title="My boxes" />
+      <Button style=
+      "margin-left: auto; margin-right: 5px; font-size: 10px; color: #181F1C;"  
+      icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openDisplayCreateBoxDialog"/>
 
-  
-    <div v-if="loadingBoxes" class="accordioncontainer">
-    </div>
-    <div class="accordioncontainer">
-      <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
-      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()" />
-    </div>
-    <div class="addnewbox">
-        <Button  class="lol" style="color: black;" label="Add new" icon="pi pi-plus" text raised  @click="openDisplayCreateBoxDialog"/>
-        <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
+      <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
          <div class="card">
           <div class="field">
             <InputText v-model="boxName" type="text" placeholder="Name" />
           </div>
           <div class="field">
-            <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="Name" />
+            <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="2" />
           </div>
           <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
         </div>
@@ -161,7 +149,14 @@ function trimString(maxLength: number, text: string) {
           <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
         </template>
       </Dialog>
-     </div>
+    </div>
+     
+    <div v-if="loadingBoxes" class="accordioncontainer">
+    </div>
+    <div class="accordioncontainer">
+      <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
+      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()" />
+    </div>
   </div>
   <div class="unattacheditems">
     <SectionTitle title="Items not in a box" />
@@ -176,7 +171,7 @@ function trimString(maxLength: number, text: string) {
         </ConfirmPopup>
         <Toast />
 
-    <!-- Skeleton -->
+    <!-- Unattached items skeleton -->
     <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
       <template #name> <Skeleton style="position: relative; top: 50%;" height="0.6rem"></Skeleton></template>
     </UnattachedItemAccordion>
@@ -215,6 +210,10 @@ function trimString(maxLength: number, text: string) {
 .addnewbox {
   width: 100%;
   margin: auto;
+}
+
+.myboxestitle{
+  display: flex;
 }
 
 
@@ -312,8 +311,4 @@ function trimString(maxLength: number, text: string) {
   font-size: x-small;
 }
 
-.boxcard:hover {
-  background-color: #f4f5f3;
-  cursor: pointer;
-}
 </style>
