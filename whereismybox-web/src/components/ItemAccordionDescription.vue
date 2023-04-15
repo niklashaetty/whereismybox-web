@@ -39,14 +39,14 @@ function addNewItem() {
 </script>
 
 <template>
-<div class="itemaccordion-container-description">
-  <div class="itemaccordion-name-description">
+<div class="itemaccordion-container">
+  <div class="itemaccordion-name">
     <p> Name </p>
   </div>
-  <div class="itemaccordion-description-description">
+  <div class="itemaccordion-description">
     <p> Description</p>
   </div>
-  <div class="itemaccordion-options-options">
+  <div class="itemaccordion-options">
     <Button size="small" style=
       "margin-left: auto; margin-right: 5px; font-size: 10px; color: #181F1C;"  
       icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openAddItemDialog" />
@@ -59,7 +59,7 @@ function addNewItem() {
           <div class="field">
             <InputText v-model="itemDescription" type="text" placeholder="Description" />
           </div>
-          <Button @click="addNewItem" type="submit" label="Add new items" class="mt-2" />
+          <Button @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
         </div>
         <template #footer>
           <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeAddItemDialog" />
@@ -71,7 +71,7 @@ function addNewItem() {
 
 <style scoped>
 
-.itemaccordion-container-description {  display: grid;
+.itemaccordion-container {  display: grid;
   grid-template-columns: 1fr 1.7fr 0.3fr;
   grid-template-rows: 0.1fr;
   grid-auto-columns: 1fr;
@@ -80,7 +80,8 @@ function addNewItem() {
   grid-template-areas:
     "name description options";
   background-color:none;
-  height: 40px;
+  height: 30px;
+  line-height: 30px;
   border-color: #e9f5db;
   font-weight: 900;
   color: #40513B;
@@ -89,12 +90,14 @@ function addNewItem() {
   padding-left: 10px;
 }
 
-.itemaccordion-name-description { 
+.itemaccordion-name { 
   grid-area: name; 
 }
 
-.itemaccordion-description-description { grid-area: description; }
+.itemaccordion-description { grid-area: description; }
 
-.itemaccordion-options-options { grid-area: options;
-margin-left: auto }
+.itemaccordion-options { grid-area: options;
+margin-left: auto; 
+margin-top: auto;
+}
 </style>

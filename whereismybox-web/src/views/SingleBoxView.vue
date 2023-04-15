@@ -20,13 +20,7 @@ import EventBus from '@/services/eventbus';
 
 
 let boxes = ref<Box[]>([]);
-let unattachedItems = ref<UnattachedItem[]>([]);
-let filteredBoxes = ref();
-const boxName = ref("");
-const boxNumber = ref(null);
-const loadingBoxes = ref(false);
-const loadingUnattachedItems = ref(false);
-const displayCreateBoxDialog = ref(false)
+
 const filter = ref("");
 const currentUserId = ref("");
 
@@ -43,6 +37,7 @@ async function getBoxes(showLoading: boolean) {
       filteredBoxes.value = response.data;
     })
     .then(() => {
+      console.log("setting loading boxes to false")
       loadingBoxes.value = false});
 }
 
@@ -130,8 +125,8 @@ function trimString(maxLength: number, text: string) {
   <div class="boxes">
     <div class="myboxestitle"> 
       <SectionTitle title="My boxes" />
-      <Button size="small" style=
-      "margin-left: auto; margin-right: 5px; font-size: 10px; background-color: white;; color: #181F1C;"  
+      <Button style=
+      "margin-left: auto; margin-right: 5px; font-size: 10px; color: #181F1C;"  
       icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openDisplayCreateBoxDialog"/>
 
       <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
@@ -170,18 +165,16 @@ function trimString(maxLength: number, text: string) {
         </ConfirmPopup>
         <Toast />
 
-    <div class="unattacheditem-content">
-      <!-- Unattached items skeleton -->
-      <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
-        <template #name> <Skeleton style="position: relative; top: 50%;" height="0.6rem"></Skeleton></template>
-      </UnattachedItemAccordion>
-    
-      <!-- Unattached items -->
-      <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
-        <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
-        <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
-      </UnattachedItemAccordion>
-    </div>
+    <!-- Unattached items skeleton -->
+    <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
+      <template #name> <Skeleton style="position: relative; top: 50%;" height="0.6rem"></Skeleton></template>
+    </UnattachedItemAccordion>
+  
+    <!-- Unattached items -->
+    <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
+      <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
+      <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
+    </UnattachedItemAccordion>
 
   </div>
 </div>
@@ -189,6 +182,29 @@ function trimString(maxLength: number, text: string) {
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
+.boxtitlecontainer {
+  display: flex;
+}
+
+.boxtitle {
+ width:83%;
+ font-family: 'Roboto', sans-serif;
+ padding-left: 10px;
+}
+
+.boxtitlenewbox {
+  align-items: center;
+}
+
+.h2{
+  font-family: 'Roboto', sans-serif;
+
+}
+
+.addnewbox {
+  width: 100%;
+  margin: auto;
+}
 
 .myboxestitle{
   display: flex;
@@ -207,6 +223,7 @@ function trimString(maxLength: number, text: string) {
     ". . .";
   width: 1200px;
   margin: auto;
+  min-height: 1000px;
   
 }
 
@@ -220,21 +237,10 @@ function trimString(maxLength: number, text: string) {
 
 }
 
-.unattacheditems { 
-  grid-area: unattacheditems; 
-  height:auto;
-}
+.unattacheditems { grid-area: unattacheditems; }
 
-.unattacheditem-content{
-  background-color: white;
-  box-shadow:
-  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
-  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
-  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
-  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
-  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
-  background-color: white;
-  border-radius: 3px;
+.boxescontainer {
+  padding: 5px;
 }
 
 .testt{
@@ -261,6 +267,42 @@ function trimString(maxLength: number, text: string) {
   0 10.8px 8.4px rgba(0, 0, 0, 0.086);
   background-color: white;
   border-radius: 3px;
+}
+
+.searchfield {
+  display: flex;
+  align-items: center;
+  width: 700px;
+}
+
+.wrapper {
+  align-items: center;
+}
+
+.footer-button {
+  display: inline-block;
+  justify-content: space-between;
+  padding: 5px;
+  align-items: center;
+}
+
+.boxcard {
+  background-color: white;
+  border-radius: 3px;
+  width: 250px;
+  height: 200px;
+  /* 32:18, i.e. 16:9 */
+  margin-bottom: 2%;
+  /* (100-32*3)/2 */
+}
+
+.p-inputtext:enabled:focus{
+  box-shadow: inherit;
+  border-color: white;
+}
+
+.matchingitemsbox {
+  font-size: x-small;
 }
 
 </style>

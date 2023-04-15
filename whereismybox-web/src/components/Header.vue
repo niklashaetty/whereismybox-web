@@ -28,11 +28,11 @@ onMounted(async () => {
   <div class="logo">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
-    <h2 style="margin-left: 5px"> Boxio</h2>
+    <h2 style="margin-left: 5px; "> Boxio</h2>
   </div>
   <div class="filler"></div>
   <div class="username"  @click="$router.push({ path: `/users/${userId}`})">
-    <Avatar :label="avatarLetter"  style="background-color: #b5c99a" class="mr-2"  shape="circle" />
+    <Avatar :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
     <p style="margin-left: 10px">{{ userName }} </p>
   </div>
 </div>
@@ -62,7 +62,7 @@ onMounted(async () => {
 }
 
 .boxlogo {
-  color: #718355;
+  color: #f7faf8;
   font-size: 1rem;
   padding-right: 5px;
 }

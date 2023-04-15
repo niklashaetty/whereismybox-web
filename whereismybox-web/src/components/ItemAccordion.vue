@@ -78,7 +78,7 @@ function toggleItemMenu(event: MouseEvent)  {
     <slot name="description"></slot>
   </div>
   <div class="itemaccordion-options">
-    <Button style="color: #718355; height: 20px;" icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text p-button-sm" @click="toggleItemMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <Button style="color: #718355; height: 30px;" icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text p-button-sm" @click="toggleItemMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
     <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
   </div>
 </div>
@@ -96,8 +96,8 @@ function toggleItemMenu(event: MouseEvent)  {
   grid-template-areas:
     "name description options";
   background-color: white;
-  height: 25px;
-  border-bottom: px solid;
+  height: 30px;
+  border-bottom: 1px solid;
   border-color: #e9f5db;
   border-radius: 2px;
   margin: 1px;
@@ -112,15 +112,19 @@ function toggleItemMenu(event: MouseEvent)  {
 
 .itemaccordion-name { 
   grid-area: name; 
-  height: 25px;
+  height: 30px;
+  line-height: 30px;
 }
 
 .itemaccordion-description { 
   grid-area: description; 
-  height: 25px;
+  height: 30px;
+  line-height: 30px;
 }
 
 .itemaccordion-options { 
   grid-area: options;
-  height: 25px; }
+  height: 30px;
+  line-height: 30px;
+  }
 </style>

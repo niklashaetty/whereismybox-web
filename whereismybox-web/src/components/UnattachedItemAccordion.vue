@@ -78,7 +78,7 @@ function trimString(maxLength: number, text: string) {
     <slot name="previousbox"></slot>
   </div>
   <div v-if="!isLoading" class="unattacheditemaccordion-options">
-    <Button style="color: #718355; height: 20px;" 
+    <Button style="color: #718355; height: 30px;, width: 30px;" 
     icon="pi pi-ellipsis-h" 
     class="p-button-rounded p-button-text p-button-sm" 
     @click="toggleItemMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
@@ -98,21 +98,11 @@ function trimString(maxLength: number, text: string) {
   grid-auto-flow: row;
   grid-template-areas:
     "name description options";
-  
-  box-shadow:
-  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
-  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
-  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
-  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
-  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
 
-  background-color: white;
-  border-radius: 2px;
-  height: 25px;
+  height: 30px;
   margin: 5px;
   border-color: #e9f5db;
   font-size: 12px;
-  padding: 2px;
   padding-left: 10px;
   background-color: white;
 
@@ -124,14 +114,21 @@ function trimString(maxLength: number, text: string) {
 
 .unattacheditemaccordion-name { 
   grid-area: name;
+  display: flex;
+  line-height: 30px;
+  height: 30px;
 }
 
-.unattacheditemaccordion-description { 
+.unattacheditemaccordion-previousbox { 
   grid-area: description; 
+  line-height: 30px;
+  height: 30px;
 
 }
 
 .unattacheditemaccordion-options { 
   grid-area: options;
+  height: 30px;
+  line-height: 30px;
   }
 </style>

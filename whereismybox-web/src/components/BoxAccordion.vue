@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed} from 'vue'
+import { defineProps, computed, onMounted} from 'vue'
 
 import router from '@/router';
 import Button from 'primevue/button';
@@ -10,7 +10,9 @@ import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import ItemAccordion from '@/components/ItemAccordion.vue'
 import ItemAccordionDescription from '@/components/ItemAccordionDescription.vue'
+import Sticker from '@/components/Sticker.vue'
 import Skeleton from 'primevue/skeleton';
+import Dialog from 'primevue/dialog'
 
 const props = defineProps(
   {
@@ -31,6 +33,8 @@ const expanded = ref(false);
 const isFullyLoaded = computed(() => !props.isLoading);
 const userId = router.currentRoute.value.params.userId as string;
 const box = computed(() => props.box);
+const displayStickerDialog = ref(false);
+const linkToBox = ref("");
 
 const menu: any = ref(null);
 const menuItems = ref([
@@ -39,7 +43,7 @@ const menuItems = ref([
         items: [
         {label: 'Show printable sticker', icon: 'pi pi-qrcode',
         command: () => {
-            console.log("Not working currently!")
+            openStickerDialog();
           }
         },
         {label: 'Edit (not working currently)', icon: 'pi pi-file-edit',
@@ -54,6 +58,14 @@ const menuItems = ref([
         }
     ]}
 ]);
+
+function closeStickerDialog() {
+  displayStickerDialog.value = false;
+}
+
+function openStickerDialog() {
+  displayStickerDialog.value = true;
+}
 
 function confirmDeleteBox(){
    
@@ -85,9 +97,20 @@ function toggleBoxMenu(event: MouseEvent)  {
 function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 }
+
+onMounted(async () => {
+  linkToBox.value = window.location.origin + router.currentRoute.value.path + "/boxes/" + box.value.boxId + "/";
+});
+
 </script>
 
 <template>
+    <Dialog v-model:visible="displayStickerDialog" :style="{ width: '450px' }" header="Printable QR code sticker" :modal="true">
+         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" />
+        <template #footer>
+          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog" />
+        </template>
+      </Dialog>
 <div v-if="isFullyLoaded" class="accordion-container">
   <div class="accordion-icon" @click="expandBox">
     <i v-if="expanded" class="pi pi-angle-down" style="color: slateblue; padding-right: 5px;"></i>
@@ -128,8 +151,7 @@ function trimString(maxLength: number, text: string) {
   </div>
 </div>
 
-<div v-if="expanded" class="accordion-content">
-
+<div v-show="expanded" class="accordion-content">
     <ItemAccordionDescription :boxId="box.boxId" />
     <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in box.items">
       <template #name> <p :title="item.name"> {{trimString(40, item.name)}}</p></template>
@@ -151,8 +173,6 @@ function trimString(maxLength: number, text: string) {
   grid-template-areas:
     "icon number name itemcount options";
 
-  background-color: white;
-
   box-shadow:
   0 0.7px 0.5px rgba(0, 0, 0, 0.034),
   0 1.5px 1.7px rgba(0, 0, 0, 0.048),
@@ -168,15 +188,18 @@ function trimString(maxLength: number, text: string) {
 }
 
 .accordion-container:hover {  
-  background-color: #f2f2f2;
+  background-color: #f7faf8
 }
 
 
 .accordion-content {  
-  margin: 5px;
-  margin-left: 20px;
-  margin-right: 20px;
+  margin-left: 5px;
+  margin-right: 5px;
+  margin-top: -5px;
+  border-top: 0px;
   border-radius: 3px;
+  background-color: #f7faf8;
+  
 }
 
 .accordion-icon { 
