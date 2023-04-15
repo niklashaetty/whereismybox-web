@@ -149,12 +149,9 @@ function trimString(maxLength: number, text: string) {
         </template>
       </Dialog>
     </div>
-     
-    <div v-if="loadingBoxes" class="accordioncontainer">
-    </div>
     <div class="accordioncontainer">
       <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
-      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()" />
+      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()"  :alwaysExpandedItems="false"/>
     </div>
   </div>
   <div class="unattacheditems">

@@ -23,24 +23,41 @@ const props = defineProps(
     isLoading: {
       type: Boolean,
       required: false
+    },
+    alwaysExpandedItems: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   }
 );
 
 const toast = useToast();
 const confirm = useConfirm();
-const expanded = ref(false);
+
 const isFullyLoaded = computed(() => !props.isLoading);
 const userId = router.currentRoute.value.params.userId as string;
 const box = computed(() => props.box);
+const alwaysExpandedItems = computed(() => props.alwaysExpandedItems);
 const displayStickerDialog = ref(false);
 const linkToBox = ref("");
+
+
+const expanded = ref(false);
+if(alwaysExpandedItems.value){
+  expanded.value = true;
+}
 
 const menu: any = ref(null);
 const menuItems = ref([
     {
-        label: 'Options',
+        label: '',
         items: [
+        {label: 'Go to box', icon: 'pi pi-qrcode',
+        command: () => {
+            router.push({path: `/users/${userId}/boxes/${box.value.boxId}`})
+          }
+        },
         {label: 'Show printable sticker', icon: 'pi pi-qrcode',
         command: () => {
             openStickerDialog();
@@ -87,7 +104,12 @@ function deleteBox(userId:string, boxId:string) {
 }
 
 function expandBox(){
-  expanded.value = !expanded.value;
+  if(alwaysExpandedItems.value){ // Just for safety, should always be true.
+    expanded.value = true;
+  }
+  else { 
+    expanded.value = !expanded.value;
+  }
 }
 
 function toggleBoxMenu(event: MouseEvent)  { 
@@ -113,8 +135,8 @@ onMounted(async () => {
       </Dialog>
 <div v-if="isFullyLoaded" class="accordion-container">
   <div class="accordion-icon" @click="expandBox">
-    <i v-if="expanded" class="pi pi-angle-down" style="color: slateblue; padding-right: 5px;"></i>
-    <i v-else class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+    <i v-if="!alwaysExpandedItems && expanded" class="pi pi-angle-down" style="color: slateblue; padding-right: 5px;"></i>
+    <i v-else-if="!alwaysExpandedItems && !expanded" class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
   </div>
   <div class="accordion-number" @click="expandBox">
     <p> {{ box.number }}</p>

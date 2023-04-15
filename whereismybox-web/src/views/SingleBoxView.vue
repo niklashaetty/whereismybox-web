@@ -8,6 +8,7 @@ import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import type Box from '@/models/Box';
+import type Item from '@/models/Item';
 import type UnattachedItem from '@/models/UnattachedItem';
 import { BoxEvents } from '@/services/eventservice';
 import ConfirmPopup from 'primevue/confirmpopup';
@@ -19,82 +20,45 @@ import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 
 
-let boxes = ref<Box[]>([]);
+let box = ref<Box>(Object())
+const boxName = ref("");
+const userId = router.currentRoute.value.params.userId as string;
+const boxId = router.currentRoute.value.params.boxId as string;
+const loadingBox = ref(true);
 
+let filteredItems = ref<Item[]>([]);
 const filter = ref("");
-const currentUserId = ref("");
 
-async function getBoxes(showLoading: boolean) {
+async function getBox(showLoading: boolean) {
   if(showLoading){
-    loadingBoxes.value = true;
+    loadingBox.value = true;
   }
 
-  let boxesPath = `/api/users/${currentUserId.value}/boxes`
+  let boxesPath = `/api/users/${userId}/boxes/${boxId}`
    axios
     .get(boxesPath)
     .then((response) => {
-      boxes.value = response.data
-      filteredBoxes.value = response.data;
+      box.value = response.data
+      filteredItems.value = response.data.items;
+      boxName.value = response.data.boxName;
     })
     .then(() => {
-      console.log("setting loading boxes to false")
-      loadingBoxes.value = false});
+      loadingBox.value = false});
 }
 
-async function getUnattachedItems(showLoading: boolean) {
-  if(showLoading){
-    loadingUnattachedItems.value = true;
-  }
-  let path = `/api/users/${currentUserId.value}/items`;
-   axios
-    .get(path)
-    .then((response) => unattachedItems.value = response.data)
-    .then(() => loadingUnattachedItems.value = false);
-}
-
-async function createNewBox() {
-  const postBoxRequest = { Number: boxNumber.value, Name: boxName.value };
-  let boxesPath = `/api/users/${currentUserId.value}/boxes`
-  await axios.post(boxesPath, postBoxRequest)
-    .then(closeDisplayCreateBoxDialog)
-}
 
 onMounted(async () => {
-  currentUserId.value = router.currentRoute.value.params.userId as string;
-  getBoxes(true);
-  getUnattachedItems(true);
+  getBox(true);
 });
 
 /* Events */
-EventBus.on(BoxEvents.ADDED,  () => {  
-      getBoxes(false);
-});
-
-EventBus.on(BoxEvents.DELETED,  () => { 
-      getBoxes(false);
-});
 
 EventBus.on(BoxEvents.ITEM_CHANGED,  () => { 
-      getBoxes(false);
+      getBox(false);
 });
 
 
-EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => { 
-    getUnattachedItems(false);
-    getBoxes(false);
-});
-
-
-function closeDisplayCreateBoxDialog() {
-  displayCreateBoxDialog.value = false;
-}
-
-function openDisplayCreateBoxDialog() {
-  displayCreateBoxDialog.value = true;
-}
-
-
-const filterBoxes = () => boxes.value.filter((box) => !filter.value || box.items.some((item: any) => item.name.toLowerCase().includes(filter.value.toLowerCase())))
+const filterBoxes = () => box.value?.items.filter((item) => !filter.value || item.name.toLowerCase().includes(filter.value.toLowerCase()))
 
 function clearFilter() {
   filter.value = "";
@@ -116,95 +80,24 @@ function trimString(maxLength: number, text: string) {
     
     <span class="p-input-icon-right p-input-icon-left testt">
         <InputText class="searchinput" type="text" v-model="filter" placeholder="Type something to start filter" />
-        <i  v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
+        <i v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
         <i v-else class="pi pi-search" style="width: 10px;" />
-      </span>
-    
+    </span>
 
   </div>
   <div class="boxes">
-    <div class="myboxestitle"> 
-      <SectionTitle title="My boxes" />
-      <Button style=
-      "margin-left: auto; margin-right: 5px; font-size: 10px; color: #181F1C;"  
-      icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openDisplayCreateBoxDialog"/>
-
-      <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
-         <div class="card">
-          <div class="field">
-            <InputText v-model="boxName" type="text" placeholder="Name" />
-          </div>
-          <div class="field">
-            <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="2" />
-          </div>
-          <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
-        </div>
-        <template #footer>
-          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
-        </template>
-      </Dialog>
-    </div>
-     
-    <div v-if="loadingBoxes" class="accordioncontainer">
-    </div>
+    
     <div class="accordioncontainer">
-      <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
-      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()" />
+      <BoxAccordion v-if="loadingBox" :box="Object()" v-for="box in Array(1)" :isLoading="loadingBox"/>
+      <BoxAccordion v-else :box="box" :alwaysExpandedItems="true" />
     </div>
-  </div>
-  <div class="unattacheditems">
-    <SectionTitle title="Items not in a box" />
-    <ConfirmPopup></ConfirmPopup>
-        <ConfirmPopup group="demo">
-            <template #message="slotProps">
-                <div class="flex p-4">
-                    <i :class="slotProps.message.icon" style="font-size: 1.5rem"></i>
-                    <p class="pl-2">{{slotProps.message.message}}</p>
-                </div>
-            </template>
-        </ConfirmPopup>
-        <Toast />
-
-    <!-- Unattached items skeleton -->
-    <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
-      <template #name> <Skeleton style="position: relative; top: 50%;" height="0.6rem"></Skeleton></template>
-    </UnattachedItemAccordion>
-  
-    <!-- Unattached items -->
-    <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
-      <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
-      <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
-    </UnattachedItemAccordion>
-
   </div>
 </div>
 </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-.boxtitlecontainer {
-  display: flex;
-}
 
-.boxtitle {
- width:83%;
- font-family: 'Roboto', sans-serif;
- padding-left: 10px;
-}
-
-.boxtitlenewbox {
-  align-items: center;
-}
-
-.h2{
-  font-family: 'Roboto', sans-serif;
-
-}
-
-.addnewbox {
-  width: 100%;
-  margin: auto;
-}
 
 .myboxestitle{
   display: flex;
@@ -212,35 +105,16 @@ function trimString(maxLength: number, text: string) {
 
 
 .container {  
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 0.2fr 1.8fr 1fr;
-  gap: 30px 30px;
-  grid-auto-flow: row;
-  grid-template-areas:
-    "searchbar searchbar searchbar"
-    "boxes boxes unattacheditems"
-    ". . .";
-  width: 1200px;
   margin: auto;
   min-height: 1000px;
+  max-width: 800px;;
   
 }
 
-.searchbar { 
-  height: 100px;
-  grid-area: searchbar; 
-}
-
 .boxes { 
+  margin-top: 50px;
   grid-area: boxes;
 
-}
-
-.unattacheditems { grid-area: unattacheditems; }
-
-.boxescontainer {
-  padding: 5px;
 }
 
 .testt{
@@ -267,42 +141,6 @@ function trimString(maxLength: number, text: string) {
   0 10.8px 8.4px rgba(0, 0, 0, 0.086);
   background-color: white;
   border-radius: 3px;
-}
-
-.searchfield {
-  display: flex;
-  align-items: center;
-  width: 700px;
-}
-
-.wrapper {
-  align-items: center;
-}
-
-.footer-button {
-  display: inline-block;
-  justify-content: space-between;
-  padding: 5px;
-  align-items: center;
-}
-
-.boxcard {
-  background-color: white;
-  border-radius: 3px;
-  width: 250px;
-  height: 200px;
-  /* 32:18, i.e. 16:9 */
-  margin-bottom: 2%;
-  /* (100-32*3)/2 */
-}
-
-.p-inputtext:enabled:focus{
-  box-shadow: inherit;
-  border-color: white;
-}
-
-.matchingitemsbox {
-  font-size: x-small;
 }
 
 </style>
