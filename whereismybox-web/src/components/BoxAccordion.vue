@@ -231,6 +231,8 @@ onMounted(async () => {
   height: 40px;
   margin: 5px;
   align-items: center;
+  user-select: none; /* Non-prefixed version, currently */
+  -webkit-user-select: none;
 }
 
 .accordion-container:hover {  

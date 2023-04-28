@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import router from '@/router';
 import axios from 'axios';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
 import Skeleton from 'primevue/skeleton'
@@ -151,7 +151,7 @@ function trimString(maxLength: number, text: string) {
     </div>
     <div class="accordioncontainer">
       <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
-      <BoxAccordion v-else :searchQuery="searchQuery" :box="box" v-for="box in filterBoxes()"  :alwaysExpandedItems="false"/>
+      <BoxAccordion v-else :searchQuery="searchQuery" :box="box" v-for="box in filterBoxes"  :alwaysExpandedItems="false"/>
     </div>
   </div>
   <div class="unattacheditems">
