@@ -27,7 +27,7 @@ const boxNumber = ref(null);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
-const filter = ref("");
+const searchQuery = ref("");
 const currentUserId = ref("");
 
 async function getBoxes(showLoading: boolean) {
@@ -99,10 +99,10 @@ function openDisplayCreateBoxDialog() {
 }
 
 
-const filterBoxes = () => boxes.value.filter((box) => !filter.value || box.items.some((item: any) => item.name.toLowerCase().includes(filter.value.toLowerCase())))
+const filterBoxes = computed(() => boxes.value.filter((box) => !searchQuery.value || box.items.some((item: any) => item.name.toLowerCase().includes(searchQuery.value.toLowerCase()))));
 
 function clearFilter() {
-  filter.value = "";
+  searchQuery.value = "";
 }
 
 
@@ -120,8 +120,8 @@ function trimString(maxLength: number, text: string) {
     <SectionTitle title="Search" />
     
     <span class="p-input-icon-right p-input-icon-left testt">
-        <InputText class="searchinput" type="text" v-model="filter" placeholder="Type something to start filter" />
-        <i  v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
+        <InputText class="searchinput" type="text" v-model="searchQuery" placeholder="Type something to start filter" />
+        <i  v-if=searchQuery style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
         <i v-else class="pi pi-search" style="width: 10px;" />
       </span>
     
@@ -151,7 +151,7 @@ function trimString(maxLength: number, text: string) {
     </div>
     <div class="accordioncontainer">
       <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
-      <BoxAccordion v-else :box="box" v-for="box in filterBoxes()"  :alwaysExpandedItems="false"/>
+      <BoxAccordion v-else :searchQuery="searchQuery" :box="box" v-for="box in filterBoxes()"  :alwaysExpandedItems="false"/>
     </div>
   </div>
   <div class="unattacheditems">

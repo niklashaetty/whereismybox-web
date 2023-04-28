@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed, onMounted} from 'vue'
+import { defineProps, computed, onMounted, watch} from 'vue'
 
 import router from '@/router';
 import Button from 'primevue/button';
@@ -9,6 +9,8 @@ import { ref } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
 import ItemAccordion from '@/components/ItemAccordion.vue'
+import type Item from '@/models/Item';
+import Box from '@/models/Box';
 import ItemAccordionDescription from '@/components/ItemAccordionDescription.vue'
 import Sticker from '@/components/Sticker.vue'
 import Skeleton from 'primevue/skeleton';
@@ -17,7 +19,7 @@ import Dialog from 'primevue/dialog'
 const props = defineProps(
   {
     box:  {
-        type: Object, // TODO why do we get a warning if type is box?
+        type: Box,
         required: true
     },
     isLoading: {
@@ -28,6 +30,10 @@ const props = defineProps(
       type: Boolean,
       required: false,
       default: false
+    },
+    searchQuery: {
+      type: String,
+      required: false
     }
   }
 );
@@ -39,14 +45,30 @@ const isFullyLoaded = computed(() => !props.isLoading);
 const userId = router.currentRoute.value.params.userId as string;
 const box = computed(() => props.box);
 const alwaysExpandedItems = computed(() => props.alwaysExpandedItems);
+const searchQuery = computed(() => {
+  if(props.searchQuery){
+    return  props.searchQuery;
+  }
+  else{
+    return "";
+  }
+});
 const displayStickerDialog = ref(false);
 const linkToBox = ref("");
+const isClicked = ref(false)
 
+const expanded = computed(() => {
+  return alwaysExpandedItems.value ||  isClicked.value
+})
 
-const expanded = ref(false);
-if(alwaysExpandedItems.value){
-  expanded.value = true;
-}
+watch(searchQuery, (newValue, oldValue) => {
+  console.log(newValue, oldValue);
+  if (newValue) {
+    isClicked.value = true
+  } else {
+    isClicked.value = false
+  }
+});
 
 const menu: any = ref(null);
 const menuItems = ref([
@@ -104,16 +126,19 @@ function deleteBox(userId:string, boxId:string) {
 }
 
 function expandBox(){
-  if(alwaysExpandedItems.value){ // Just for safety, should always be true.
-    expanded.value = true;
-  }
-  else { 
-    expanded.value = !expanded.value;
-  }
+  isClicked.value = !isClicked.value
 }
 
 function toggleBoxMenu(event: MouseEvent)  { 
   menu.value?.toggle(event);
+}
+
+function filter()  { 
+  if(box.value.items){
+    console.log("Items found: "  + box.value.items.length + "\n query: " + searchQuery.value);
+    return box.value.items.filter((item: Item) => item.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+  }
+  else return Array(0);
 }
 
 function trimString(maxLength: number, text: string) {
@@ -169,13 +194,12 @@ onMounted(async () => {
     <Skeleton />
   </div>
   <div class="accordion-options">
-  
   </div>
 </div>
 
 <div v-show="expanded" class="accordion-content">
     <ItemAccordionDescription :boxId="box.boxId" />
-    <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in box.items">
+    <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in filter()">
       <template #name> <p :title="item.name"> {{trimString(40, item.name)}}</p></template>
       <template #description> <p :title="item.description">{{trimString(50, item.description)}} </p></template>
     </ItemAccordion>
