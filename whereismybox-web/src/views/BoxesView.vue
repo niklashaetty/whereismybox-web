@@ -120,8 +120,8 @@ function trimString(maxLength: number, text: string) {
     <SectionTitle title="Search" />
     
     <span class="p-input-icon-right p-input-icon-left testt">
-        <InputText class="searchinput" type="text" v-model="searchQuery" placeholder="Type something to start filter" />
-        <i  v-if=searchQuery style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
+        <InputText class="searchinput" type="text" v-model="searchQuery" placeholder="Type something to start filtering items" />
+        <i v-if=searchQuery style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
         <i v-else class="pi pi-search" style="width: 10px;" />
       </span>
     
@@ -155,7 +155,10 @@ function trimString(maxLength: number, text: string) {
     </div>
   </div>
   <div class="unattacheditems">
-    <SectionTitle title="Items not in a box" />
+    <div class="unattacheditemstitle">
+      <SectionTitle title="Items not in a box" />
+      <i class="pi pi-info-circle" v-tooltip.top="{ value: `<p>Here is a list of all the items that you have taken out (removed) from a box. You can easily add any one of them item back into the box it was previously placed in!</p>`, escape: true, class: 'custom-error' }" style="margin-left: auto; margin-right: 5px; font-size: 18px; line-height: 40px; color: white;"/>
+    </div>
     <ConfirmPopup></ConfirmPopup>
         <ConfirmPopup group="demo">
             <template #message="slotProps">
@@ -192,10 +195,23 @@ function trimString(maxLength: number, text: string) {
 }
 
 
+.custom-error .p-tooltip-text {
+    background-color: pink;
+    color: rgb(255, 255, 255);
+}
+.custom-error.p-tooltip-right .p-tooltip-arrow {
+    border-right-color: var(--pink-800);
+}
+
+
+.unattacheditemstitle{
+  display: flex;
+}
+
 .container {  
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  grid-template-rows: 0.2fr 1.8fr 1fr;
+  grid-template-rows: 100px 1.8fr 1fr;
   gap: 30px 30px;
   grid-auto-flow: row;
   grid-template-areas:
@@ -214,7 +230,6 @@ function trimString(maxLength: number, text: string) {
 
 .boxes { 
   grid-area: boxes;
-
 }
 
 .unattacheditems { 
