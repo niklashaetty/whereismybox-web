@@ -53,11 +53,13 @@ function addNewItem() {
 
       <Dialog v-model:visible="displayAddItemDialog" :style="{ width: '450px' }" header="Add a new item" :modal="true">
          <div class="card">
+          <p style="font-size:10px; margin-bottom: 10px;"> An item consists of a name, and optionally a description. 
+            Currently only the name is searchable.</p>
           <div class="field">
-            <InputText v-model="itemName" type="text" placeholder="Name" />
+            <InputText v-model="itemName" type="text" placeholder="Name - e.g. Bike helmet" />
           </div>
           <div class="field">
-            <InputText v-model="itemDescription" type="text" placeholder="Description" />
+            <InputText v-model="itemDescription" type="text" placeholder="Description - e.g. Ferrari, red with white stripes" />
           </div>
           <Button @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
         </div>

@@ -17,13 +17,14 @@ import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
+import BoxService from '@/services/boxservice';
 
 
 let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
-const boxNumber = ref(null);
+const boxNumber = ref(99);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
@@ -58,9 +59,7 @@ async function getUnattachedItems(showLoading: boolean) {
 }
 
 async function createNewBox() {
-  const postBoxRequest = { Number: boxNumber.value, Name: boxName.value };
-  let boxesPath = `/api/users/${currentUserId.value}/boxes`
-  await axios.post(boxesPath, postBoxRequest)
+  BoxService.createBox(currentUserId.value, boxNumber.value, boxName.value)
     .then(closeDisplayCreateBoxDialog)
 }
 
@@ -96,6 +95,24 @@ function closeDisplayCreateBoxDialog() {
 
 function openDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = true;
+  boxName.value = "";
+  boxNumber.value = getlowestFreeBoxNumber();
+
+}
+
+function getlowestFreeBoxNumber(){
+  let currentNumbers = boxes.value.map(box => box.number);
+  let result = 1;
+  
+  while(true && result < 300){
+    if(currentNumbers.find(number => number == result)){
+      result++;
+    }
+    else {
+      return result;   
+    }
+  }
+  return 0; // just a faillback
 }
 
 
@@ -136,6 +153,7 @@ function trimString(maxLength: number, text: string) {
 
       <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
          <div class="card">
+          <p style="font-size:10px; margin-bottom: 10px;"> A box must have a name, for example "Kitchen stuff", and a unique number larger than 0. We've filled in the lowest unoccupied number for you, but feel free to change it! </p>
           <div class="field">
             <InputText v-model="boxName" type="text" placeholder="Name" />
           </div>

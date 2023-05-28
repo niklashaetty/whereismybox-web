@@ -85,11 +85,6 @@ const menuItems = ref([
             openStickerDialog();
           }
         },
-        {label: 'Edit (not working currently)', icon: 'pi pi-file-edit',
-        command: () => {
-              console.log("Not working currently!")
-          }
-        },
         {label: 'Delete', icon: 'pi pi-trash',
             command: () => {
               confirmDeleteBox()
@@ -135,7 +130,6 @@ function toggleBoxMenu(event: MouseEvent)  {
 
 function filter()  { 
   if(box.value.items){
-    console.log("Items found: "  + box.value.items.length + "\n query: " + searchQuery.value);
     return box.value.items.filter((item: Item) => item.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
   }
   else return Array(0);

@@ -14,6 +14,7 @@ BoxDeleted(boxId: string) {
 }
 
 BoxAdded(boxId: string) {
+  console.log("Box was added! EventService")
   EventBus.emit(BoxEvents.ADDED, boxId);
 
 }
