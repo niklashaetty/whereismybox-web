@@ -1,3 +1,4 @@
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Repositories;
 
@@ -30,8 +31,16 @@ public class UnattachedItemFetchingService : IUnattachedItemFetchingService
         {
             if (unattachedItem.PreviousBoxId.HasValue)
             {
-                var box = await _boxRepository.Get(userId, unattachedItem.PreviousBoxId.Value);
-                unattachedItem.AddPreviousBoxNumber(box.Number);
+                try
+                {
+                    var box = await _boxRepository.Get(userId, unattachedItem.PreviousBoxId.Value);
+                    unattachedItem.AddPreviousBoxNumber(box.Number);
+                }
+                catch (BoxNotFoundException e)
+                { 
+                    // Then box doesn't exist anymore.
+                    unattachedItem.PreviousBoxId = null;
+                }
             }
         }
     }

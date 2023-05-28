@@ -23,10 +23,13 @@ public class GetUnattachedItemsFunction
     private const string OperationId = "GetUnattachedItems";
     private const string FunctionName = OperationId + "Function";
     private readonly IUnattachedItemFetchingService _unattachedItemFetchingService;
+    private readonly ILogger _logger;
 
-    public GetUnattachedItemsFunction(IUnattachedItemFetchingService unattachedItemFetchingService)
+    public GetUnattachedItemsFunction(ILoggerFactory loggerFactory, IUnattachedItemFetchingService unattachedItemFetchingService)
     {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(unattachedItemFetchingService);
+        _logger = loggerFactory.CreateLogger<GetUnattachedItemsFunction>();
         _unattachedItemFetchingService = unattachedItemFetchingService;
     }
 

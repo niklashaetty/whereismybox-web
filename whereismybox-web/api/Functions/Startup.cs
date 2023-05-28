@@ -35,6 +35,7 @@ namespace Functions
                 .AddEnvironmentVariables()
                 .Build();
             
+            // Cosmos
             builder.Services.AddSingleton(new BoxRepositoryConfiguration(
                 config["CosmosConnectionString"], 
                 "WhereIsMyBox", "Boxes"));
@@ -44,6 +45,8 @@ namespace Functions
             builder.Services.AddSingleton(new UnattachedItemRepositoryRepositoryConfiguration(
                 config["CosmosConnectionString"], 
                 "WhereIsMyBox", "UnattachedItems"));
+
+            builder.Services.AddLogging();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();

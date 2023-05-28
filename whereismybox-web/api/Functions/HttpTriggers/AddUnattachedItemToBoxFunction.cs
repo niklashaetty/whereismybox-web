@@ -24,10 +24,13 @@ public class AddUnattachedItemToBoxFunction
     private const string OperationId = "AddUnattachedItem";
     private const string FunctionName = OperationId + "Function";
     private readonly IItemAddingService _itemAddingService;
+    private readonly ILogger _logger;
 
-    public AddUnattachedItemToBoxFunction(IItemAddingService itemAddingService)
+    public AddUnattachedItemToBoxFunction(ILoggerFactory loggerFactory, IItemAddingService itemAddingService)
     {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(itemAddingService);
+        _logger = loggerFactory.CreateLogger<AddUnattachedItemToBoxFunction>();
         _itemAddingService = itemAddingService;
     }
 

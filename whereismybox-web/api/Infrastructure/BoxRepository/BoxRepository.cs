@@ -1,3 +1,5 @@
+using System.Net;
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
@@ -30,9 +32,16 @@ public class BoxRepository : IBoxRepository
 
     public async Task<Box> Get(Guid userId, Guid boxId)
     {
-        var cosmosAware =
-            await _container.ReadItemAsync<CosmosAwareBox>(boxId.ToString(), new PartitionKey(userId.ToString()));
-        return cosmosAware.Resource;
+        try
+        {
+            var cosmosAware =
+                await _container.ReadItemAsync<CosmosAwareBox>(boxId.ToString(), new PartitionKey(userId.ToString()));
+            return cosmosAware.Resource;
+        }
+        catch (CosmosException e) when (e.StatusCode is HttpStatusCode.NotFound)
+        {
+            throw new BoxNotFoundException(userId, boxId);
+        }
     }
 
     public async Task<Box> PersistUpdate(Guid userId, Box updatedBox)
