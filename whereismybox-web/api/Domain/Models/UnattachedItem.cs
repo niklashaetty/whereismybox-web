@@ -30,4 +30,10 @@ public class UnattachedItem : Item
     {
         PreviousBoxNumber = previousBoxNumber;
     }
+    
+    public void RemovePreviousBox()
+    {
+        PreviousBoxNumber = null;
+        PreviousBoxNumber = null;
+    }
 }

@@ -39,7 +39,7 @@ public class UnattachedItemFetchingService : IUnattachedItemFetchingService
                 catch (BoxNotFoundException e)
                 { 
                     // Then box doesn't exist anymore.
-                    unattachedItem.PreviousBoxId = null;
+                    unattachedItem.RemovePreviousBox();
                 }
             }
         }
