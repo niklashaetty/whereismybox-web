@@ -25,6 +25,8 @@ const itemDescription = ref("");
 
 function closeAddItemDialog() {
   displayAddItemDialog.value = false;
+  itemName.value = "";
+  itemDescription.value = "";
 }
 
 function openAddItemDialog() {
