@@ -12,4 +12,11 @@ public class CreateBoxRequest
     [JsonRequired]
     [OpenApiProperty(Description = "The box number. Must be unique per user", Default = 24)]
     public int Number { get; set; }
+
+    public CreateBoxRequest(string name, int number)
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        Name = name;
+        Number = number;
+    }
 }

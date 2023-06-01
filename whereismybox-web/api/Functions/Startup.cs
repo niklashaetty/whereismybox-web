@@ -1,14 +1,16 @@
+using System.Collections.Generic;
 using System.IO;
-using System.Net.Http.Formatting;
+using Api;
+using Domain.CommandHandlers;
+using Domain.Commands;
+using Domain.Models;
+using Domain.Queries;
+using Domain.QueryHandlers;
 using Domain.Repositories;
-using Domain.Services.BoxCreationService;
-using Domain.Services.ItemAddingService;
-using Domain.Services.ItemDeletionService;
-using Domain.Services.ItemEditingService;
-using Domain.Services.UnattachedItemFetchingService;
-using Domain.Services.UserCreationService;
 using Functions;
+using Functions.HttpTriggers.V2;
 using Infrastructure.BoxRepository;
+using Infrastructure.CollectionRepository;
 using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -38,21 +40,33 @@ namespace Functions
             // Cosmos
             builder.Services.AddSingleton(new BoxRepositoryConfiguration(
                 config["CosmosConnectionString"], 
-                "WhereIsMyBox", "Boxes"));
+                "WhereIsMyBox", "BoxesV2"));
             builder.Services.AddSingleton(new UserRepositoryConfiguration(
                 config["CosmosConnectionString"], 
-                "WhereIsMyBox", "Users"));
-            builder.Services.AddSingleton(new UnattachedItemRepositoryRepositoryConfiguration(
+                "WhereIsMyBox", "UsersV2"));
+            builder.Services.AddSingleton(new UnattachedItemRepositoryConfiguration(
                 config["CosmosConnectionString"], 
-                "WhereIsMyBox", "UnattachedItems"));
+                "WhereIsMyBox", "UnattachedItemsV2"));
 
             builder.Services.AddLogging();
+            
+            // CommandHandlers
+            builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
+            builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<AddItemCommand>, AddItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<DeleteBoxCommand>, DeleteBoxCommandHandler>();
+            
+            // QueryHandlers
+            builder.Services.AddSingleton<IQueryHandler<GetBoxCollectionQuery, List<Box>>, GetBoxCollectionQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetBoxQuery, Box>, GetBoxQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetUserQuery, User>, GetUserQueryHandler>();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
             
             // Services
+            /*
             builder.Services.AddSingleton<IUserCreationService, UserCreationService>();
             builder.Services.AddSingleton<IBoxCreationService, BoxCreationService>();
             builder.Services.AddSingleton<IItemAddingService, ItemAddingService>();
@@ -60,7 +74,7 @@ namespace Functions
             builder.Services.AddSingleton<IItemEditingService, ItemEditingService>();
             builder.Services.AddSingleton<IUnattachedItemRepository, UnattachedItemRepository>();
             builder.Services.AddSingleton<IUnattachedItemFetchingService, UnattachedItemFetchingService>();
-
+            */
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver

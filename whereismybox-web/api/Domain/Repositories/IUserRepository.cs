@@ -1,4 +1,5 @@
 using Domain.Models;
+using Domain.Primitives;
 
 namespace Domain.Repositories;
 
@@ -10,7 +11,7 @@ public interface IUserRepository
     /// Gets a user
     /// </summary>
     /// <throws>UserNotFoundException</throws>
-    public Task<User> Get(Guid userId);
+    public Task<User> Get(UserId userId);
 
     /// <summary>
     /// Persist a user update

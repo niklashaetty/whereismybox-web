@@ -1,3 +1,4 @@
+using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
 using InvalidOperationException = System.InvalidOperationException;
@@ -22,7 +23,7 @@ public class UserRepository : IUserRepository
         return response.Resource;
     }
 
-    public async Task<User> Get(Guid userId)
+    public async Task<User> Get(UserId userId)
     {
         var cosmosAware =
             await _container.ReadItemAsync<CosmosAwareUser>(userId.ToString(), new PartitionKey(userId.ToString()));

@@ -1,8 +1,8 @@
-using System.Net;
-using Domain.Exceptions;
 using Domain.Models;
+using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 
 namespace Infrastructure.UnattachedItemRepository;
 
@@ -10,48 +10,41 @@ public class UnattachedItemRepository : IUnattachedItemRepository
 {
     private readonly Container _container;
 
-    public UnattachedItemRepository(UnattachedItemRepositoryRepositoryConfiguration config)
+    public UnattachedItemRepository(UnattachedItemRepositoryConfiguration config)
     {
         ArgumentNullException.ThrowIfNull(config);
         var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
     
-    public async Task<UnattachedItemCollection> Create(UnattachedItemCollection unattachedItemCollection)
+    public async Task<UnattachedItem> Create(UnattachedItem unattachedItem)
     {
-        var cosmosAware = CosmosAwareUnattachedItemCollection.ToCosmosAware(unattachedItemCollection);
-        var response = await _container.CreateItemAsync(cosmosAware, cosmosAware.GetPartitionKey());
+        var cosmosAware = CosmosAwareUnattachedItem.ToCosmosAware(unattachedItem);
+        var response = await _container.CreateItemAsync(cosmosAware, cosmosAware.PartitionKey());
         return response.Resource;
     }
 
-    public async Task<UnattachedItemCollection> Get(Guid userId)
+    public async Task<List<UnattachedItem>> GetCollection(CollectionId collectionId)
     {
-        try
+        var queryAble = _container
+            .GetItemLinqQueryable<CosmosAwareUnattachedItem>(requestOptions: new QueryRequestOptions()
+            {
+                PartitionKey = new PartitionKey(collectionId.ToString())
+            });
+
+        var iterator = queryAble.ToFeedIterator();
+        var results = new List<UnattachedItem>();
+        while (iterator.HasMoreResults)
         {
-            var cosmosAware =
-                await _container.ReadItemAsync<CosmosAwareUnattachedItemCollection>(userId.ToString(),
-                    new PartitionKey(userId.ToString()));
-            return cosmosAware.Resource;
+            results.AddRange(await iterator.ReadNextAsync());
         }
-        catch (CosmosException e) when (e.StatusCode is HttpStatusCode.NotFound)
-        {
-            throw new UnattachedItemsNotFoundException(userId, e);
-        }
+
+        return results;
     }
 
-    public async Task<UnattachedItemCollection> PersistUpdate(UnattachedItemCollection updatedUnattachedItemCollection)
+    public async Task Delete(CollectionId collectionId, ItemId itemId)
     {
-        if (updatedUnattachedItemCollection is not CosmosAwareUnattachedItemCollection cosmosAware)
-        {
-            throw new InvalidOperationException("Not a cosmos aware item");
-        }
-
-        var cosmosResponse =
-            await _container.ReplaceItemAsync(cosmosAware, cosmosAware.Id,
-                cosmosAware.GetPartitionKey(), new ItemRequestOptions()
-                {
-                    IfMatchEtag = cosmosAware.ETag
-                });
-        return cosmosResponse.Resource;
+        await _container.DeleteItemAsync<CosmosAwareUnattachedItem>(itemId.ToString(),
+            new PartitionKey(collectionId.ToString()));
     }
 }

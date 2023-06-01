@@ -12,4 +12,12 @@ public class AddItemRequest
     [JsonRequired]
     [OpenApiProperty(Description = "Detailed description of the item", Default = "Red")]
     public string Description { get; set; }
+
+    public AddItemRequest(string name, string description="")
+    {
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(description);
+        Name = name;
+        Description = description;
+    }
 }
