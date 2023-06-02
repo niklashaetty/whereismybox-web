@@ -1,6 +1,4 @@
 using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -48,10 +46,9 @@ public class AssignUserRolesFunction
     {
         _logger.LogInformation("Entering AssignUserRolesFunction");
         _logger.LogWarning("Entering AssignUserRolesFunction");
-        var token = ExtractExternalUserId(req);
         try
         {
-            var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(new ExternalUserId(token)));
+            var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(new ExternalUserId("heello")));
             return new OkObjectResult(user.ToApiModel());
         }
         catch (UserNotFoundException e)
@@ -59,18 +56,5 @@ public class AssignUserRolesFunction
             return new NotFoundObjectResult(new ErrorResponse("Not found", "User was not found"));
         }
     }
-    
-    public static string ExtractExternalUserId(HttpRequest httpRequest)
-    {
-        var accessToken = httpRequest.Headers["Authorization"].ToString().Replace("Bearer ", string.Empty).Trim();
-        var handler = new JwtSecurityTokenHandler();
-        if (handler.CanReadToken(accessToken) is false)
-        {
-            throw new InvalidOperationException("Missing a valid authentication header");
-        }
 
-        var jwtSecurityToken = handler.ReadJwtToken(accessToken);
-        var claims = jwtSecurityToken.Claims;
-        return claims.FirstOrDefault(c => c.Value == "userId").Value;
-    }
 }

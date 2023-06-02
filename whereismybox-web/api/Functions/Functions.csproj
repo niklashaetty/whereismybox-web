@@ -36,12 +36,4 @@
     <ItemGroup>
       <EmbeddedResource Remove="HttpTriggers\V1\**" />
     </ItemGroup>
-    <ItemGroup>
-      <Reference Include="Microsoft.IdentityModel.Tokens">
-        <HintPath>..\..\..\..\..\..\.AzureToolsForIntelliJ\AzureFunctionsCoreTools\v4\4.40.0\Microsoft.IdentityModel.Tokens.dll</HintPath>
-      </Reference>
-      <Reference Include="System.IdentityModel.Tokens.Jwt">
-        <HintPath>..\..\..\..\..\..\.AzureToolsForIntelliJ\AzureFunctionsCoreTools\v4\4.40.0\System.IdentityModel.Tokens.Jwt.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 </Project>
