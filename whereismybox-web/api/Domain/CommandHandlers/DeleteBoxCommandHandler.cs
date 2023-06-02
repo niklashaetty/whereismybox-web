@@ -3,7 +3,6 @@ using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Repositories;
-using Domain.Services.BoxCreationService;
 
 namespace Domain.CommandHandlers;
 

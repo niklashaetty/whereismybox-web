@@ -17,7 +17,7 @@ const props = defineProps(
 );
 
 const toast = useToast();
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 const boxId = computed(() => props.boxId);
 const displayAddItemDialog = ref(false);
 const itemName = ref("");
@@ -34,7 +34,7 @@ function openAddItemDialog() {
 }
 
 function addNewItem() {
-  BoxService.addItemToBox(userId, boxId.value, itemName.value, itemDescription.value)
+  BoxService.addItemToBox(collectionId, boxId.value, itemName.value, itemDescription.value)
   .then(() => closeAddItemDialog())
   .then((response) => toast.add({severity:'success', summary: `${itemName.value} was added to box`, life: 3000}))
 }

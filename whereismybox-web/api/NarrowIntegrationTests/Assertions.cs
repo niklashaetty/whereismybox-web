@@ -22,4 +22,20 @@ public static class Assertions
         Assert.Equal(amount, response.Items.Count);
         return response;
     }
+    
+    public static UnattachedItemCollectionDto AssertUnattachedItems(IActionResult actionResult, int amount)
+    {
+        ResponseAssertions.AssertSuccessStatusCode(actionResult);
+        var response = actionResult.GetContentOfType<UnattachedItemCollectionDto>();
+        Assert.Equal(amount, response.UnattachedItems.Count);
+        return response;
+    }
+    
+    public static void AssertItemInBox(IActionResult actionResult, Guid itemId)
+    {
+        ResponseAssertions.AssertSuccessStatusCode(actionResult);
+        var response = actionResult.GetContentOfType<BoxDto>();
+        var item = response.Items.FirstOrDefault(i => i.ItemId == itemId);
+        Assert.NotNull(item);
+    }
 }

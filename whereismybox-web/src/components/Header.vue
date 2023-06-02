@@ -5,22 +5,24 @@ import router from '@/router';
 
 import UserService from '@/services/userservice';
 import Avatar from 'primevue/avatar';
+import { useUserStore } from '@/stores/user'
 
-const userId = router.currentRoute.value.params.userId as string;
-const userName = ref(" ");
-const avatarLetter = ref(" ");
-
-function getCurrentUser() {
-  UserService.getUser(userId)
-  .then((response => {
-    userName.value = response.data.userName;
-    avatarLetter.value = Array.from(userName.value)[0];
-  }))
-}
+const collectionId = router.currentRoute.value.params.collectionId as string;
+const userStore = useUserStore()
 
 onMounted(async () => {
   getCurrentUser();
 });
+
+function getCurrentUser() {
+  UserService.getUserByCollectionId(collectionId)
+  .then((response => userStore.setUser(response.data.userId, response.data.username, response.data.primaryCollectionId)))
+}
+
+function getAvatarLetter(username: string){
+  return Array.from(username)[0];
+}
+
 </script>
 
 <template>
@@ -31,9 +33,9 @@ onMounted(async () => {
     <h2 style="margin-left: 5px; "> Boxio</h2>
   </div>
   <div class="filler"></div>
-  <div class="username"  @click="$router.push({ path: `/users/${userId}`})">
-    <Avatar :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
-    <p style="margin-left: 10px">{{ userName }} </p>
+  <div class="username"  @click="$router.push({ path: `/collections/${collectionId}`})">
+    <Avatar :label="getAvatarLetter(userStore.username)"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
+    <p style="margin-left: 10px">{{ userStore.username }} </p>
   </div>
 </div>
 </template>

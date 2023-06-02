@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.IO;
-using Api;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Models;
@@ -8,9 +7,7 @@ using Domain.Queries;
 using Domain.QueryHandlers;
 using Domain.Repositories;
 using Functions;
-using Functions.HttpTriggers.V2;
 using Infrastructure.BoxRepository;
-using Infrastructure.CollectionRepository;
 using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -51,30 +48,26 @@ namespace Functions
             builder.Services.AddLogging();
             
             // CommandHandlers
-            builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
-            builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<AddItemCommand>, AddItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
             builder.Services.AddSingleton<ICommandHandler<DeleteBoxCommand>, DeleteBoxCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<DeleteItemCommand>, DeleteItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<DeleteUnattachedItemCommand>, DeleteUnattachedItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<MoveUnattachedItemToBoxCommand>, MoveUnattachedItemToCommandHandler>();
             
             // QueryHandlers
             builder.Services.AddSingleton<IQueryHandler<GetBoxCollectionQuery, List<Box>>, GetBoxCollectionQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetBoxQuery, Box>, GetBoxQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUserQuery, User>, GetUserQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetUserByCollectionIdQuery, User>, GetUserByCollectionIdQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>, GetUnattachedItemsQueryHandler>();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
-            
-            // Services
-            /*
-            builder.Services.AddSingleton<IUserCreationService, UserCreationService>();
-            builder.Services.AddSingleton<IBoxCreationService, BoxCreationService>();
-            builder.Services.AddSingleton<IItemAddingService, ItemAddingService>();
-            builder.Services.AddSingleton<IItemDeletionService, ItemDeletionService>();
-            builder.Services.AddSingleton<IItemEditingService, ItemEditingService>();
             builder.Services.AddSingleton<IUnattachedItemRepository, UnattachedItemRepository>();
-            builder.Services.AddSingleton<IUnattachedItemFetchingService, UnattachedItemFetchingService>();
-            */
+
             builder.Services.AddMvcCore().AddNewtonsoftJson(options =>
             {
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver

@@ -6,6 +6,7 @@ import Card from 'primevue/card';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import Tooltip from 'primevue/tooltip';
+import { createPinia } from 'pinia'
 
 
 import './assets/main.css'
@@ -23,13 +24,14 @@ import { faUserSecret } from '@fortawesome/free-solid-svg-icons'
 /* add icons to the library */
 library.add(faUserSecret)
 
-
+const pinia = createPinia()
 const app = createApp(App)
 
 app.use(router)
 app.use(PrimeVue);
 app.use(ToastService);
 app.use(ConfirmationService);
+app.use(pinia)
 
 app.directive('tooltip', Tooltip);
 

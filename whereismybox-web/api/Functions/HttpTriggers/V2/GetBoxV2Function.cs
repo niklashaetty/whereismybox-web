@@ -20,7 +20,7 @@ namespace Functions.HttpTriggers.V2;
 
 public class GetBoxV2Function
 {
-    private const string OperationId = "GetBox";
+    private const string OperationId = "GetBoxV2";
     private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetBoxQuery, Box> _queryHandler;
 

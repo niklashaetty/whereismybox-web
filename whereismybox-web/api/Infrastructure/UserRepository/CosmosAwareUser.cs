@@ -24,6 +24,6 @@ public class CosmosAwareUser : User
 
     public PartitionKey GetPartitionKey()
     {
-        return new PartitionKey(PrimaryCollectionId.ToString());
+        return new PartitionKey(UserId.ToString());
     }
 }

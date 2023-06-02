@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using Api;
 using Domain.CommandHandlers;
 using Domain.Commands;
+using Domain.Exceptions;
 using Domain.Primitives;
-using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -17,30 +17,33 @@ using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 
-public class DeleteBoxV2Function
+public class DeleteUnattachedItemV2Function
 {
-    private const string OperationId = "DeleteBoxV2";
+    private const string OperationId = "DeleteUnattachedItemV2";
     private const string FunctionName = OperationId + "Function";
-    private readonly ICommandHandler<DeleteBoxCommand> _commandHandler;
+    private readonly ICommandHandler<DeleteUnattachedItemCommand> _deleteUnattachedItemCommandHandler;
 
-    public DeleteBoxV2Function(ICommandHandler<DeleteBoxCommand> commandHandler)
+    public DeleteUnattachedItemV2Function(
+        ICommandHandler<DeleteUnattachedItemCommand> deleteUnattachedItemCommandHandler)
     {
-        ArgumentNullException.ThrowIfNull(commandHandler);
-        _commandHandler = commandHandler;
+        ArgumentNullException.ThrowIfNull(deleteUnattachedItemCommandHandler);
+        _deleteUnattachedItemCommandHandler = deleteUnattachedItemCommandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Boxes"}, Summary = "Delete a box")]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Unattached items"},
+        Summary = "Remove an unattached item")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-    [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
+    [OpenApiParameter("itemId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "collections/{collectionId}/boxes/{boxId}")]
+        [HttpTrigger(AuthorizationLevel.Function, "delete",
+            Route = "collections/{collectionId}/unattached-items/{itemId}")]
         HttpRequest req,
         string collectionId,
-        Guid boxId)
+        Guid itemId)
     {
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
         {
@@ -48,7 +51,8 @@ public class DeleteBoxV2Function
                 new ErrorResponse("Validation error", "Invalid collectionId"));
         }
 
-        await _commandHandler.Execute(new DeleteBoxCommand(domainCollectionId, new BoxId(boxId)));
+        var command = new DeleteUnattachedItemCommand(domainCollectionId, new ItemId(itemId));
+        await _deleteUnattachedItemCommandHandler.Execute(command);
         return new NoContentResult();
     }
 }

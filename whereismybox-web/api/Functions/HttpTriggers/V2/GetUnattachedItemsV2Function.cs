@@ -22,31 +22,31 @@ using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 
-public class GetBoxCollectionFunction
+public class GetUnattachedItemsV2Function
 {
-    private const string OperationId = "GetBoxCollection";
+    private const string OperationId = "GetUnattachedItemsV2";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetBoxCollectionQuery, List<Box>> _queryHandler;
+    private readonly IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> _queryHandler;
     private readonly ILogger _logger;
 
-    public GetBoxCollectionFunction(ILoggerFactory loggerFactory,
-        IQueryHandler<GetBoxCollectionQuery, List<Box>> queryHandler)
+    public GetUnattachedItemsV2Function(ILoggerFactory loggerFactory,
+        IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> queryHandler)
     {
         ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(queryHandler);
-        _logger = loggerFactory.CreateLogger<GetBoxCollectionFunction>();
+        _logger = loggerFactory.CreateLogger<GetUnattachedItemsV2Function>();
         _queryHandler = queryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
-        Summary = "Get an entire collection of boxes and their items")]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"UnattachedItems"},
+        Summary = "Get unattached items in a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(BoxCollectionDto))]
+    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(UnattachedItemCollectionDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "collections/{collectionId}")]
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "collections/{collectionId}/unattached-items")]
         HttpRequest req,
         string collectionId)
     {
@@ -55,8 +55,8 @@ public class GetBoxCollectionFunction
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
         }
 
-        var boxCollection = await _queryHandler.Handle(new GetBoxCollectionQuery(domainCollectionId));
-        return new OkObjectResult(new BoxCollectionDto(domainCollectionId.Value,
-            boxCollection.Select(b => b.ToApiModel()).ToList()));
+        var unattachedItems = await _queryHandler.Handle(new GetUnattachedItemsQuery(domainCollectionId));
+        return new OkObjectResult(new UnattachedItemCollectionDto(domainCollectionId.Value,
+            unattachedItems.Select(b => b.ToApiModel()).ToList()));
     }
 }

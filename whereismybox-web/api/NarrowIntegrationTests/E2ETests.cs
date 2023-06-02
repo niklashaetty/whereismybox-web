@@ -35,7 +35,7 @@ public class E2ETests
         var createBoxRequest = new CreateBoxRequest("Some box name", 1);
         var createBoxResult = await _driver.InvokeCreateBoxFunction(createBoxRequest, collectionId);
         var boxId = createBoxResult.GetContentOfType<CreateBoxResponse>().BoxId;
-        
+
         // Then there should be 1 box
         getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(collectionId);
         Assertions.AssertBoxes(getBoxesResponse, 1);
@@ -45,24 +45,24 @@ public class E2ETests
             collectionId, boxId);
         await _driver.InvokeAddItemFunction(new AddItemRequest("Second item", "Description"),
             collectionId, boxId);
-        
+
         // Then there should be two items in the box
         var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         var box = Assertions.AssertItems(getBoxResponse, 2);
-        
+
         // When deleting the box
         var deleteBoxResponse = await _driver.InvokeDeleteBoxFunction(collectionId, boxId);
         ResponseAssertions.AssertSuccessStatusCode(deleteBoxResponse);
-        
+
         // Then the box should be deleted
         getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         ResponseAssertions.Assert404NotFound(getBoxResponse);
-        
+
         // And there should be no box
         getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(collectionId);
         Assertions.AssertBoxes(getBoxesResponse, 0);
     }
-    
+
     [Fact]
     public async void UnattachedItemScenarioTests()
     {
@@ -83,7 +83,7 @@ public class E2ETests
         var createBoxRequest = new CreateBoxRequest("Some box name", 1);
         var createBoxResult = await _driver.InvokeCreateBoxFunction(createBoxRequest, collectionId);
         var boxId = createBoxResult.GetContentOfType<CreateBoxResponse>().BoxId;
-        
+
         // Then there should be 1 box
         getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(collectionId);
         Assertions.AssertBoxes(getBoxesResponse, 1);
@@ -97,32 +97,81 @@ public class E2ETests
         // Then there should be one item in the box
         var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         Assertions.AssertItems(getBoxResponse, 1);
-        
-        // And no unattached items TODO
-        
+
+        // And no unattached items
+        var getUnattachedItemsResponse = await _driver.InvokeGetUnattachedItems(collectionId);
+        Assertions.AssertUnattachedItems(getUnattachedItemsResponse, 0);
+
         // When hard deleting the item
         var hardDeleteItemResponse = await _driver.InvokeRemoveItemFunction(collectionId, boxId, itemId, true);
         ResponseAssertions.AssertSuccessStatusCode(hardDeleteItemResponse);
-        
+
         // Then there should be no items in the box
         getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         var box = Assertions.AssertItems(getBoxResponse, 0);
-        
+
         // When adding an item to the box
         addItemResponse = await _driver.InvokeAddItemFunction(new AddItemRequest("First item", "Description"),
             collectionId, boxId);
         ResponseAssertions.AssertSuccessStatusCode(addItemResponse);
         itemId = addItemResponse.GetContentOfType<ItemDto>().ItemId;
-        
+
         // When removing an item from the box
         var removeItemResponse = await _driver.InvokeRemoveItemFunction(collectionId, boxId, itemId, false);
         ResponseAssertions.AssertSuccessStatusCode(removeItemResponse);
-        
+
         // Then there should be no items in the box
         getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         Assertions.AssertItems(getBoxResponse, 0);
-        
+
         // And one unattached item
-        
+        getUnattachedItemsResponse = await _driver.InvokeGetUnattachedItems(collectionId);
+        Assertions.AssertUnattachedItems(getUnattachedItemsResponse, 1);
+
+        // When deleting the unattached item
+        var deleteUnattachedItemResponse = await _driver.InvokeDeleteUnattachedItemFunction(collectionId, itemId);
+        ResponseAssertions.AssertSuccessStatusCode(deleteUnattachedItemResponse);
+
+        // Then there should be no unattached items
+        getUnattachedItemsResponse = await _driver.InvokeGetUnattachedItems(collectionId);
+        Assertions.AssertUnattachedItems(getUnattachedItemsResponse, 0);
+    }
+
+    [Fact]
+    public async void MovingUnattachedItemTest()
+    {
+        // When creating a user
+        var userName = "Some username";
+        var createUserResponse = await _driver.InvokeCreateUserFunction(new CreateUserRequest(userName));
+
+        // Then there should be a user
+        ResponseAssertions.AssertSuccessStatusCode(createUserResponse);
+        var user = createUserResponse.GetContentOfType<UserDto>();
+        var collectionId = user.PrimaryCollectionId;
+
+        // When creating a box
+        var createBoxRequest = new CreateBoxRequest("Some box name", 1);
+        var createBoxResult = await _driver.InvokeCreateBoxFunction(createBoxRequest, collectionId);
+        var boxId = createBoxResult.GetContentOfType<CreateBoxResponse>().BoxId;
+
+        // And adding an item to the box
+        var addItemResponse = await _driver.InvokeAddItemFunction(new AddItemRequest("First item", "Description"),
+            collectionId, boxId);
+        ResponseAssertions.AssertSuccessStatusCode(addItemResponse);
+        var itemId = addItemResponse.GetContentOfType<ItemDto>().ItemId;
+
+        // And removing the item from the box
+        var removeItemResponse = await _driver.InvokeRemoveItemFunction(collectionId, boxId, itemId, false);
+        ResponseAssertions.AssertSuccessStatusCode(removeItemResponse);
+
+        // And moving it back to the previous box
+        var moveItemResponse =
+            await _driver.InvokeMoveUnattachedItemToBoxFunction(new MoveUnattachedItemToBoxRequest(boxId), collectionId,
+                itemId);
+        ResponseAssertions.AssertSuccessStatusCode(moveItemResponse);
+
+        // Then the item should be in the previous box
+        var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
+        Assertions.AssertItemInBox(getBoxResponse, itemId);
     }
 }

@@ -12,6 +12,12 @@ public interface IUserRepository
     /// </summary>
     /// <throws>UserNotFoundException</throws>
     public Task<User> Get(UserId userId);
+    
+    /// <summary>
+    /// Gets a user that owns a collection
+    /// </summary>
+    /// <throws>UserNotFoundException</throws>
+    public Task<User> Get(CollectionId collectionId);
 
     /// <summary>
     /// Persist a user update

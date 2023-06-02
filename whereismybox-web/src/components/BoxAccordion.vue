@@ -42,7 +42,7 @@ const toast = useToast();
 const confirm = useConfirm();
 
 const isFullyLoaded = computed(() => !props.isLoading);
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 const box = computed(() => props.box);
 const alwaysExpandedItems = computed(() => props.alwaysExpandedItems);
 const searchQuery = computed(() => {
@@ -58,7 +58,7 @@ const linkToBox = ref("");
 const isClicked = ref(false)
 
 const expanded = computed(() => {
-  return alwaysExpandedItems.value ||  isClicked.value
+  return alwaysExpandedItems.value || isClicked.value
 })
 
 watch(searchQuery, (newValue, oldValue) => {
@@ -77,7 +77,7 @@ const menuItems = ref([
         items: [
         {label: 'Go to box', icon: 'pi pi-qrcode',
         command: () => {
-            router.push({path: `/users/${userId}/boxes/${box.value.boxId}`})
+            router.push({path: `/collections/${collectionId}/boxes/${box.value.boxId}`})
           }
         },
         {label: 'Show printable sticker', icon: 'pi pi-qrcode',
@@ -108,13 +108,13 @@ function confirmDeleteBox(){
        header: `Deleting box ${box.value.number}`,
        icon: 'pi pi-info-circle',
        acceptClass: 'p-button-danger',
-       accept: () => deleteBox(userId, box.value.boxId),
+       accept: () => deleteBox(collectionId, box.value.boxId),
        reject: () => {}
    });
 };
 
-function deleteBox(userId:string, boxId:string) {
-  BoxService.deleteBox(userId, boxId)
+function deleteBox(collectionId:string, boxId:string) {
+  BoxService.deleteBox(collectionId, boxId)
   .then((response => {
      toast.add({ severity: 'success', summary: 'Confirmed', detail: `Box ${box.value.name} deleted`, life: 3000 });
   }))

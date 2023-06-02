@@ -18,20 +18,20 @@ using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 
-public class GetUserV2Function
+public class GetUserByCollectionIdV2Function
 {
-    private const string OperationId = "GetUserV2";
+    private const string OperationId = "GetUserByCollectionIdV2";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetUserQuery, User> _queryHandler;
+    private readonly IQueryHandler<GetUserByCollectionIdQuery, User> _queryHandler;
 
-    public GetUserV2Function(IQueryHandler<GetUserQuery, User> queryHandler)
+    public GetUserByCollectionIdV2Function(IQueryHandler<GetUserByCollectionIdQuery, User> queryHandler)
     {
         ArgumentNullException.ThrowIfNull(queryHandler);
         _queryHandler = queryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Get an existing user")]
-    [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Get an existing user by its primary collectionId")]
+    [OpenApiParameter("primaryCollectionId", In = ParameterLocation.Query, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(UserDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
@@ -39,13 +39,17 @@ public class GetUserV2Function
         Summary = "User was not found")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{userId}")] 
-        HttpRequest req,
-        Guid userId)
+        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] 
+        HttpRequest req)
     {
+        if (CollectionId.TryParse(req.Query["primaryCollectionId"], out var primaryCollectionId) is false)
+        {
+            return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid primaryCollectionId"));
+        }
+
         try
         {
-            var user = await _queryHandler.Handle(new GetUserQuery(new UserId(userId)));
+            var user = await _queryHandler.Handle(new GetUserByCollectionIdQuery(primaryCollectionId));
             return new OkObjectResult(user.ToApiModel());
         }
         catch (UserNotFoundException e)

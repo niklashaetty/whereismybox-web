@@ -16,14 +16,14 @@ public class UserDto
     [JsonRequired]
     [OpenApiProperty(Description = "The name of the user.", 
         Default = "John Doe")]
-    public string UserName { get; set; }
+    public string Username { get; set; }
 
-    public UserDto(Guid userId, string userName, string primaryCollectionId)
+    public UserDto(Guid userId, string username, string primaryCollectionId)
     {
-        ArgumentNullException.ThrowIfNull(userName);
+        ArgumentNullException.ThrowIfNull(username);
         ArgumentNullException.ThrowIfNull(primaryCollectionId);
         UserId = userId;
-        UserName = userName;
+        Username = username;
         PrimaryCollectionId = primaryCollectionId;
     }
 }

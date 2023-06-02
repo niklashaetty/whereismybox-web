@@ -4,8 +4,8 @@ namespace Domain.Exceptions;
 
 public class ItemNotFoundException : Exception
 {
-    public ItemNotFoundException(BoxId boxId, ItemId itemId) : base(
-        $"Item {itemId} not found in box {boxId}")
+    public ItemNotFoundException(CollectionId collectionId, ItemId itemId) : base(
+        $"No box with id {itemId} was found in collection {collectionId}")
     {
     }
 }

@@ -26,10 +26,14 @@ public class Fixture
     public ICommandHandler<AddItemCommand> AddItemCommandHandler { get; }
     public ICommandHandler<DeleteBoxCommand> DeleteBoxCommandHandler { get; }
     public ICommandHandler<DeleteItemCommand> DeleteItemCommandHandler { get; }
+    public ICommandHandler<DeleteUnattachedItemCommand> DeleteUnattachedItemCommandHandler { get; }
+    public ICommandHandler<MoveUnattachedItemToBoxCommand> MoveUnattachedItemToBoxCommandHandler { get; }
 
     // Queries
-    public IQueryHandler<GetBoxCollectionQuery, List<Box>> GetBoxCollectionQueryHandler { get; }
+    public IQueryHandler<GetUserByCollectionIdQuery, User> GetUserByCollectionIdQueryHandler { get; }
     public IQueryHandler<GetUserQuery, User> GetUserQueryHandler { get; }
+    public IQueryHandler<GetBoxCollectionQuery, List<Box>> GetBoxCollectionQueryHandler { get; }
+    public IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> GetUnattachedItemsQueryHandler { get; }
     public IQueryHandler<GetBoxQuery, Box> GetBoxQueryHandler { get; }
 
     public Fixture(ITestOutputHelper testOutputHelper)
@@ -44,10 +48,17 @@ public class Fixture
         DeleteBoxCommandHandler = new DeleteBoxCommandHandler(FakeBoxRepository);
         DeleteItemCommandHandler =
             new DeleteItemCommandHandler(XunitLoggerFactory, FakeBoxRepository, FakeUnattachedItemRepository);
+        DeleteUnattachedItemCommandHandler =
+            new DeleteUnattachedItemCommandHandler(XunitLoggerFactory, FakeUnattachedItemRepository);
+        MoveUnattachedItemToBoxCommandHandler = new MoveUnattachedItemToCommandHandler(XunitLoggerFactory,
+            FakeBoxRepository, FakeUnattachedItemRepository);
 
         // Queries
+        GetUserByCollectionIdQueryHandler = new GetUserByCollectionIdQueryHandler(FakeUserRepository);
         GetUserQueryHandler = new GetUserQueryHandler(FakeUserRepository);
         GetBoxCollectionQueryHandler = new GetBoxCollectionQueryHandler(FakeBoxRepository);
         GetBoxQueryHandler = new GetBoxQueryHandler(FakeBoxRepository);
+        GetUnattachedItemsQueryHandler =
+            new GetUnattachedItemsQueryHandler(FakeUnattachedItemRepository, FakeBoxRepository);
     }
 }

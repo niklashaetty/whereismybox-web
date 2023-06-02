@@ -1,0 +1,42 @@
+using Domain.Commands;
+using Domain.Exceptions;
+using Domain.Models;
+using Domain.Repositories;
+using Microsoft.Extensions.Logging;
+
+namespace Domain.CommandHandlers;
+
+public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattachedItemToBoxCommand>
+{
+    private readonly IBoxRepository _boxRepository;
+    private readonly IUnattachedItemRepository _unattachedItemRepository;
+    private readonly ILogger _logger;
+
+    public MoveUnattachedItemToCommandHandler(ILoggerFactory loggerFactory, IBoxRepository boxRepository,
+        IUnattachedItemRepository unattachedItemRepository)
+    {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
+        ArgumentNullException.ThrowIfNull(boxRepository);
+        ArgumentNullException.ThrowIfNull(unattachedItemRepository);
+        _logger = loggerFactory.CreateLogger<MoveUnattachedItemToCommandHandler>();
+        _boxRepository = boxRepository;
+        _unattachedItemRepository = unattachedItemRepository;
+    }
+
+    public async Task Execute(MoveUnattachedItemToBoxCommand command)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        var unattachedItems = await _unattachedItemRepository.GetCollection(command.CollectionId);
+        var unattachedItem = unattachedItems.FirstOrDefault(i => i.ItemId == command.ItemId);
+        if (unattachedItem is null)
+        {
+            throw new ItemNotFoundException(command.CollectionId, command.ItemId);
+        }
+
+        var box = await _boxRepository.Get(command.CollectionId, command.BoxId);
+        box.AddItem(unattachedItem);
+        await _boxRepository.PersistUpdate(box);
+        
+        await _unattachedItemRepository.Delete(command.CollectionId, unattachedItem.ItemId);
+    }
+}

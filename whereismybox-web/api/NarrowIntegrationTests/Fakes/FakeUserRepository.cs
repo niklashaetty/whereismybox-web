@@ -9,7 +9,7 @@ namespace NarrowIntegrationTests.Fakes;
 
 public class FakeUserRepository : IUserRepository
 {
-    private List<TestableUser> _database = new ();
+    private readonly List<TestableUser> _database = new ();
     public Task<User> Create(User user)
     {
         var cosmosAwareUser = CosmosAwareUser.ToCosmosAware(user);
@@ -30,6 +30,18 @@ public class FakeUserRepository : IUserRepository
         return Task.FromResult<User>(testableUser.AsCosmosAware());
     }
 
+    public Task<User> Get(CollectionId collectionId)
+    {
+        ArgumentNullException.ThrowIfNull(collectionId);
+        var testableUser = _database.SingleOrDefault(u => u.PrimaryCollectionId.Equals(collectionId));
+        if (testableUser is null)
+        {
+            throw new UserNotFoundException(collectionId);
+        }
+
+        return Task.FromResult<User>(testableUser.AsCosmosAware());
+    }
+
     public Task<User> PersistUpdate(User updatedUser)
     {
         throw new NotImplementedException();
@@ -39,12 +51,14 @@ public class FakeUserRepository : IUserRepository
 public class TestableUser
 {
     public UserId UserId { get; set; }
+    public CollectionId PrimaryCollectionId { get; set; }
     public string SerializedCosmosAwareUser { get; set; }
 
     public TestableUser(CosmosAwareUser cosmosAwareUser)
     {
         ArgumentNullException.ThrowIfNull(cosmosAwareUser);
         UserId = cosmosAwareUser.UserId;
+        PrimaryCollectionId = cosmosAwareUser.PrimaryCollectionId;
         SerializedCosmosAwareUser = JsonConvert.SerializeObject(cosmosAwareUser);
     }
 
