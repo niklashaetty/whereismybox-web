@@ -23,7 +23,7 @@ namespace Functions.HttpTriggers.V2;
 
 public class AssignUserRolesFunction
 {
-    private const string OperationId = "AssignUserRoles";
+    private const string OperationId = "GetRoles";
     private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
     private readonly ILogger _logger;
@@ -43,7 +43,7 @@ public class AssignUserRolesFunction
         Summary = "User was not found")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")] 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetRoles")] 
         HttpRequest req)
     {
         _logger.LogInformation("Entering AssignUserRolesFunction");
