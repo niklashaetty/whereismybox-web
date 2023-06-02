@@ -41,7 +41,7 @@ public class AssignUserRolesFunction
         Summary = "User was not found")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRoles")] 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")] 
         HttpRequest req)
     {
         _logger.LogInformation("Entering AssignUserRolesFunction");
