@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Mime;
@@ -48,6 +49,10 @@ public class AssignUserRolesFunction
     {
         _logger.LogInformation("Entering AssignUserRolesFunction");
         _logger.LogWarning("Entering AssignUserRolesFunction");
+        return new OkObjectResult(new RolesResponse()
+        {
+            Roles = new List<string>(){"MyCoolRole", "secondRole"}
+        });
         using (var content = new StreamContent(req.Body))
         {
             var contentString = await content.ReadAsStringAsync();
