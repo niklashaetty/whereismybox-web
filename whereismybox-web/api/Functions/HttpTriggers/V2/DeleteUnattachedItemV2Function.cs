@@ -39,7 +39,7 @@ public class DeleteUnattachedItemV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "delete",
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete",
             Route = "collections/{collectionId}/unattached-items/{itemId}")]
         HttpRequest req,
         string collectionId,

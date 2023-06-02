@@ -39,7 +39,7 @@ public class GetUserByCollectionIdV2Function
         Summary = "User was not found")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users")] 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users")] 
         HttpRequest req)
     {
         if (CollectionId.TryParse(req.Query["primaryCollectionId"], out var primaryCollectionId) is false)

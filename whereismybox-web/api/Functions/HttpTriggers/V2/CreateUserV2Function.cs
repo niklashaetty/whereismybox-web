@@ -35,7 +35,7 @@ public class CreateUserV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "users")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")]
         HttpRequest req)
     {
         var body = await new StreamReader(req.Body).ReadToEndAsync();

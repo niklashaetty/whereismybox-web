@@ -41,7 +41,7 @@ public class MoveUnattachedItemToBoxV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post",
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post",
             Route = "collections/{collectionId}/unattached-items/{itemId}")]
         HttpRequest req,
         string collectionId,

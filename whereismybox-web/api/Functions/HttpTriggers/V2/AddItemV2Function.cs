@@ -40,7 +40,7 @@ public class AddItemV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "collections/{collectionId}/boxes/{boxId}/items")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "collections/{collectionId}/boxes/{boxId}/items")]
         HttpRequest req,
         string collectionId,
         Guid boxId)

@@ -39,7 +39,7 @@ public class GetUserV2Function
         Summary = "User was not found")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "users/{userId}")] 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users/{userId}")] 
         HttpRequest req,
         Guid userId)
     {

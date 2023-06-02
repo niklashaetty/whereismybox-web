@@ -38,7 +38,7 @@ public class CreateBoxV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "post", Route = "collections/{collectionId}/boxes")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "collections/{collectionId}/boxes")]
         HttpRequest req,
         string collectionId)
     {

@@ -46,7 +46,7 @@ public class GetBoxCollectionFunction
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "collections/{collectionId}")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "collections/{collectionId}")]
         HttpRequest req,
         string collectionId)
     {

@@ -46,7 +46,7 @@ public class GetUnattachedItemsV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "get", Route = "collections/{collectionId}/unattached-items")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "collections/{collectionId}/unattached-items")]
         HttpRequest req,
         string collectionId)
     {

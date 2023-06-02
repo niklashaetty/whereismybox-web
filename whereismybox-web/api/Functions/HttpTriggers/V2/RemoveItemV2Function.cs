@@ -41,7 +41,7 @@ public class RemoveItemV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Function, "delete", Route = "collections/{collectionId}/boxes/{boxId}/items/{itemId}")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "collections/{collectionId}/boxes/{boxId}/items/{itemId}")]
         HttpRequest req,
         string collectionId,
         Guid boxId,
