@@ -1,8 +1,10 @@
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Azure.Core;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
@@ -46,6 +48,11 @@ public class AssignUserRolesFunction
     {
         _logger.LogInformation("Entering AssignUserRolesFunction");
         _logger.LogWarning("Entering AssignUserRolesFunction");
+        using (var content = new StreamContent(req.Body))
+        {
+            var contentString = await content.ReadAsStringAsync();
+            _logger.LogWarning("Body: " + contentString);
+        }
         try
         {
             var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(new ExternalUserId("heello")));
