@@ -18,6 +18,12 @@ public interface IUserRepository
     /// </summary>
     /// <throws>UserNotFoundException</throws>
     public Task<User> Get(CollectionId collectionId);
+    
+    /// <summary>
+    /// Gets a user by its external userId
+    /// </summary>
+    /// <throws>UserNotFoundException</throws>
+    public Task<User> Get(ExternalUserId externalUserId);
 
     /// <summary>
     /// Persist a user update

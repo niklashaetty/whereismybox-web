@@ -53,6 +53,28 @@ public class UserRepository : IUserRepository
 
         return res;
     }
+    
+    public async Task<User> Get(ExternalUserId externalUserId)
+    {
+        var queryAble = _container
+            .GetItemLinqQueryable<CosmosAwareUser>()
+            .Where(u => u.ExternalUserId == externalUserId);
+
+        var iterator = queryAble.ToFeedIterator();
+        var results = new List<CosmosAwareUser>();
+        while (iterator.HasMoreResults)
+        {
+            results.AddRange(await iterator.ReadNextAsync());
+        }
+
+        var res = results.FirstOrDefault();
+        if (res is null)
+        {
+            throw new UserNotFoundException(externalUserId);
+        }
+
+        return res;
+    }
 
     public async Task<User> PersistUpdate(User updatedUser)
     {

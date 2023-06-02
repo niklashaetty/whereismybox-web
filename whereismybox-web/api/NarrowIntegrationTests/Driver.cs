@@ -27,14 +27,7 @@ public class Driver
         
         return await sut.RunAsync(httpRequest);
     }
-    
-    public async Task<IActionResult> InvokeCreateUserFunction(CreateUserRequest request)
-    {
-        var sut = new CreateUserV2Function(_fixture.CreateUserCommandHandler);
-        var httpRequest = CreateHttpRequest(request);
 
-        return await sut.RunAsync(httpRequest);
-    }
     
     public async Task<IActionResult> InvokeCreateBoxFunction(CreateBoxRequest request, string collectionId)
     {

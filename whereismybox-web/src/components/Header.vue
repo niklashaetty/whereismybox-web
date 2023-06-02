@@ -34,7 +34,7 @@ function getAvatarLetter(username: string){
   </div>
   <div class="filler"></div>
   <div class="username"  @click="$router.push({ path: `/collections/${collectionId}`})">
-    <Avatar :label="getAvatarLetter(userStore.username)"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
+    <Avatar v-if="userStore.username" :label="getAvatarLetter(userStore.username)"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
     <p style="margin-left: 10px">{{ userStore.username }} </p>
   </div>
 </div>

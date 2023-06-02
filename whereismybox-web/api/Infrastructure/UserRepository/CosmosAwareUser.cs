@@ -11,7 +11,8 @@ public class CosmosAwareUser : User
 
     [JsonProperty(PropertyName = "id")] public string Id { get; set; }
 
-    public CosmosAwareUser(UserId userId, string userName, CollectionId primaryCollectionId) : base(userId, userName,
+    public CosmosAwareUser(UserId userId, ExternalUserId externalUserId, string externalIdentityProvider, string userName,
+        CollectionId primaryCollectionId) : base(userId, externalUserId, externalIdentityProvider, userName,
         primaryCollectionId)
     {
         Id = userId.ToString();
@@ -19,7 +20,8 @@ public class CosmosAwareUser : User
 
     public static CosmosAwareUser ToCosmosAware(User user)
     {
-        return new CosmosAwareUser(user.UserId, user.UserName, user.PrimaryCollectionId);
+        return new CosmosAwareUser(user.UserId, user.ExternalUserId, user.ExternalIdentityProvider, user.Username,
+            user.PrimaryCollectionId);
     }
 
     public PartitionKey GetPartitionKey()

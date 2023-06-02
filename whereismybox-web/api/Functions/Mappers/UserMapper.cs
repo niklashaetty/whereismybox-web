@@ -10,6 +10,6 @@ public static class UserMapper
     public static UserDto ToApiModel(this User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        return new UserDto(user.UserId.Value, user.UserName, user.PrimaryCollectionId.Value);
+        return new UserDto(user.UserId.Value, user.Username, user.PrimaryCollectionId.Value);
     }
 }

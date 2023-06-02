@@ -8,6 +8,10 @@ public class UserNotFoundException : Exception
     {
     }
     
+    public UserNotFoundException(ExternalUserId externalUserId) : base($"User with externalId {externalUserId} not found")
+    {
+    }
+    
     public UserNotFoundException(CollectionId collectionId) : base($"User with collectionId {collectionId} not found")
     {
     }

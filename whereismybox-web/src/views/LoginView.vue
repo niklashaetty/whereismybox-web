@@ -1,24 +1,46 @@
 <script setup lang="ts">
 import router from '@/router';
+import axios from 'axios';
+import { ref } from 'vue';
 import UserService from '@/services/userservice';
-import Header from '@/components/Header.vue';
-import { onMounted, ref } from 'vue';
+import Header from '@/components/Header.vue'
+import Button from 'primevue/button'
 
 const username = ref("");
 const newUser = ref("");
 let userId = ref("")
 
-function getCurrentUser(){
-  router.push({path: `.auth/login/github`});
+function createUser(){
+  UserService.createUser(username.value)
+  .then(response => router.push({path: `collections/${response.data.primaryCollectionId}`}))
 }
 
-onMounted(async () => {
-  getCurrentUser();
-});
+function gitHubLogin(){
+  router.push({path: `.auth/login/github`});
+}
 
 </script>
 <template>
   <Header />
+  <div class="logincontainer" >
+    <div class="loginsection" @click="gitHubLogin()">
+      <div class="logo"> 
+        <img src="../assets/github-logo.svg" width="50px" height="50px"> 
+      </div>
+      <div class="text" >
+        <p class="logintext" > Login with Github</p>
+        
+      </div>
+    </div>
+    <div class="loginsection">
+      <div class="logo"> 
+        <img src="../assets/github-logo.svg" width="50px" height="50px"> 
+      </div>
+      <div class="text">
+        <p class="logintext"> Login with Github</p>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>

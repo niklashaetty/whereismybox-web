@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import router from '@/router';
-import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
