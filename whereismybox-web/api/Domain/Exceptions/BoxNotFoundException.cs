@@ -1,8 +1,11 @@
+using Domain.Primitives;
+
 namespace Domain.Exceptions;
 
 public class BoxNotFoundException : Exception
 {
-    public BoxNotFoundException(Guid userId, Guid boxId) : base($"No box with id {boxId} was found on user {userId}")
+    public BoxNotFoundException(CollectionId collectionId, BoxId boxId) : base(
+        $"No box with id {boxId} was found in collection {collectionId}")
     {
     }
 }

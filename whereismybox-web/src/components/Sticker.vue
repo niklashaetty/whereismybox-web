@@ -10,7 +10,7 @@ import Avatar from 'primevue/avatar';
 import { useConfirm } from "primevue/useconfirm";
 import QrcodeVue from 'qrcode.vue'
 
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 
 const props = defineProps({
   boxNumber:  {

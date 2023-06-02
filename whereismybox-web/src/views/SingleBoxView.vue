@@ -18,11 +18,11 @@ import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
-
+import BoxService from '@/services/boxservice';
 
 let box = ref<Box>(Object())
 const boxName = ref("");
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 const boxId = router.currentRoute.value.params.boxId as string;
 const loadingBox = ref(true);
 
@@ -33,10 +33,7 @@ async function getBox(showLoading: boolean) {
   if(showLoading){
     loadingBox.value = true;
   }
-
-  let boxesPath = `/api/users/${userId}/boxes/${boxId}`
-   axios
-    .get(boxesPath)
+  BoxService.getBox(collectionId, boxId)
     .then((response) => {
       box.value = response.data
       filteredItems.value = response.data.items;
@@ -48,6 +45,7 @@ async function getBox(showLoading: boolean) {
 
 
 onMounted(async () => {
+  console.log("M08jted!")
   getBox(true);
 });
 

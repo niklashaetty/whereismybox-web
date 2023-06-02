@@ -2,17 +2,15 @@
 import router from '@/router';
 import axios from 'axios';
 import { ref } from 'vue';
+import UserService from '@/services/userservice';
 
 const username = ref("");
 const newUser = ref("");
 let userId = ref("")
 
 function createUser(){
-  const createUserRequest = { username: username.value };
-  
-  axios.post('/api/users', createUserRequest)
-      .then(response => router.push({path: `users/${response.data.userId}`}))
-
+  UserService.createUser(username.value)
+  .then(response => router.push({path: `collections/${response.data.primaryCollectionId}`}))
 }
 
 </script>

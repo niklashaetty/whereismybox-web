@@ -4,32 +4,41 @@ import EventService from '@/services/eventservice';
 
 export default new class BoxService {
 
-  async addItemToBox(userId:string, boxId:string, name:string, description:string){
+  async addItemToBox(collectionId:string, boxId:string, name:string, description:string){
     const requestBody = { Name: name,  Description: description};
-    let path = `/api/users/${userId}/boxes/${boxId}/items`
+    let path = `/api/collections/${collectionId}/boxes/${boxId}/items`
     return axios
         .post(path, requestBody)
         .then(() => EventService.BoxItemsChanged(boxId));
   }
 
-  async getBox(userId:string, boxId:string){
-    let path = `/api/users/${userId}/boxes/${boxId}`
+  async getBoxCollection(collectionId:string){
+    let path = `/api/collections/${collectionId}`
     return axios.get(path);
   }
 
+  async getUnattachedItems(collectionId:string){
+    let path = `/api/collections/${collectionId}/unattached-items`
+    return axios.get(path);
+  }
+
+  async getBox(collectionId:string, boxId:string){
+    let path = `/api/collections/${collectionId}/boxes/${boxId}`
+    return axios.get(path);
+  }
+
+  // TODO: NOT WORKING
   async putItem(userId:string, boxId:string, item:Item){
-    console.log("PutItem " + item.itemId)
     const requestBody = { ItemId: item.itemId,  Name: item.name, Description: item.description };
     let path = `/api/users/${userId}/boxes/${boxId}/items/${item.itemId}`
     axios.put(path, requestBody)
     .then(() => EventService.BoxItemsChanged(boxId))
   }
 
-  async deleteItem(userId:string, boxId:string, itemId: string, hardDelete: boolean){
-    let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}?hardDelete=${hardDelete}`
-    axios.delete(path)
+  async deleteItem(collectionId:string, boxId:string, itemId: string, hardDelete: boolean){
+    let path = `/api/collections/${collectionId}/boxes/${boxId}/items/${itemId}?hardDelete=${hardDelete}`
+    return axios.delete(path)
     .then(() => {
-      console.log("Just deletedItem. Hard? " + hardDelete);
       EventService.BoxItemsChanged(boxId);
       if(hardDelete == false){
         EventService.UnattachedItemsChanged();
@@ -37,31 +46,30 @@ export default new class BoxService {
     })
   }
 
-  async deleteUnattachedItem(userId:string, itemId: string){
-    let path = `/api/users/${userId}/items/${itemId}`
-    axios.delete(path)
+  async deleteUnattachedItem(collectionId:string, itemId: string){
+    let path = `/api/collections/${collectionId}/unattached-items/${itemId}`
+    return axios.delete(path)
     .then(() => EventService.UnattachedItemsChanged());
   }
 
-  async addBackUnattachedItem(userId:string, boxId:string, itemId: string){
-    let path = `/api/users/${userId}/boxes/${boxId}/items/${itemId}`
-    axios.post(path)
-    .then(() =>{
-      EventService.BoxItemsChanged(boxId)
-    })
+  async addBackUnattachedItem(collectionId:string, boxId:string, itemId: string){
+    let path = `/api/collections/${collectionId}/unattached-items/${itemId}`
+    const requestBody = { BoxId: boxId };
+    return axios.post(path, requestBody)
+    .then(() => EventService.BoxItemsChanged(boxId))
     .then(() => EventService.UnattachedItemsChanged());
   }
 
-  async deleteBox(userId:string, boxId:string){
-    let path = `/api/users/${userId}/boxes/${boxId}`
-    axios.delete(path)
+  async deleteBox(collectionId:string, boxId:string){
+    let path = `/api/collections/${collectionId}/boxes/${boxId}`
+    return axios.delete(path)
     .then(() => EventService.BoxDeleted(boxId));
   }
 
-  async createBox(userId:string, boxNumber: number, boxName: string){
+  async createBox(collectionId:string, boxNumber: number, boxName: string){
     const postBoxRequest = { Number: boxNumber, Name: boxName };
-    let boxesPath = `/api/users/${userId}/boxes`
-    await axios.post(boxesPath, postBoxRequest)
+    let boxesPath = `/api/collections/${collectionId}/boxes`
+    return axios.post(boxesPath, postBoxRequest)
     .then((response) => EventService.BoxAdded(response.data.boxId))
     .then(() => console.log("Box added boxservice!"))
   }

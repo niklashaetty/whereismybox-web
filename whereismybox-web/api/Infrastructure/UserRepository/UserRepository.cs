@@ -1,5 +1,8 @@
+using Domain.Exceptions;
+using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using InvalidOperationException = System.InvalidOperationException;
 using User = Domain.Models.User;
 
@@ -22,11 +25,33 @@ public class UserRepository : IUserRepository
         return response.Resource;
     }
 
-    public async Task<User> Get(Guid userId)
+    public async Task<User> Get(UserId userId)
     {
         var cosmosAware =
             await _container.ReadItemAsync<CosmosAwareUser>(userId.ToString(), new PartitionKey(userId.ToString()));
         return cosmosAware.Resource;
+    }
+
+    public async Task<User> Get(CollectionId collectionId)
+    {
+        var queryAble = _container
+            .GetItemLinqQueryable<CosmosAwareUser>()
+            .Where(u => u.PrimaryCollectionId == collectionId);
+
+        var iterator = queryAble.ToFeedIterator();
+        var results = new List<CosmosAwareUser>();
+        while (iterator.HasMoreResults)
+        {
+            results.AddRange(await iterator.ReadNextAsync());
+        }
+
+        var res = results.FirstOrDefault();
+        if (res is null)
+        {
+            throw new UserNotFoundException(collectionId);
+        }
+
+        return res;
     }
 
     public async Task<User> PersistUpdate(User updatedUser)
@@ -35,7 +60,7 @@ public class UserRepository : IUserRepository
         {
             throw new InvalidOperationException("Not a cosmos aware item");
         }
-
+        
         var cosmosResponse =
             await _container.ReplaceItemAsync(cosmosAwareUser, cosmosAwareUser.Id,
                 cosmosAwareUser.GetPartitionKey(), new ItemRequestOptions()

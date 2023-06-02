@@ -22,7 +22,7 @@ const props = defineProps({
 );
 
 const confirm = useConfirm();
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 const item = computed(() => props.item);
 const boxId = computed(() => props.boxId);
 
@@ -32,35 +32,35 @@ const menuItems = ref([
         label: 'Options',
         items: [{label: 'Remove item from box', icon: 'pi pi-times-circle',
         command: () => {
-              removeSelectedItemFromBox(userId, boxId.value, item.value.itemId);
+              removeSelectedItemFromBox(collectionId, boxId.value, item.value.itemId);
             }
         },
         {label: 'Delete item', icon: 'pi pi-trash',
             command: () => {
-              confirmHardDeleteItem(userId, boxId.value, item.value.itemId)
+              confirmHardDeleteItem(collectionId, boxId.value, item.value.itemId)
             }
         }
     ]}
 ]);
 
-function confirmHardDeleteItem(userId: string, boxId: string, itemId: string) {
+function confirmHardDeleteItem(collectionId: string, boxId: string, itemId: string) {
 
   confirm.require({
         message: `Are you sure you want to delete ${item.value.name}? This action cannot be undone`,
         header: `Deleting ${item.value.name}`,
         icon: 'pi pi-info-circle',
         acceptClass: 'p-button-danger',
-        accept: () => deleteItem(userId, boxId, itemId, true),
+        accept: () => deleteItem(collectionId, boxId, itemId, true),
         reject: () => {}
     });
 }
 
-function removeSelectedItemFromBox(userId: string, boxId: string, itemId: string) {
-  deleteItem(userId, boxId, itemId, false)
+function removeSelectedItemFromBox(collectionId: string, boxId: string, itemId: string) {
+  deleteItem(collectionId, boxId, itemId, false)
 }
 
-function deleteItem(userId: string, boxId: string, itemId: string, hardDelete: boolean) {
-  BoxService.deleteItem(userId, boxId, itemId, hardDelete);
+function deleteItem(collectionId: string, boxId: string, itemId: string, hardDelete: boolean) {
+  BoxService.deleteItem(collectionId, boxId, itemId, hardDelete);
 }
 
 function toggleItemMenu(event: MouseEvent)  { 

@@ -1,4 +1,4 @@
-namespace Domain.Services.BoxCreationService;
+namespace Domain.Exceptions;
 
 public class NonUniqueBoxException : Exception
 {

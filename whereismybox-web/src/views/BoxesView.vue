@@ -19,7 +19,6 @@ import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
 
-
 let boxes = ref<Box[]>([]);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
@@ -29,19 +28,17 @@ const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
 const searchQuery = ref("");
-const currentUserId = ref("");
+const currentCollectionId = ref("");
 
 async function getBoxes(showLoading: boolean) {
   if(showLoading){
     loadingBoxes.value = true;
   }
 
-  let boxesPath = `/api/users/${currentUserId.value}/boxes`
-   axios
-    .get(boxesPath)
+  BoxService.getBoxCollection(currentCollectionId.value)
     .then((response) => {
-      boxes.value = response.data
-      filteredBoxes.value = response.data;
+      boxes.value = response.data.boxes
+      filteredBoxes.value = response.data.boxes;
     })
     .then(() => {
       loadingBoxes.value = false});
@@ -51,20 +48,18 @@ async function getUnattachedItems(showLoading: boolean) {
   if(showLoading){
     loadingUnattachedItems.value = true;
   }
-  let path = `/api/users/${currentUserId.value}/items`;
-   axios
-    .get(path)
-    .then((response) => unattachedItems.value = response.data)
+    BoxService.getUnattachedItems(currentCollectionId.value)
+    .then((response) => unattachedItems.value = response.data.unattachedItems)
     .then(() => loadingUnattachedItems.value = false);
 }
 
 async function createNewBox() {
-  BoxService.createBox(currentUserId.value, boxNumber.value, boxName.value)
+  BoxService.createBox(currentCollectionId.value, boxNumber.value, boxName.value)
     .then(closeDisplayCreateBoxDialog)
 }
 
 onMounted(async () => {
-  currentUserId.value = router.currentRoute.value.params.userId as string;
+  currentCollectionId.value = router.currentRoute.value.params.collectionId as string;
   getBoxes(true);
   getUnattachedItems(true);
 });
@@ -82,15 +77,14 @@ EventBus.on(BoxEvents.ITEM_CHANGED,  () => {
       getBoxes(false);
 });
 
-
 EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => { 
     getUnattachedItems(false);
     getBoxes(false);
 });
 
-
 function closeDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = false;
+  console.log(displayCreateBoxDialog);
 }
 
 function openDisplayCreateBoxDialog() {
@@ -122,7 +116,6 @@ function clearFilter() {
   searchQuery.value = "";
 }
 
-
 function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 }
@@ -148,7 +141,7 @@ function trimString(maxLength: number, text: string) {
     <div class="myboxestitle"> 
       <SectionTitle title="My boxes" />
       <Button size="small" style=
-      "margin-left: auto; margin-right: 5px; font-size: 10px; background-color: white;; color: #181F1C;"  
+      "margin-left: auto; margin-right: 5px; font-size: 10px; background-color: white; color: #181F1C;"  
       icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openDisplayCreateBoxDialog"/>
 
       <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">

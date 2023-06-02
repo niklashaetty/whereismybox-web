@@ -7,4 +7,10 @@ public class CreateUserRequest
     [OpenApiProperty(Description = "The name of the user", 
         Default = "John Doe")]
     public string UserName { get; set; }
+
+    public CreateUserRequest(string userName)
+    {
+        ArgumentNullException.ThrowIfNull(userName);
+        UserName = userName;
+    }
 }

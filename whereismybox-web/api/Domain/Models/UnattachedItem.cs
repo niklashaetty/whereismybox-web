@@ -1,28 +1,33 @@
+using Domain.Primitives;
 using Newtonsoft.Json;
 
 namespace Domain.Models;
 
 public class UnattachedItem : Item
 {
-    [JsonProperty] public Guid? PreviousBoxId { get; private set; }
+    [JsonProperty] public CollectionId CollectionId { get; private set; }
+    [JsonProperty] public BoxId? PreviousBoxId { get; private set; }
     [JsonProperty] public int? PreviousBoxNumber { get; private set; }
-    
-        
+
+
     [JsonConstructor]
     protected UnattachedItem()
     {
     }
 
-    public UnattachedItem(Guid itemId, string name, string description, Guid previousBoxId, int previousBoxNumber) : 
-        base(itemId, name, description)
+    public static UnattachedItem ToUnattached(Item item, CollectionId collectionId, BoxId? previousBoxId)
     {
-        PreviousBoxId = previousBoxId;
-        PreviousBoxNumber = previousBoxNumber;
+        return new UnattachedItem(collectionId, item.ItemId, item.Name, item.Description, previousBoxId);
     }
     
-    public UnattachedItem(Item item, Guid? previousBoxId) : 
-        base(item.ItemId, item.Name, item.Description)
+    public UnattachedItem(CollectionId collectionId, ItemId itemId, string name, string description, BoxId? previousBoxId) :
+        base(itemId, name, description)
     {
+        ArgumentNullException.ThrowIfNull(collectionId);
+        ArgumentNullException.ThrowIfNull(itemId);
+        ArgumentNullException.ThrowIfNull(name);
+        ArgumentNullException.ThrowIfNull(description);
+        CollectionId = collectionId;
         PreviousBoxId = previousBoxId;
     }
 
@@ -30,7 +35,7 @@ public class UnattachedItem : Item
     {
         PreviousBoxNumber = previousBoxNumber;
     }
-    
+
     public void RemovePreviousBox()
     {
         PreviousBoxNumber = null;

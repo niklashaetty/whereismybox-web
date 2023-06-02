@@ -1,19 +1,19 @@
+using Domain.Primitives;
 using Newtonsoft.Json;
 
 namespace Domain.Models;
 
 public class Box
 {
-    [JsonProperty] public Guid BoxId { get; private set; }
-    [JsonProperty] public Guid UserId { get; private set; }
+    [JsonProperty] public CollectionId CollectionId { get; private set; }
+    [JsonProperty] public BoxId BoxId { get; private set; }
     [JsonProperty] public int Number { get; private set; }
     [JsonProperty] public string Name { get; private set; }
     [JsonProperty] public List<Item> Items { get; private set; }
 
-    public static Box Create(Guid userId, int boxNumber, string boxName)
+    public static Box Create(CollectionId collectionId, BoxId boxId, int boxNumber, string boxName)
     {
-        var boxId = Guid.NewGuid();
-        return new Box(boxId, userId, boxNumber, boxName, new List<Item>());
+        return new Box(collectionId, boxId, boxNumber, boxName, new List<Item>());
     }
     
     [JsonConstructor]
@@ -21,12 +21,14 @@ public class Box
     {
     }
     
-    public Box(Guid boxId, Guid userId, int number, string name, List<Item> items)
+    public Box(CollectionId collectionId, BoxId boxId, int number, string name, List<Item> items)
     {
+        ArgumentNullException.ThrowIfNull(collectionId);
+        ArgumentNullException.ThrowIfNull(boxId);
         ArgumentNullException.ThrowIfNull(name);
         ArgumentNullException.ThrowIfNull(items);
+        CollectionId = collectionId;
         BoxId = boxId;
-        UserId = userId;
         Number = number;
         Name = name;
         Items = items;
@@ -48,7 +50,7 @@ public class Box
         return true;
     }
     
-    public bool TryGetItem(Guid itemId, out Item item)
+    public bool TryGetItem(ItemId itemId, out Item item)
     {
         var existingItem =  Items.FirstOrDefault(i => i.ItemId == itemId);
         if (existingItem is null)
@@ -61,7 +63,7 @@ public class Box
         return true;
     }
 
-    public bool RemoveItem(Guid itemId)
+    public bool RemoveItem(ItemId itemId)
     {
         var itemsRemoved = Items.RemoveAll(i => i.ItemId == itemId);
         return itemsRemoved > 0;

@@ -1,15 +1,16 @@
 using Domain.Models;
+using Domain.Primitives;
 
 namespace Domain.Repositories;
 
 public interface IUnattachedItemRepository
 {
-    public Task<UnattachedItemCollection> Create(UnattachedItemCollection unattachedItemCollection);
+    public Task<UnattachedItem> Create(UnattachedItem unattachedItem);
     
     /// <summary>
     /// Gets items that are not associated to a box
     /// </summary>
-    public Task<UnattachedItemCollection> Get(Guid userId);
+    public Task<List<UnattachedItem>> GetCollection(CollectionId collectionId);
     
-    public Task<UnattachedItemCollection> PersistUpdate(UnattachedItemCollection unattachedItemCollection);
+    public Task Delete(CollectionId collectionId, ItemId itemId);
 }

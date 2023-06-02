@@ -26,7 +26,7 @@ const props = defineProps({
 
 const toast = useToast();
 const confirm = useConfirm();
-const userId = router.currentRoute.value.params.userId as string;
+const collectionId = router.currentRoute.value.params.collectionId as string;
 const unattachedItem = computed(() => props.unattachedItem);
 const isLoading = computed(() => props.isLoading);
 const menu: any = ref(null);
@@ -47,12 +47,12 @@ const menuItems = ref([
 
 
 function addBackUnattachedItem(itemId:string) {
-  BoxService.addBackUnattachedItem(userId, unattachedItem.value.previousBoxId, itemId)
+  BoxService.addBackUnattachedItem(collectionId, unattachedItem.value.previousBoxId, itemId)
     .then(() => showSuccess(`Item ${trimString(30, unattachedItem.value.name)} added back to box ${unattachedItem.value.previousBoxNumber}`, 3000))
 }
 
 function deleteUnattachedItem(itemId:string) {
-  BoxService.deleteUnattachedItem(userId, itemId)
+  BoxService.deleteUnattachedItem(collectionId, itemId)
     .then(() => showSuccess(`Item ${unattachedItem.value.name} was deleted`, 3000))
 }
 
