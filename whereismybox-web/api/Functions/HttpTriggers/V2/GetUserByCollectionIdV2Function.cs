@@ -45,7 +45,11 @@ public class GetUserByCollectionIdV2Function
         ILogger log)
     {
         var bearer = req.Headers["Authorization"];
+        var msclaimsPrincipal = req.Headers["X-MS-CLIENT-PRINCIPAL"];
+        var msclaimsPrincipal2 = req.Headers["x-ms-client-principal"];
         log.LogInformation("[AuthHeader] : {AuthHeader}", bearer);
+        log.LogInformation("[XMSCLIENTPRINCIPAL1] : {AuthHeader}", msclaimsPrincipal);
+        log.LogInformation("[XMSCLIENTPRINCIPAL2] : {AuthHeader}", msclaimsPrincipal2);
         
         if (CollectionId.TryParse(req.Query["primaryCollectionId"], out var primaryCollectionId) is false)
         {
