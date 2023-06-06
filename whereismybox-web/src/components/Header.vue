@@ -26,17 +26,21 @@ function getAvatarLetter(username: string){
   return Array.from(username)[0].toUpperCase();
 }
 
+function pushToIndex(){
+  router.push({ path: `/`});
+}
+
 </script>
 
 <template>
 <div class="headercontainer">
-  <div class="logo">
+  <div class="logo" @click="pushToIndex()">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
     <h2 style="margin-left: 5px; "> Boxie</h2>
   </div>
   <div class="filler"></div>
-  <div class="username"  @click="$router.push({ path: `/`})">
+  <div class="username"  @click="pushToIndex()">
     <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
     <p style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
   </div>
@@ -63,6 +67,7 @@ function getAvatarLetter(username: string){
   justify-content: center;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
 }
 
 .boxlogo {
