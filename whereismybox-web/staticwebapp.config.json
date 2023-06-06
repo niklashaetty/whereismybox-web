@@ -1,11 +1,17 @@
 {
   "auth": {
-	  "rolesSource": "/api/Functions/HttpTriggers/V2",	
+	  "rolesSource": "/api/Functions",	
     "identityProviders": {
       "github": {
         "registration": {
           "clientIdSettingName": "GITHUB_CLIENT_ID",
           "clientSecretSettingName": "GITHUB_CLIENT_SECRET"
+        }
+      },
+      "twitter": {
+        "registration": {
+          "consumerKeySettingName": "TWITTER_CONSUMER_KEY",
+          "consumerSecretSettingName": "TWITTER_CONSUMER_SECRET"
         }
       }
     }
