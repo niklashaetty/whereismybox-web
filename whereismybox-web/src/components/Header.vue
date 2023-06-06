@@ -17,10 +17,8 @@ onMounted(async () => {
 
 async function getCurrentUserInformation() {
   if(!loggedInUserStore.username){
-    console.log("Have to get current user!")
     await UserService.getLoggedInUser();
   }
-  console.log("Ok now user should have been gotten: " + loggedInUserStore.username)
   avatarLetter.value = getAvatarLetter(loggedInUserStore.username);
 }
 
@@ -35,10 +33,10 @@ function getAvatarLetter(username: string){
   <div class="logo">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo" ></i>
-    <h2 style="margin-left: 5px; "> Boxio</h2>
+    <h2 style="margin-left: 5px; "> Boxie</h2>
   </div>
   <div class="filler"></div>
-  <div class="username"  @click="$router.push({ path: `/collections/${collectionId}`})">
+  <div class="username"  @click="$router.push({ path: `/`})">
     <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
     <p style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
   </div>
@@ -57,9 +55,8 @@ function getAvatarLetter(username: string){
     ". . ."; 
   width: 100%;
   height:60px;
-
-
 }
+
 .logo { 
   display: flex;
   grid-area: logo; 
