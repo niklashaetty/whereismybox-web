@@ -1,25 +1,12 @@
 <script setup lang="ts">
 import router from '@/router';
-import axios from 'axios';
-import { ref } from 'vue';
-import UserService from '@/services/userservice';
 import Header from '@/components/Header.vue'
-import Button from 'primevue/button'
-
-const username = ref("");
-const newUser = ref("");
-let userId = ref("")
-
-
-function gitHubLogin(){
-  router.push({path: `.auth/login/github`});
-}
 
 </script>
 <template>
   <Header />
-  <div class="logincontainer" @click="gitHubLogin()" >
-    <div class="dummy">
+  <div class="logincontainer"  >
+    <a href="/.auth/login/github?post_login_redirect_uri=/">
     <div class="loginsection">
       <div class="logo"> 
         <img src="../assets/github-logo.svg" width="50px" height="50px"> 
@@ -28,7 +15,7 @@ function gitHubLogin(){
         <p class="logintext" > Login with Github</p>
       </div>
     </div>
-  </div>
+  </a>
   </div>
 </template>
 
