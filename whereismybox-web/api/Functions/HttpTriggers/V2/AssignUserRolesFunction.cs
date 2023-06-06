@@ -27,11 +27,9 @@ public class AssignUserRolesFunction
     private const string OperationId = "GetRoles";
     private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
-    private readonly ILogger _logger;
 
-    public AssignUserRolesFunction(ILoggerFactory loggerFactory, IQueryHandler<GetUserByExternalUserIdQuery, User> queryHandler)
+    public AssignUserRolesFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> queryHandler)
     {
-        _logger = loggerFactory.CreateLogger<AssignUserRolesFunction>();
         ArgumentNullException.ThrowIfNull(queryHandler);
         _queryHandler = queryHandler;
     }
@@ -45,10 +43,11 @@ public class AssignUserRolesFunction
     [FunctionName("GetRoles")]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", "post", Route = "GetRoles")] 
-        HttpRequest req)
+        HttpRequest req,
+        ILogger log)
     {
-        _logger.LogInformation("Entering AssignUserRolesFunction");
-        _logger.LogWarning("Entering AssignUserRolesFunction");
+        log.LogInformation("Entering AssignUserRolesFunction");
+        log.LogWarning("Entering AssignUserRolesFunction");
         return new OkObjectResult(new RolesResponse()
         {
             Roles = new List<string>(){"MyCoolRole", "secondRole"}
@@ -56,7 +55,6 @@ public class AssignUserRolesFunction
         using (var content = new StreamContent(req.Body))
         {
             var contentString = await content.ReadAsStringAsync();
-            _logger.LogWarning("Body: " + contentString);
         }
         try
         {

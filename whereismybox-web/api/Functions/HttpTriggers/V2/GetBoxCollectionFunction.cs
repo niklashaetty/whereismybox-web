@@ -27,14 +27,11 @@ public class GetBoxCollectionFunction
     private const string OperationId = "GetBoxCollection";
     private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetBoxCollectionQuery, List<Box>> _queryHandler;
-    private readonly ILogger _logger;
 
-    public GetBoxCollectionFunction(ILoggerFactory loggerFactory,
+    public GetBoxCollectionFunction(
         IQueryHandler<GetBoxCollectionQuery, List<Box>> queryHandler)
     {
-        ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(queryHandler);
-        _logger = loggerFactory.CreateLogger<GetBoxCollectionFunction>();
         _queryHandler = queryHandler;
     }
 
