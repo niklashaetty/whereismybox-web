@@ -18,23 +18,24 @@ function gitHubLogin(){
 </script>
 <template>
   <Header />
-  <div class="logincontainer" >
-    <div class="loginsection" @click="gitHubLogin()">
+  <div class="logincontainer" @click="gitHubLogin()" >
+    <div class="dummy">
+    <div class="loginsection">
       <div class="logo"> 
         <img src="../assets/github-logo.svg" width="50px" height="50px"> 
       </div>
       <div class="text" >
         <p class="logintext" > Login with Github</p>
-        
       </div>
     </div>
+  </div>
   </div>
 </template>
 
 <style scoped>
 .logincontainer {
   margin-top: 10px;
-  width: 400px;
+  width: 300px;
   height: 500px;
   padding: 10px;
   border-radius: 3px;
@@ -50,10 +51,11 @@ function gitHubLogin(){
   margin-bottom: 5px;
   height: 80px;
   border-radius: 3px;
-  background-color: aqua;
   display: flex;
   text-align: center;
   align-items: center;
+  cursor: pointer;
+  background-color: #f7faf8;
 
   box-shadow:
   0 0.7px 0.5px rgba(0, 0, 0, 0.034),
