@@ -1,6 +1,6 @@
 {
   "auth": {
-	  "rolesSource": "/api/Functions",	
+	  "rolesSource": "/api/GetRoles",	
     "identityProviders": {
       "github": {
         "registration": {
