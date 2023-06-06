@@ -25,7 +25,7 @@ async function getCurrentUserInformation() {
 }
 
 function getAvatarLetter(username: string){
-  return Array.from(username)[0];
+  return Array.from(username)[0].toUpperCase();
 }
 
 </script>
