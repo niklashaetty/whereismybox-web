@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
@@ -57,11 +58,20 @@ public class MoveUnattachedItemToBoxV2Function
 
         try
         {
-            var command = new MoveUnattachedItemToBoxCommand(domainCollectionId,
+            var externalUser = req.ParseExternalUser();
+            var command = new MoveUnattachedItemToBoxCommand(externalUser.ExternalUserId, domainCollectionId,
                 new BoxId(moveUnattachedItemToBoxRequest.BoxId), new ItemId(itemId));
             await _commandHandler.Execute(command);
 
             return new NoContentResult();
+        }
+        catch (UnparsableExternalUserException e)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
         }
         catch (BoxNotFoundException e)
         {

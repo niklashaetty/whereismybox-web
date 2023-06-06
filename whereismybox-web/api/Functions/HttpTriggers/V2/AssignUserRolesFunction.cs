@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
-using Azure.Core;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
@@ -18,7 +17,6 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 

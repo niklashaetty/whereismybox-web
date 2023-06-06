@@ -4,8 +4,10 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
+using Domain.Exceptions;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -42,19 +44,38 @@ public class CreateBoxV2Function
         HttpRequest req,
         string collectionId)
     {
-        var body = await new StreamReader(req.Body).ReadToEndAsync();
-        var createBoxRequest = JsonConvert.DeserializeObject<CreateBoxRequest>(body);
-        if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+        try
         {
-            return new BadRequestObjectResult(
-                new ErrorResponse("Validation error", "Invalid collectionId"));
+            var externalUser = req.ParseExternalUser();
+            var body = await new StreamReader(req.Body).ReadToEndAsync();
+            var createBoxRequest = JsonConvert.DeserializeObject<CreateBoxRequest>(body);
+            if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+            {
+                return new BadRequestObjectResult(
+                    new ErrorResponse("Validation error", "Invalid collectionId"));
+            }
+
+            var boxId = new BoxId();
+            var command = new CreateBoxCommand(externalUser.ExternalUserId, domainCollectionId, boxId,
+                createBoxRequest.Number, createBoxRequest.Name);
+
+            await _commandHandler.Execute(command);
+            return new CreatedResult($"/api/collections/{command.CollectionId}/boxes/{command.BoxId}",
+                new CreateBoxResponse(command.CollectionId.Value, command.BoxId.Value));
+        }
+        catch (NonUniqueBoxException)
+        {
+            return new ConflictObjectResult(new ErrorResponse("Conflict",
+                "A box with this number already exist in this collection"));
+        }
+        catch (UnparsableExternalUserException)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
         }
 
-        var boxId = new BoxId();
-        var command = new CreateBoxCommand(domainCollectionId, boxId, createBoxRequest.Number, createBoxRequest.Name);
-
-        await _commandHandler.Execute(command);
-        return new CreatedResult($"/api/collections/{command.CollectionId}/boxes/{command.BoxId}",
-            new CreateBoxResponse(command.CollectionId.Value, command.BoxId.Value));
     }
 }

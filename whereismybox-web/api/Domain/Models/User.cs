@@ -24,6 +24,8 @@ public class User
         ArgumentNullException.ThrowIfNull(username);
         ArgumentNullException.ThrowIfNull(primaryCollectionId);
         UserId = userId;
+        ExternalUserId = externalUserId;
+        ExternalIdentityProvider = externalIdentityProvider;
         Username = username;
         PrimaryCollectionId = primaryCollectionId;
     }

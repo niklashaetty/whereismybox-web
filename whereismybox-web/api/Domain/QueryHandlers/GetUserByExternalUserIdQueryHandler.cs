@@ -1,3 +1,4 @@
+using Domain.Authorization;
 using Domain.Models;
 using Domain.Queries;
 using Domain.Repositories;

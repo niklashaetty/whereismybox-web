@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
@@ -52,12 +52,15 @@ public class AddItemV2Function
         {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
         }
+
         try
         {
+            var externalUser = req.ParseExternalUser();
             var itemId = new ItemId();
-            var command = new AddItemCommand(domainCollectionId, new BoxId(boxId), itemId, addItemRequest.Name, addItemRequest.Description);
+            var command = new AddItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId), itemId,
+                addItemRequest.Name, addItemRequest.Description);
             await _commandHandler.Execute(command);
-            
+
             return new CreatedResult($"/api/collections/{command.CollectionId}/boxes/{command.BoxId}/items/{itemId}",
                 new ItemDto(itemId.Value, addItemRequest.Name, addItemRequest.Description));
         }
@@ -68,6 +71,14 @@ public class AddItemV2Function
         catch (InvalidOperationException e)
         {
             return new ConflictObjectResult(new ErrorResponse("Conflict", "Item already exists on this box"));
+        }
+        catch (UnparsableExternalUserException)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
         }
     }
 }

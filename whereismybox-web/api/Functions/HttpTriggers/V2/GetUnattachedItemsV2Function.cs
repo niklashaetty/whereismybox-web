@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Models;
@@ -50,13 +51,25 @@ public class GetUnattachedItemsV2Function
         HttpRequest req,
         string collectionId)
     {
-        if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+        try
         {
-            return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
+            var externalUser = req.ParseExternalUser();
+            if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+            {
+                return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
+            }
 
-        var unattachedItems = await _queryHandler.Handle(new GetUnattachedItemsQuery(domainCollectionId));
-        return new OkObjectResult(new UnattachedItemCollectionDto(domainCollectionId.Value,
-            unattachedItems.Select(b => b.ToApiModel()).ToList()));
+            var unattachedItems = await _queryHandler.Handle(new GetUnattachedItemsQuery(externalUser.ExternalUserId, domainCollectionId));
+            return new OkObjectResult(new UnattachedItemCollectionDto(domainCollectionId.Value,
+                unattachedItems.Select(b => b.ToApiModel()).ToList()));
+        } 
+        catch (UnparsableExternalUserException e)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Models;
@@ -47,6 +48,9 @@ namespace Functions
 
             builder.Services.AddLogging();
             
+            // Authorization
+            builder.Services.AddSingleton<IAuthorizationService, AuthorizationService>();
+            
             // CommandHandlers
             builder.Services.AddSingleton<ICommandHandler<AddItemCommand>, AddItemCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
@@ -59,8 +63,6 @@ namespace Functions
             // QueryHandlers
             builder.Services.AddSingleton<IQueryHandler<GetBoxCollectionQuery, List<Box>>, GetBoxCollectionQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetBoxQuery, Box>, GetBoxQueryHandler>();
-            builder.Services.AddSingleton<IQueryHandler<GetUserQuery, User>, GetUserQueryHandler>();
-            builder.Services.AddSingleton<IQueryHandler<GetUserByCollectionIdQuery, User>, GetUserByCollectionIdQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUserByExternalUserIdQuery, User>, GetUserByExternalUserIdQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>, GetUnattachedItemsQueryHandler>();
             

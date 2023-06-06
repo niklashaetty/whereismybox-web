@@ -1,3 +1,4 @@
+using Domain.Authorization;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Queries;
@@ -7,19 +8,23 @@ namespace Domain.QueryHandlers;
 
 public class GetUnattachedItemsQueryHandler : IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>
 {
+    private readonly IAuthorizationService _authorization;
     private readonly IUnattachedItemRepository _unattachedItemRepository;
     private readonly IBoxRepository _boxRepository;
     
-    public GetUnattachedItemsQueryHandler(IUnattachedItemRepository unattachedItemRepository, IBoxRepository boxRepository)
+    public GetUnattachedItemsQueryHandler(IAuthorizationService authorization, IUnattachedItemRepository unattachedItemRepository, IBoxRepository boxRepository)
     {
+        ArgumentNullException.ThrowIfNull(authorization);
         ArgumentNullException.ThrowIfNull(unattachedItemRepository);
         ArgumentNullException.ThrowIfNull(boxRepository);
+        _authorization = authorization;
         _unattachedItemRepository = unattachedItemRepository;
         _boxRepository = boxRepository;
     }
 
     public async Task<List<UnattachedItem>> Handle(GetUnattachedItemsQuery query)
     {
+        await _authorization.EnsureCollectionAccessAllowed(query.ExternalUserId, query.CollectionId);
         var unattachedItems = await _unattachedItemRepository.GetCollection(query.CollectionId);
         await AttachPreviousBoxNumber(query, unattachedItems);
         return unattachedItems;

@@ -1,3 +1,5 @@
+using Domain.Primitives;
+
 namespace Domain.QueryHandlers;
 
 public interface IQueryHandler<in TQuery, TResult>
@@ -6,4 +8,7 @@ public interface IQueryHandler<in TQuery, TResult>
     Task<TResult> Handle(TQuery query);
 }
 
-public interface IQuery {}
+public interface IQuery
+{
+    public ExternalUserId ExternalUserId { get; }
+}

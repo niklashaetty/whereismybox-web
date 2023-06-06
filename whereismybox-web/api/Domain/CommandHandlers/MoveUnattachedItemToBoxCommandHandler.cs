@@ -1,3 +1,4 @@
+using Domain.Authorization;
 using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
@@ -8,16 +9,19 @@ namespace Domain.CommandHandlers;
 
 public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattachedItemToBoxCommand>
 {
+    private readonly IAuthorizationService _authorization;
     private readonly IBoxRepository _boxRepository;
     private readonly IUnattachedItemRepository _unattachedItemRepository;
     private readonly ILogger _logger;
 
-    public MoveUnattachedItemToCommandHandler(ILoggerFactory loggerFactory, IBoxRepository boxRepository,
+    public MoveUnattachedItemToCommandHandler(IAuthorizationService authorization,ILoggerFactory loggerFactory, IBoxRepository boxRepository,
         IUnattachedItemRepository unattachedItemRepository)
     {
+        ArgumentNullException.ThrowIfNull(authorization);
         ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(boxRepository);
         ArgumentNullException.ThrowIfNull(unattachedItemRepository);
+        _authorization = authorization;
         _logger = loggerFactory.CreateLogger<MoveUnattachedItemToCommandHandler>();
         _boxRepository = boxRepository;
         _unattachedItemRepository = unattachedItemRepository;
@@ -26,6 +30,8 @@ public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattached
     public async Task Execute(MoveUnattachedItemToBoxCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
+        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        
         var unattachedItems = await _unattachedItemRepository.GetCollection(command.CollectionId);
         var unattachedItem = unattachedItems.FirstOrDefault(i => i.ItemId == command.ItemId);
         if (unattachedItem is null)

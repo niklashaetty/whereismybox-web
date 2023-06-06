@@ -10,10 +10,6 @@ const username = ref("");
 const newUser = ref("");
 let userId = ref("")
 
-function createUser(){
-  UserService.createUser(username.value)
-  .then(response => router.push({path: `collections/${response.data.primaryCollectionId}`}))
-}
 
 function gitHubLogin(){
   router.push({path: `.auth/login/github`});
@@ -30,14 +26,6 @@ function gitHubLogin(){
       <div class="text" >
         <p class="logintext" > Login with Github</p>
         
-      </div>
-    </div>
-    <div class="loginsection">
-      <div class="logo"> 
-        <img src="../assets/github-logo.svg" width="50px" height="50px"> 
-      </div>
-      <div class="text">
-        <p class="logintext"> Login with Github</p>
       </div>
     </div>
   </div>

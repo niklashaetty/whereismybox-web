@@ -47,9 +47,9 @@ async function getUnattachedItems(showLoading: boolean) {
   if(showLoading){
     loadingUnattachedItems.value = true;
   }
-    BoxService.getUnattachedItems(currentCollectionId.value)
-    .then((response) => unattachedItems.value = response.data.unattachedItems)
-    .then(() => loadingUnattachedItems.value = false);
+  BoxService.getUnattachedItems(currentCollectionId.value)
+  .then((response) => unattachedItems.value = response.data.unattachedItems)
+  .then(() => loadingUnattachedItems.value = false)
 }
 
 async function createNewBox() {

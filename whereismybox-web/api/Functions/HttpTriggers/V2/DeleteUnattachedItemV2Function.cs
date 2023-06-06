@@ -3,9 +3,11 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
+using Domain.Models;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -45,14 +47,27 @@ public class DeleteUnattachedItemV2Function
         string collectionId,
         Guid itemId)
     {
-        if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+        try
         {
-            return new BadRequestObjectResult(
-                new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
+            var externalUser = req.ParseExternalUser();
+            if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+            {
+                return new BadRequestObjectResult(
+                    new ErrorResponse("Validation error", "Invalid collectionId"));
+            }
 
-        var command = new DeleteUnattachedItemCommand(domainCollectionId, new ItemId(itemId));
-        await _deleteUnattachedItemCommandHandler.Execute(command);
-        return new NoContentResult();
+            var command =
+                new DeleteUnattachedItemCommand(externalUser.ExternalUserId, domainCollectionId, new ItemId(itemId));
+            await _deleteUnattachedItemCommandHandler.Execute(command);
+            return new NoContentResult();
+        }
+        catch (UnparsableExternalUserException)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
+        }
     }
 }

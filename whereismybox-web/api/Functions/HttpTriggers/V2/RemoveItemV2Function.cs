@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
@@ -59,14 +60,23 @@ public class RemoveItemV2Function
 
         try
         {
-            var command = new DeleteItemCommand(domainCollectionId, new BoxId(boxId), new ItemId(itemId), isHardDelete);
+            var externalUser = req.ParseExternalUser();
+            var command = new DeleteItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId), new ItemId(itemId), isHardDelete);
             await _deleteItemCommandHandler.Execute(command);
+            return new NoContentResult();
         }
         catch (BoxNotFoundException e)
         {
             // Fine, item still gone 
+            return new NoContentResult();
         }
-
-        return new NoContentResult();
+        catch (UnparsableExternalUserException e)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
+        }
     }
 }

@@ -5,18 +5,23 @@ import router from '@/router';
 
 import UserService from '@/services/userservice';
 import Avatar from 'primevue/avatar';
-import { useUserStore } from '@/stores/user'
+import { useLoggedInUserStore } from '@/stores/loggedinuser'
 
 const collectionId = router.currentRoute.value.params.collectionId as string;
-const userStore = useUserStore()
+const loggedInUserStore = useLoggedInUserStore()
+const avatarLetter = ref("");
 
 onMounted(async () => {
-  getCurrentUser();
+  await getCurrentUserInformation();
 });
 
-function getCurrentUser() {
-  UserService.getUserByCollectionId(collectionId)
-  .then((response => userStore.setUser(response.data.userId, response.data.username, response.data.primaryCollectionId)))
+async function getCurrentUserInformation() {
+  if(!loggedInUserStore.username){
+    console.log("Have to get current user!")
+    await UserService.getLoggedInUser();
+  }
+  console.log("Ok now user should have been gotten: " + loggedInUserStore.username)
+  avatarLetter.value = getAvatarLetter(loggedInUserStore.username);
 }
 
 function getAvatarLetter(username: string){
@@ -34,8 +39,8 @@ function getAvatarLetter(username: string){
   </div>
   <div class="filler"></div>
   <div class="username"  @click="$router.push({ path: `/collections/${collectionId}`})">
-    <Avatar v-if="userStore.username" :label="getAvatarLetter(userStore.username)"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
-    <p style="margin-left: 10px">{{ userStore.username }} </p>
+    <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
+    <p style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
   </div>
 </div>
 </template>

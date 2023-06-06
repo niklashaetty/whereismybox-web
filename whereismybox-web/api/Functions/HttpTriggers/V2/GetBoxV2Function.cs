@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
@@ -46,17 +47,27 @@ public class GetBoxV2Function
     {
         try
         {
+            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
             {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
             }
 
-            var box = await _queryHandler.Handle(new GetBoxQuery(domainCollectionId, new BoxId(boxId)));
+            var box = await _queryHandler.Handle(new GetBoxQuery(externalUser.ExternalUserId, domainCollectionId,
+                new BoxId(boxId)));
             return new OkObjectResult(box.ToApiModel());
         }
         catch (BoxNotFoundException e)
         {
             return new NotFoundObjectResult(new ErrorResponse("Not found", "Box was not found"));
+        }
+        catch (UnparsableExternalUserException)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
         }
     }
 }

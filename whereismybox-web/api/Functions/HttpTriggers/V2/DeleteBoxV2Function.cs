@@ -3,16 +3,15 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Primitives;
-using Domain.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
@@ -42,13 +41,26 @@ public class DeleteBoxV2Function
         string collectionId,
         Guid boxId)
     {
-        if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+        try
         {
-            return new BadRequestObjectResult(
-                new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
+            var externalUser = req.ParseExternalUser();
+            if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
+            {
+                return new BadRequestObjectResult(
+                    new ErrorResponse("Validation error", "Invalid collectionId"));
+            }
 
-        await _commandHandler.Execute(new DeleteBoxCommand(domainCollectionId, new BoxId(boxId)));
-        return new NoContentResult();
+            await _commandHandler.Execute(new DeleteBoxCommand(externalUser.ExternalUserId, domainCollectionId,
+                new BoxId(boxId)));
+            return new NoContentResult();
+        }
+        catch (UnparsableExternalUserException)
+        {
+            return new UnauthorizedResult();
+        }
+        catch (ForbiddenCollectionAccessException)
+        {
+            return new StatusCodeResult(403);
+        }
     }
 }

@@ -1,3 +1,4 @@
+using Domain.Authorization;
 using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
@@ -8,16 +9,19 @@ namespace Domain.CommandHandlers;
 
 public class DeleteItemCommandHandler : ICommandHandler<DeleteItemCommand>
 {
+    private readonly IAuthorizationService _authorization;
     private readonly IBoxRepository _boxRepository;
     private readonly IUnattachedItemRepository _unattachedItemRepository;
     private readonly ILogger _logger;
 
-    public DeleteItemCommandHandler(ILoggerFactory loggerFactory, IBoxRepository boxRepository,
+    public DeleteItemCommandHandler(IAuthorizationService authorization, ILoggerFactory loggerFactory, IBoxRepository boxRepository,
         IUnattachedItemRepository unattachedItemRepository)
     {
+        ArgumentNullException.ThrowIfNull(authorization);
         ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(boxRepository);
         ArgumentNullException.ThrowIfNull(unattachedItemRepository);
+        _authorization = authorization;
         _logger = loggerFactory.CreateLogger<DeleteItemCommandHandler>();
         _boxRepository = boxRepository;
         _unattachedItemRepository = unattachedItemRepository;
@@ -26,6 +30,8 @@ public class DeleteItemCommandHandler : ICommandHandler<DeleteItemCommand>
     public async Task Execute(DeleteItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
+        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        
         var box = await _boxRepository.Get(command.CollectionId, command.BoxId);
 
         if (box.TryGetItem(command.ItemId, out var item) is false)
