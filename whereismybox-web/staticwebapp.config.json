@@ -12,8 +12,11 @@
   },
   "routes": [
     {
-      "route": "/login/github",
-      "redirect": "/.auth/login/github"
+      "route": "/logout",
+      "rewrite": "/.auth/logout"
     }
-  ]
+  ],
+  "navigationFallback": {
+    "rewrite": "/pp"
+  }
 }
