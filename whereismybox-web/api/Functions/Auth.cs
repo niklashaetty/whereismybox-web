@@ -35,7 +35,7 @@ public static class Auth
 
     public static RolesResponse AsRolesResponse(this User user)
     {
-        var roles = new List<string> {"userId:" + user.PrimaryCollectionId};
+        var roles = new List<string> {"userId:" + user.UserId};
         return new RolesResponse(roles);
     }
 }
