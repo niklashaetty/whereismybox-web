@@ -38,7 +38,12 @@ public static class Auth
     {
         var roles = new List<string>
         {
-            "userId:" + user.UserId,
+            user.UserId.ToString(),
+            "userId:" + user.UserId.Value,
+            "01234567890123456789",
+            "012345678901234567890123456789",
+            "dash-",
+            "kolon:1",
             "test_role"
         };
         return new RolesResponse(roles);
