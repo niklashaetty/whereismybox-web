@@ -15,19 +15,43 @@ const title = computed(() => props.title);
 
 <template>
 <div class="titlecontainer">
-  <i class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
-  <p> {{ title }}</p>
+  <div class="icon">
+    <i class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+  </div>
+  <div class="title">
+    <p> {{ title }}</p>
+  </div>
+  <div class="right-content">
+    <slot name="right"></slot>
+  </div>
+  
+  
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .titlecontainer{
   align-items: center;
   display: flex;
-  height: 40px;
-  font-size: 18px;
+  height: 30px;
+  font-size: 14px;
   padding-left: 10px;
-  min-width: 200px;
+  width:100%;
+  @media (min-width: 500px) {
+    font-size: 18px;
+    height: 40px;
+  }
+}
+
+.icon {
+  width:20px;
+}
+
+
+.right-content {
+  max-width: 100px;
+  margin-right: 5px;
+  margin-left: auto;
 }
 
 

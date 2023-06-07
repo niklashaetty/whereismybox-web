@@ -154,8 +154,8 @@ onMounted(async () => {
       </Dialog>
 <div v-if="isFullyLoaded" class="accordion-container">
   <div class="accordion-icon" @click="expandBox">
-    <i v-if="!alwaysExpandedItems && expanded" class="pi pi-angle-down" style="color: slateblue; padding-right: 5px;"></i>
-    <i v-else-if="!alwaysExpandedItems && !expanded" class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+    <i v-if="!alwaysExpandedItems && expanded" class="pi pi-angle-down accordion-icon-icon" style="color: slateblue; padding-right: 5px;"></i>
+    <i v-else-if="!alwaysExpandedItems && !expanded" class="pi pi-angle-right accordion-icon-icon" style="color: slateblue; padding-right: 5px;"></i>
   </div>
   <div class="accordion-number" @click="expandBox">
     <p> {{ box.number }}</p>
@@ -168,14 +168,14 @@ onMounted(async () => {
     <p>{{ box.items.length  }} items</p>
   </div>
   <div class="accordion-options">
-    <Button style="color: #718355; " icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text" @click="toggleBoxMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <i class="pi pi-ellipsis-h accordion-options-icon" @click="toggleBoxMenu($event)" />
     <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
   </div>
 </div>
 
 <div v-else class="accordion-container">
   <div class="accordion-icon">
-    <i class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+    <i class="pi pi-angle-right"></i>
   </div>
   <div class="accordion-number">
    <Skeleton />
@@ -201,7 +201,7 @@ onMounted(async () => {
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .accordion-container {  
   /* grid props */
   cursor: pointer;
@@ -209,7 +209,7 @@ onMounted(async () => {
   grid-template-columns: 0.4fr 0.4fr 2.9fr 1.1fr 0.4fr;
   grid-template-rows: 0.1fr;
   gap: 0px 10px;
-  grid-auto-flow: row;
+
   grid-template-areas:
     "icon number name itemcount options";
 
@@ -222,11 +222,16 @@ onMounted(async () => {
 
   background-color: white;
   border-radius: 3px;
-  height: 40px;
+  height: 30px;
+  line-height: 30px;
   margin: 5px;
-  align-items: center;
-  user-select: none; /* Non-prefixed version, currently */
-  -webkit-user-select: none;
+  font-size: 10px;
+
+  @media (min-width: 500px) {
+    height: 40px;
+    font-size: 14px;
+    line-height: 40px;
+  }
 }
 
 .accordion-container:hover {  
@@ -235,40 +240,57 @@ onMounted(async () => {
 
 
 .accordion-content {  
-  margin-left: 5px;
-  margin-right: 5px;
-  margin-top: -5px;
-  border-top: 0px;
   border-radius: 3px;
   background-color: #f7faf8;
+  
   
 }
 
 .accordion-icon { 
   grid-area: icon; 
-  margin: 0;
   left: 25%;
 }
 
-.accordion-number { 
+.accordion-icon-icon { 
+  height: 30px;
+  line-height: 30px;;
+  @media (min-width: 500px) {
+    height: 40px;
+    line-height: 40px;
+  }
+}
 
+.accordion-number { 
   grid-area: number;
-  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
  }
 
 .accordion-name { 
   grid-area: name; 
-  align-items: center;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
 .accordion-itemcount {
    grid-area: itemcount;
-   align-items: center; 
+   margin-top: auto;
+  margin-bottom: auto;
   }
 
 .accordion-options { 
-  height: 40px;
   grid-area: options; 
+
 }
+
+.accordion-options-icon { 
+  height: 30px;
+  line-height: 30px;;
+  @media (min-width: 500px) {
+    height: 40px;
+    line-height: 40px;
+  }
+}
+
 
 </style>
