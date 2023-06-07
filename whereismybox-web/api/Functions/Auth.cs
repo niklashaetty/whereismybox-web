@@ -39,7 +39,7 @@ public static class Auth
         var roles = new List<string>
         {
             user.UserId.ToString(),
-            "userId:" + user.UserId.Value,
+            "userId." + user.UserId,
             "01234567890123456789",
             "012345678901234567890123456789",
             "dash-",
