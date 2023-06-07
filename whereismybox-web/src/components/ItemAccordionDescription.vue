@@ -73,7 +73,7 @@ function addNewItem() {
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 
 .itemaccordion-container {  display: grid;
   grid-template-columns: 1fr 1.7fr 0.3fr;
@@ -89,9 +89,12 @@ function addNewItem() {
   border-color: #e9f5db;
   font-weight: 900;
   color: #40513B;
-  font-size: 15px;
+  font-size: 12px;
   padding: 2px;
   padding-left: 10px;
+  @media (min-width: 500px) {
+    font-size: 14px;
+  }
 }
 
 .itemaccordion-name { 

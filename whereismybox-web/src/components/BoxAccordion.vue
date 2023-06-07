@@ -242,8 +242,7 @@ onMounted(async () => {
 .accordion-content {  
   border-radius: 3px;
   background-color: #f7faf8;
-  
-  
+  margin: 5px;
 }
 
 .accordion-icon { 

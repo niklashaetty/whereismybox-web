@@ -84,7 +84,7 @@ function toggleItemMenu(event: MouseEvent)  {
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 
 
 .itemaccordion-container {  display: grid;
@@ -101,9 +101,12 @@ function toggleItemMenu(event: MouseEvent)  {
   border-color: #e9f5db;
   border-radius: 2px;
   margin: 1px;
-  font-size: 12px;
   padding: 2px;
   padding-left: 10px;
+  font-size: 10px;
+  @media (min-width: 500px) {
+    font-size: 12px;
+  }
 }
 
 .itemaccordion-container:hover {  
