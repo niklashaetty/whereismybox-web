@@ -1,8 +1,10 @@
+using Newtonsoft.Json;
+
 namespace Api.Auth;
 
 public class RolesResponse
 {
-    public List<string> Roles { get; set; }
+    [JsonProperty("roles")] public List<string> Roles { get; set; }
 
     public RolesResponse(List<string> roles)
     {
