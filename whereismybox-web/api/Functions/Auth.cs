@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
+using Api.Auth;
 using Domain.Models;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
@@ -12,13 +11,6 @@ namespace Functions;
 
 public static class Auth
 {
-    public class ExternalUserDto
-    {
-        public string IdentityProvider { get; set; }
-        public string UserId { get; set; }
-        public string UserDetails { get; set; }
-    }
-
     public static ExternalUser ParseExternalUser(this HttpRequest req)
     {
         if (req.Headers.TryGetValue("x-ms-client-principal", out var header))
@@ -33,5 +25,17 @@ public static class Auth
         }
 
         throw new UnparsableExternalUserException();
+    }
+
+    public static ExternalUser AsExternalUser(this RolesRequest request)
+    {
+        return new ExternalUser(new ExternalUserId(request.UserId), request.IdentityProvider,
+            request.UserDetails);
+    }
+
+    public static RolesResponse AsRolesResponse(this User user)
+    {
+        var roles = new List<string> {"userId:" + user.PrimaryCollectionId};
+        return new RolesResponse(roles);
     }
 }

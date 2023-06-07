@@ -1,4 +1,4 @@
-namespace Api;
+namespace Api.Auth;
 
 public class RolesResponse
 {
