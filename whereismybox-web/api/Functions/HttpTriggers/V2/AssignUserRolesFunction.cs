@@ -5,6 +5,8 @@ using System.Net.Http;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
+using Domain.CommandHandlers;
+using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
@@ -24,16 +26,19 @@ public class AssignUserRolesFunction
 {
     private const string OperationId = "GetRoles";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
+    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _getUserByExternalIdQueryHandler;
+    private readonly ICommandHandler<CreateUserCommand> _createUserCommandHandler;
 
-    public AssignUserRolesFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> queryHandler)
+    public AssignUserRolesFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> getUserByExternalIdQueryHandler, ICommandHandler<CreateUserCommand> createUserCommandHandler)
     {
-        ArgumentNullException.ThrowIfNull(queryHandler);
-        _queryHandler = queryHandler;
+        ArgumentNullException.ThrowIfNull(getUserByExternalIdQueryHandler);
+        ArgumentNullException.ThrowIfNull(createUserCommandHandler);
+        _getUserByExternalIdQueryHandler = getUserByExternalIdQueryHandler;
+        _createUserCommandHandler = createUserCommandHandler;
     }
 
     [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Fetch the user object of the current logged in user")]
-    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(UserDto))]
+    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(RolesResponse))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [OpenApiResponseWithBody(HttpStatusCode.NotFound, MediaTypeNames.Application.Json, typeof(ErrorResponse),
@@ -44,25 +49,37 @@ public class AssignUserRolesFunction
         HttpRequest req,
         ILogger log)
     {
-        log.LogInformation("Entering AssignUserRolesFunction");
-        log.LogWarning("Entering AssignUserRolesFunction");
-        return new OkObjectResult(new RolesResponse()
-        {
-            Roles = new List<string>(){"MyCoolRole", "secondRole"}
-        });
-        using (var content = new StreamContent(req.Body))
-        {
-            var contentString = await content.ReadAsStringAsync();
-        }
         try
         {
-            var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(new ExternalUserId("heello")));
-            return new OkObjectResult(user.ToApiModel());
+            var externalUser = req.ParseExternalUser();
+
+            var user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
+            return new OkObjectResult(ParseRoles(user));
         }
-        catch (UserNotFoundException e)
+        catch (UserNotFoundException)
         {
-            return new NotFoundObjectResult(new ErrorResponse("Not found", "User was not found"));
+            var externalUser = req.ParseExternalUser();
+            log.LogInformation("User with externalId {ExternalUserId} not found, will create a new",
+                externalUser.ExternalUserId);
+            
+            var newUser = new User(new UserId(), externalUser.ExternalUserId, externalUser.ExternalIdentityProvider,
+                externalUser.Username, CollectionId.GenerateNew());
+            await _createUserCommandHandler.Execute(new CreateUserCommand(newUser.UserId, newUser.ExternalUserId,
+                newUser.ExternalIdentityProvider, newUser.Username, newUser.PrimaryCollectionId));
+            
+            log.LogInformation("Created new user {UserId} with primaryCollectionId {PrimaryCollectionId}",
+                newUser.UserId, newUser.PrimaryCollectionId);
+            return new OkObjectResult(ParseRoles(newUser));
+        }
+        catch (UnparsableExternalUserException e)
+        {
+            return new UnauthorizedResult();
         }
     }
 
+    private static RolesResponse ParseRoles(User user)
+    {
+        var roles = new List<string> {"userId:" + user.PrimaryCollectionId};
+        return new RolesResponse(roles);
+    }
 }
