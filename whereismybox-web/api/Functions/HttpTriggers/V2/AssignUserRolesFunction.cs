@@ -60,7 +60,10 @@ public class AssignUserRolesFunction
             var externalUser = rolesRequest.AsExternalUser();
 
             var user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
-            return new OkObjectResult(user.AsRolesResponse());
+            var response = user.AsRolesResponse();
+            var asString = JsonConvert.SerializeObject(response);
+            log.LogInformation("AssignRolesResponse]: {AsString}", asString);
+            return new OkObjectResult(response);
         }
         catch (UserNotFoundException)
         {
@@ -75,7 +78,10 @@ public class AssignUserRolesFunction
             
             log.LogInformation("Created new user {UserId} with primaryCollectionId {PrimaryCollectionId}",
                 newUser.UserId, newUser.PrimaryCollectionId);
-            return new OkObjectResult(newUser.AsRolesResponse());
+            var response = newUser.AsRolesResponse();
+            var asString = JsonConvert.SerializeObject(response);
+            log.LogInformation("AssignRolesResponse]: {AsString}", asString);
+            return new OkObjectResult(response);
         }
     }
 }

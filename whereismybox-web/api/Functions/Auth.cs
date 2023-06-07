@@ -6,6 +6,7 @@ using Api.Auth;
 using Domain.Models;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Functions;
 
