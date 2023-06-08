@@ -103,7 +103,7 @@ function toggleItemMenu(event: MouseEvent)  {
   margin: 1px;
   padding: 2px;
   padding-left: 10px;
-  font-size: 10px;
+  font-size: 12px;
   @media (min-width: 500px) {
     font-size: 12px;
   }
