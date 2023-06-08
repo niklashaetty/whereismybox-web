@@ -49,10 +49,7 @@ function addNewItem() {
     <p> Description</p>
   </div>
   <div class="itemaccordion-options">
-    <Button size="small" style=
-      "margin-left: auto; margin-right: 5px; font-size: 10px; color: #181F1C;"  
-      icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openAddItemDialog" />
-
+    <i class="pi pi-plus-circle boxie-icon clickable" @click="openAddItemDialog" />
       <Dialog v-model:visible="displayAddItemDialog" :style="{ width: '450px' }" header="Add a new item" :modal="true">
          <div class="card">
           <p style="font-size:10px; margin-bottom: 10px;"> An item consists of a name, and optionally a description. 
@@ -107,4 +104,23 @@ function addNewItem() {
 margin-left: auto; 
 margin-top: auto;
 }
+
+.clickable {
+  cursor: pointer;
+}
+
+.boxie-icon {
+  font-size: 16px;
+  text-shadow:
+  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
+  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
+  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
+  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
+  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
+  color: #656c63;
+  @media (min-width: 500px) {
+    font-size: 20px;
+  }
+}
+
 </style>

@@ -282,14 +282,4 @@ onMounted(async () => {
 
 }
 
-.accordion-options-icon { 
-  height: 30px;
-  line-height: 30px;;
-  @media (min-width: 500px) {
-    height: 40px;
-    line-height: 40px;
-  }
-}
-
-
 </style>

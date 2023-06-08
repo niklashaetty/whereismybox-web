@@ -128,8 +128,8 @@ function trimString(maxLength: number, text: string) {
     <div class="searchbar">
     <span class="p-input-icon-right p-input-icon-left searchinput">
         <InputText class="searchinput" type="text" v-model="searchQuery" placeholder="Type something to start filtering items" />
-        <i v-if=searchQuery style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
-        <i v-else class="pi pi-search" style="width: 10px;" />
+        <i v-if=searchQuery class="pi pi-times boxie-icon clickable" @click="clearFilter()" />
+        <i v-else class="pi pi-search boxie-icon" />
       </span>
     
     </div>
@@ -138,8 +138,7 @@ function trimString(maxLength: number, text: string) {
         <div class="sectiontitle">
           <SectionTitle title="My collection" >
             <template #right>
-              <Button size="small" style="font-size: 10px; background-color: white; color: #181F1C;"  
-              icon="pi pi-plus" text outlined raised rounded aria-label="Filter" @click="openDisplayCreateBoxDialog"/>
+              <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
             </template>
           </SectionTitle>
         </div>
@@ -152,15 +151,26 @@ function trimString(maxLength: number, text: string) {
         <div class="sectiontitle">
           <SectionTitle title="Unattached items" >
             <template #right>
-              <i class="pi pi-info-circle" 
+              <i class="pi pi-info-circle boxie-icon" 
               v-tooltip.top="{ value: `<p>Here is a list 
                 of all the items that you have taken out (removed) from a box. You can easily add any one of them item back 
-                into the box it was previously placed in!</p>`, escape: true, class: 'custom-error' }" 
-                style="font-size: 18px; line-height: 40px; color: white;"/>
+                into the box it was previously placed in!</p>`, escape: true, class: 'custom-error' }"/>
             </template>
           </SectionTitle>
         </div>
+        <div class="c-ui-unattacheditems">
+          <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
+          <template #name> <Skeleton style="margin:auto;" height="12px"></Skeleton></template>
+          </UnattachedItemAccordion>
+    
+          <!-- Unattached items -->
+          <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
+            <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
+            <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
+          </UnattachedItemAccordion>
+        </div>
       </div>
+
     </div>
   </div>
 </div>
@@ -188,15 +198,18 @@ function trimString(maxLength: number, text: string) {
 
 
 .container {
-  width: 80%;
+  width: 95%;
   max-width: 1250px;  
   min-width: 350px;
   min-height: 500px;
   margin: auto;
   padding: 10px;
-  border: 1px solid;
-  border-color: aqua;
-  
+  @media (min-width: 1000px) {
+    width: 80%;
+  }
+  @media (min-width: 500px) {
+    width:90%;
+  }
 }
 
 .searchbar {
@@ -205,10 +218,6 @@ function trimString(maxLength: number, text: string) {
   margin-left: auto;
   margin-right: auto;
   height: 50px;
-  margin-bottom: 10px;
-
-  border: 1px solid;
-  border-color: chartreuse;
   box-shadow:
   0 0.7px 0.5px rgba(0, 0, 0, 0.034),
   0 1.5px 1.7px rgba(0, 0, 0, 0.048),
@@ -224,11 +233,13 @@ function trimString(maxLength: number, text: string) {
   height: 100%;
 }
 
+.add-new-icon {
+  color: white;
+}
+
 .content{
   width: 100%;
   height: 100%;
-  border: 1px solid;
-  border-color: coral;
   @media (min-width: 1000px) {
     display: flex;
   }
@@ -238,10 +249,9 @@ function trimString(maxLength: number, text: string) {
   display: flex;
   flex-direction: column;
   width: 100%;
+  margin-top: 15px;
   margin-left: auto;
   margin-right: auto;
-  border: 1px solid;
-  border-color: gold;
   @media (min-width: 1000px) {
     width: 65%;
   }
@@ -258,11 +268,15 @@ function trimString(maxLength: number, text: string) {
   width: 100%;
 }
 
+.clickable {
+  cursor: pointer;
+}
+
 .c-unattacheditems {
   width: 100%;
+  margin-top: 15px;
   margin-left: auto;
   margin-right: auto;
-  border: 2px solid;
   @media (min-width: 1000px) {
     width: 35%;
   }
@@ -270,5 +284,20 @@ function trimString(maxLength: number, text: string) {
     width: 30%;
   }
 }
+
+.boxie-icon {
+  font-size: 16px;
+  text-shadow:
+  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
+  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
+  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
+  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
+  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
+  color: white;
+  @media (min-width: 500px) {
+    font-size: 20px;
+  }
+}
+
 
 </style>

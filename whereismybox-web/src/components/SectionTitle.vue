@@ -22,7 +22,7 @@ const title = computed(() => props.title);
     <p> {{ title }}</p>
   </div>
   <div class="right-content">
-    <slot name="right"></slot>
+    <slot class="right-slot" name="right"></slot>
   </div>
   
   
@@ -52,8 +52,14 @@ const title = computed(() => props.title);
   max-width: 100px;
   margin-right: 5px;
   margin-left: auto;
+  margin-top: auto;
+  margin-bottom: auto;
 }
 
+.right-slot {
+  height: 30px;
+  line-height: 30px;
 
 
+}
 </style>
