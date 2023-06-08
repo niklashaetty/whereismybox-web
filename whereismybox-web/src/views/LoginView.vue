@@ -5,17 +5,32 @@ import Header from '@/components/Header.vue'
 </script>
 <template>
   <Header />
-  <div class="logincontainer"  >
+  <div class="logincontainer">
+
+    <!-- Github -->
     <a href="/.auth/login/github?post_login_redirect_uri=/">
     <div class="loginsection">
       <div class="logo"> 
         <img src="../assets/github-logo.svg" width="50px" height="50px"> 
       </div>
       <div class="text" >
-        <p class="logintext" > Login with Github</p>
+        <p class="logintext" > Sign in with Github</p>
       </div>
     </div>
   </a>
+
+  <!-- Google -->
+  <a href="/.auth/login/google?post_login_redirect_uri=/">
+    <div class="loginsection">
+      <div class="logo"> 
+        <img src="../assets/google-logo-normal.svg" width="60px" height="60px"> 
+      </div>
+      <div class="text" >
+        <p class="logintext" > Sign in with Google</p>
+      </div>
+    </div>
+  </a>
+
   </div>
 </template>
 
@@ -43,6 +58,7 @@ import Header from '@/components/Header.vue'
   align-items: center;
   cursor: pointer;
   background-color: #f7faf8;
+  color: black;
 
   box-shadow:
   0 0.7px 0.5px rgba(0, 0, 0, 0.034),
