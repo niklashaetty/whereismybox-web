@@ -222,13 +222,9 @@ onMounted(async () => {
 
   background-color: white;
   border-radius: 3px;
-  height: 30px;
-  line-height: 30px;
+  height: 40px;
+  line-height: 40px;
   margin: 5px;
-  @media (min-width: 500px) {
-    height: 40px;
-    line-height: 40px;
-  }
 }
 
 .accordion-container:hover {  
@@ -248,12 +244,8 @@ onMounted(async () => {
 }
 
 .accordion-icon-icon { 
-  height: 30px;
-  line-height: 30px;;
-  @media (min-width: 500px) {
-    height: 40px;
-    line-height: 40px;
-  }
+  height: 40px;
+  line-height: 40px;
 }
 
 .accordion-number { 
@@ -273,7 +265,7 @@ onMounted(async () => {
   grid-area: itemcount;
   margin-top: auto;
   margin-bottom: auto;
-  font-size: 10px;
+  font-size: 12px;
   @media (min-width: 500px) {
   font-size: 14px;
   }
@@ -284,7 +276,7 @@ onMounted(async () => {
 }
 
 .accordion-options-icon { 
-  font-size: 10px;
+  font-size: 12px;
   @media (min-width: 500px) {
   font-size: 14px;
   }

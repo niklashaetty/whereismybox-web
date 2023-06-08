@@ -104,9 +104,6 @@ function toggleItemMenu(event: MouseEvent)  {
   padding: 2px;
   padding-left: 10px;
   font-size: 12px;
-  @media (min-width: 500px) {
-    font-size: 12px;
-  }
 }
 
 .itemaccordion-container:hover {  
@@ -130,5 +127,12 @@ function toggleItemMenu(event: MouseEvent)  {
   height: 30px;
   line-height: 30px;
   }
+
+.itemaccordion-options-icon{
+  font-size: 12px;
+  @media (min-width: 500px) {
+  font-size: 14px;
+  }
+}
 
 </style>
