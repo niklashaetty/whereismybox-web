@@ -225,11 +225,8 @@ onMounted(async () => {
   height: 30px;
   line-height: 30px;
   margin: 5px;
-  font-size: 10px;
-
   @media (min-width: 500px) {
     height: 40px;
-    font-size: 14px;
     line-height: 40px;
   }
 }
@@ -269,17 +266,28 @@ onMounted(async () => {
   grid-area: name; 
   margin-top: auto;
   margin-bottom: auto;
+  font-size: 14px;
 }
 
 .accordion-itemcount {
-   grid-area: itemcount;
-   margin-top: auto;
+  grid-area: itemcount;
+  margin-top: auto;
   margin-bottom: auto;
+  font-size: 10px;
+  @media (min-width: 500px) {
+  font-size: 14px;
   }
+}
 
 .accordion-options { 
   grid-area: options; 
+}
 
+.accordion-options-icon { 
+  font-size: 10px;
+  @media (min-width: 500px) {
+  font-size: 14px;
+  }
 }
 
 </style>
