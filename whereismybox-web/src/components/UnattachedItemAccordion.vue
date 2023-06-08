@@ -3,14 +3,11 @@
 import { defineProps, computed} from 'vue'
 
 import router from '@/router';
-import Button from 'primevue/button';
 import Menu from 'primevue/menu';
 import BoxService from '@/services/boxservice';
 import { ref } from 'vue';
 import { useConfirm } from "primevue/useconfirm";
 import { useToast } from "primevue/usetoast";
-
-
 
 const props = defineProps({
   unattachedItem:  {
@@ -78,10 +75,7 @@ function trimString(maxLength: number, text: string) {
     <slot name="previousbox"></slot>
   </div>
   <div v-if="!isLoading" class="unattacheditemaccordion-options">
-    <Button style="color: #718355; height: 30px;, width: 30px;" 
-    icon="pi pi-ellipsis-h" 
-    class="p-button-rounded p-button-text p-button-sm" 
-    @click="toggleItemMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <i class="pi pi-ellipsis-h unattacheditemaccordion-options-icon" @click="toggleItemMenu($event)" />
     <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
   </div>
 </div>
@@ -90,7 +84,8 @@ function trimString(maxLength: number, text: string) {
 <style scoped>
 
 
-.unattacheditemaccordion-container {  display: grid;
+.unattacheditemaccordion-container {  
+  display: grid;
   grid-template-columns: 2.4fr 0.3fr 0.3fr;
   grid-template-rows: 0.1fr;
   grid-auto-columns: 1fr;
@@ -101,11 +96,18 @@ function trimString(maxLength: number, text: string) {
 
   height: 30px;
   margin: 5px;
-  border-color: #e9f5db;
+  box-shadow:
+  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
+  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
+  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
+  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
+  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
+  background-color: white;
+  border-radius: 3px;
   font-size: 12px;
   padding-left: 10px;
   background-color: white;
-
+  
 }
 
 .unattacheditemaccordion-container:hover {  
@@ -123,12 +125,17 @@ function trimString(maxLength: number, text: string) {
   grid-area: description; 
   line-height: 30px;
   height: 30px;
-
 }
 
 .unattacheditemaccordion-options { 
   grid-area: options;
   height: 30px;
   line-height: 30px;
+  cursor: pointer;
   }
+
+.unattacheditemaccordion-options-icon {
+  height: 30px;
+  line-height: 30px;
+}
 </style>

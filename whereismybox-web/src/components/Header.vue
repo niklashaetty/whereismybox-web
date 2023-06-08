@@ -42,12 +42,12 @@ function pushToIndex(){
   <div class="filler"></div>
   <div class="username"  @click="pushToIndex()">
     <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
-    <p style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
+    <p class="username-text" style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
   </div>
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .headercontainer {
   display: grid; 
   grid-template-columns: 0.7fr 1.9fr 0.8fr; 
@@ -84,6 +84,14 @@ function pushToIndex(){
   cursor: pointer;
   height: 60px;
 }
+
+.username-text{
+  display: none;
+  @media (min-width: 1000px) {
+    display: inline;
+  }
+}
+
 .filler { grid-area: filler; }
 
 </style>

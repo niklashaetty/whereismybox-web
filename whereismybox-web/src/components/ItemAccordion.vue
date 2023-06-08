@@ -78,13 +78,13 @@ function toggleItemMenu(event: MouseEvent)  {
     <slot name="description"></slot>
   </div>
   <div class="itemaccordion-options">
-    <Button style="color: #718355; height: 30px;" icon="pi pi-ellipsis-h" class="p-button-rounded p-button-text p-button-sm" @click="toggleItemMenu($event)" aria-haspopup="true" aria-controls="overlay_menu" />
+    <i class="pi pi-ellipsis-h itemaccordion-options-icon" @click="toggleItemMenu($event)" />
     <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
   </div>
 </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 
 
 .itemaccordion-container {  display: grid;
@@ -101,9 +101,12 @@ function toggleItemMenu(event: MouseEvent)  {
   border-color: #e9f5db;
   border-radius: 2px;
   margin: 1px;
-  font-size: 12px;
   padding: 2px;
   padding-left: 10px;
+  font-size: 10px;
+  @media (min-width: 500px) {
+    font-size: 12px;
+  }
 }
 
 .itemaccordion-container:hover {  
@@ -127,4 +130,5 @@ function toggleItemMenu(event: MouseEvent)  {
   height: 30px;
   line-height: 30px;
   }
+
 </style>
