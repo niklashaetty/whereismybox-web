@@ -9,14 +9,5 @@
         }
       }
     }
-  },
-  "routes": [
-    {
-      "route": "/logout",
-      "rewrite": "/.auth/logout"
-    }
-  ],
-  "navigationFallback": {
-    "rewrite": "/pp"
   }
 }
