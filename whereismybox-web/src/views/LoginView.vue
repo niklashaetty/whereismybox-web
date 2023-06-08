@@ -1,44 +1,58 @@
 <script setup lang="ts">
 import router from '@/router';
 import Header from '@/components/Header.vue'
+import ImageCard from '@/components/ImageCard.vue'
 
 </script>
 <template>
   <Header />
-  <div class="logincontainer">
+  <div>
+    <div class="logincontainer">
 
-    <!-- Github -->
-    <a href="/.auth/login/github?post_login_redirect_uri=/">
-    <div class="loginsection">
-      <div class="logo"> 
-        <img src="../assets/github-logo.svg" width="50px" height="50px"> 
+      <!-- Github -->
+      <a href="/.auth/login/github?post_login_redirect_uri=/">
+      <div class="loginsection">
+        <div class="logo"> 
+          <img src="../assets/github-logo.svg" width="50px" height="50px"> 
+        </div>
+        <div class="text" >
+          <p class="logintext" > Sign in with Github</p>
+        </div>
       </div>
-      <div class="text" >
-        <p class="logintext" > Sign in with Github</p>
-      </div>
-    </div>
-  </a>
+    </a>
 
-  <!-- Google -->
-  <a href="/.auth/login/google?post_login_redirect_uri=/">
-    <div class="loginsection">
-      <div class="logo"> 
-        <img src="../assets/google-logo-normal.svg" width="60px" height="60px"> 
+    <!-- Google -->
+    <a href="/.auth/login/google?post_login_redirect_uri=/">
+      <div class="loginsection">
+        <div class="logo"> 
+          <img src="../assets/google-logo-normal.svg" width="60px" height="60px"> 
+        </div>
+        <div class="text" >
+          <p class="logintext" > Sign in with Google</p>
+        </div>
       </div>
-      <div class="text" >
-        <p class="logintext" > Sign in with Google</p>
-      </div>
-    </div>
-  </a>
-
+    </a>
   </div>
+    <div class="info-cards">
+      <div class="info-card">
+        <ImageCard title="Never lose an item" imgpath="d" text="Store, search, move items and never lose track of which box you placed an item in." />
+      </div>
+      <div class="info-card">
+        <ImageCard title="Smart QR-code stickers" imgpath="d" text="Print stickers with a direct link to you box - find out what's inside it in seconds." />
+      </div>
+      <div class="info-card">
+        <ImageCard title="Safe storage" imgpath="d" text="Sign in with your social favourite account and keep your collections, boxes, and items safe. We don't store any personal data and cannot access your private information" />
+      </div>
+    </div>
+  </div>
+  
 </template>
 
 <style scoped>
 .logincontainer {
   margin-top: 10px;
   width: 300px;
-  height: 500px;
+
   padding: 10px;
   border-radius: 3px;
   align-items: center;
@@ -78,6 +92,13 @@ import Header from '@/components/Header.vue'
   justify-content: center;
 }
 
-
+.info-cards {
+  display:flex;
+  width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-content: space-evenly;
+  
+}
 
 </style>
