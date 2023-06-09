@@ -16,10 +16,13 @@ onMounted(async () => {
 });
 
 async function getCurrentUserInformation() {
-  if(!loggedInUserStore.username){
-    await UserService.getLoggedInUser();
+  if(loggedInUserStore.username){
+    avatarLetter.value = getAvatarLetter(loggedInUserStore.username);
   }
-  avatarLetter.value = getAvatarLetter(loggedInUserStore.username);
+  else {
+    await UserService.getRegisteredUser();
+    avatarLetter.value = getAvatarLetter(loggedInUserStore.username);
+  }
 }
 
 function getAvatarLetter(username: string){

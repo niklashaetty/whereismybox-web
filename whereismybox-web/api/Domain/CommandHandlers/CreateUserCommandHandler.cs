@@ -1,4 +1,3 @@
-using Domain.Authorization;
 using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
@@ -22,6 +21,14 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
         
         var user = new User(command.UserId, command.ExternalUserId, command.ExternalIdentityProvider, command.Username,
             command.PrimaryCollectionId);
+        var userWithConflictingUsername = await _userRepository.SearchByUsername(command.Username);
+        var userWithConflictingExternalUserId = await _userRepository.SearchByExternalUserId(command.ExternalUserId);
+
+        if (userWithConflictingUsername is not null 
+            || userWithConflictingExternalUserId is not null)
+        {
+            throw new UserAlreadyExistException("User already exist");
+        }
         await _userRepository.Create(user);
     }
 }

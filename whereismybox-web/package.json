@@ -23,6 +23,7 @@
     "primevue": "^3.26.1",
     "qrcode.vue": "^3.3.3",
     "tiny-emitter": "^2.1.0",
+    "vee-validate": "^4.9.6",
     "vue": "^3.2.45",
     "vue-qrcode": "^2.2.0",
     "vue-router": "^4.1.6"

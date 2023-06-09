@@ -15,13 +15,11 @@ public class AuthorizationService : IAuthorizationService
     
     public async Task EnsureCollectionAccessAllowed(ExternalUserId externalUserId, CollectionId collectionId)
     {
-        var user = await _userRepository.Get(externalUserId);
-
-        if (user.PrimaryCollectionId.Equals(collectionId))
+        var user = await _userRepository.SearchByExternalUserId(externalUserId);
+        if (user is null || 
+            user.PrimaryCollectionId.Equals(collectionId) is false)
         {
-            return;
+            throw new ForbiddenCollectionAccessException();
         }
-
-        throw new ForbiddenCollectionAccessException();
     }
 }

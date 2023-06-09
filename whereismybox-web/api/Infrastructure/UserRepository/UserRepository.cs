@@ -32,6 +32,38 @@ public class UserRepository : IUserRepository
         return cosmosAware.Resource;
     }
 
+    public async Task<User?> SearchByUsername(string username)
+    {
+        var query = new QueryDefinition(
+            $"SELECT * FROM c WHERE c.{nameof(CosmosAwareUser.Username)} = '{username}'");
+        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
+
+        if (!iterator.HasMoreResults)
+        {
+            return null;
+        }
+
+        var response = await iterator.ReadNextAsync();
+        
+        return response.Resource.FirstOrDefault();
+    }
+
+    public async Task<User?> SearchByExternalUserId(ExternalUserId externalUserId)
+    {
+        var query = new QueryDefinition(
+            $"SELECT * FROM c WHERE c.{nameof(CosmosAwareUser.ExternalUserId)} = '{externalUserId}'");
+        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
+
+        if (!iterator.HasMoreResults)
+        {
+            return null;
+        }
+
+        var response = await iterator.ReadNextAsync();
+        
+        return response.Resource.FirstOrDefault();
+    }
+
     public async Task<User> Get(CollectionId collectionId)
     {
         var queryAble = _container

@@ -14,17 +14,15 @@ public interface IUserRepository
     public Task<User> Get(UserId userId);
     
     /// <summary>
-    /// Gets a user that owns a collection
+    /// Returns null if not found
     /// </summary>
-    /// <throws>UserNotFoundException</throws>
-    public Task<User> Get(CollectionId collectionId);
+    public Task<User?> SearchByUsername(string username);
     
     /// <summary>
-    /// Gets a user by its external userId
+    /// Returns null if not found
     /// </summary>
-    /// <throws>UserNotFoundException</throws>
-    public Task<User> Get(ExternalUserId externalUserId);
-
+    public Task<User?> SearchByExternalUserId(ExternalUserId externalUserId);
+    
     /// <summary>
     /// Persist a user update
     /// </summary>

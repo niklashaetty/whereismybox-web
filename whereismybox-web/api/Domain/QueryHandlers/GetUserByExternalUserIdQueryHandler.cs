@@ -1,4 +1,5 @@
 using Domain.Authorization;
+using Domain.Exceptions;
 using Domain.Models;
 using Domain.Queries;
 using Domain.Repositories;
@@ -17,6 +18,12 @@ public class GetUserByExternalUserIdQueryHandler : IQueryHandler<GetUserByExtern
     
     public async Task<User> Handle(GetUserByExternalUserIdQuery query)
     {
-        return await _userRepository.Get(query.ExternalUserId);
+        var existingUser = await _userRepository.SearchByExternalUserId(query.ExternalUserId);
+        if (existingUser is null)
+        {
+            throw new UserNotFoundException(query.ExternalUserId);
+        }
+
+        return existingUser;
     }
 }

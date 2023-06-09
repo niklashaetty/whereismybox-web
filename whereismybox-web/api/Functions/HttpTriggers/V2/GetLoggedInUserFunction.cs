@@ -63,18 +63,7 @@ public class GetLoggedInUserFunction
         }
         catch (UserNotFoundException)
         {
-            var externalUser = req.ParseExternalUser();
-            log.LogInformation("User with externalId {ExternalUserId} not found, will create a new",
-                externalUser.ExternalUserId);
-            
-            var newUser = new User(new UserId(), externalUser.ExternalUserId, externalUser.ExternalIdentityProvider,
-                externalUser.Username, CollectionId.GenerateNew());
-            await _commandHandler.Execute(new CreateUserCommand(newUser.UserId, newUser.ExternalUserId,
-                newUser.ExternalIdentityProvider, newUser.Username, newUser.PrimaryCollectionId));
-            
-            log.LogInformation("Created new user {UserId} with primaryCollectionId {PrimaryCollectionId}",
-                newUser.UserId, newUser.PrimaryCollectionId);
-            return new OkObjectResult(newUser.ToApiModel());
+            return new NotFoundObjectResult(new ErrorResponse("Not found", "User not found"));
         }
         catch (UnparsableExternalUserException e)
         {

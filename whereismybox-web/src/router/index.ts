@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import RedirectView from '../views/RedirectView.vue'
+import RegisterView from '../views/RegisterView.vue'
 import BoxesView from '../views/BoxesView.vue'
 import SingleBoxView from '@/views/SingleBoxView.vue'
 import LoginView from '@/views/LoginView.vue'
@@ -9,8 +10,8 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'home',
-      component: HomeView
+      name: 'redirect',
+      component: RedirectView
     },
     {
       path: '/login',
@@ -18,12 +19,19 @@ const router = createRouter({
       component: LoginView
     },
     {
+      path: '/register',
+      name: 'register',
+      component: RegisterView
+    },
+    {
       path: '/collections/:collectionId', 
-      name: 'boxes', component: BoxesView
+      name: 'boxes', 
+      component: BoxesView
     },
     {
       path: '/collections/:collectionId/boxes/:boxId', 
-      name: 'singlebox', component: SingleBoxView
+      name: 'singlebox', 
+      component: SingleBoxView
     }
   ]
 })
