@@ -41,7 +41,7 @@ import ImageCard from '@/components/ImageCard.vue'
         <ImageCard title="Smart QR-code stickers" imgpath="d" text="Print stickers with a direct link to you box - find out what's inside it in seconds." />
       </div>
       <div class="info-card">
-        <ImageCard title="Safe storage" imgpath="d" text="Sign in with your social favourite account and keep your collections, boxes, and items safe. We don't store any personal data and cannot access your private information" />
+        <ImageCard title="Secure your data" imgpath="d" text="Sign in with your social favourite account and keep your collections, boxes, and items safe. We don't store any personal data and cannot access your private information" />
       </div>
     </div>
   </div>
