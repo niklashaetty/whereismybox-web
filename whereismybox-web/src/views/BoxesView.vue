@@ -147,6 +147,10 @@ function trimString(maxLength: number, text: string) {
         <div class="c-bc-boxes">
           <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
           <BoxAccordion v-else :searchQuery="searchQuery" :box="box" v-for="box in filterBoxes"  :alwaysExpandedItems="false"/>
+          <div v-show="!loadingBoxes && boxes.length === 0" class="c-bc-boxes-empty"> 
+            <h3 class="c-bc-boxes-empty-text">This is your collection of boxes. </h3>
+            <h3 class="c-bc-boxes-empty-text"> When you create your first box, it'll show up here!</h3>
+          </div>
         </div>
       </div>
       <div class="c-unattacheditems">
@@ -268,6 +272,15 @@ function trimString(maxLength: number, text: string) {
 
 .c-bc-boxes {
   width: 100%;
+}
+
+.c-bc-boxes-empty{
+  width: 100%;
+}
+.c-bc-boxes-empty-text{
+  margin-top: 20px;
+  text-align: center;
+  color:white;
 }
 
 .clickable {
