@@ -108,8 +108,10 @@ function getlowestFreeBoxNumber(){
   return 0; // just a faillback
 }
 
-
-const filterBoxes = computed(() => boxes.value.filter((box) => !searchQuery.value || box.items.some((item: any) => item.name.toLowerCase().includes(searchQuery.value.toLowerCase()))));
+const filterBoxes = computed(() => boxes.value.filter((box) => !searchQuery.value || 
+box.items.some((item: any) => 
+item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+|| item.description.toLowerCase().includes(searchQuery.value.toLowerCase()))));
 
 function clearFilter() {
   searchQuery.value = "";

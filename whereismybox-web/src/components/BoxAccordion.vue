@@ -130,7 +130,10 @@ function toggleBoxMenu(event: MouseEvent)  {
 
 function filter()  { 
   if(box.value.items){
-    return box.value.items.filter((item: Item) => item.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+    return box.value.items.filter((item: Item) => 
+    item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    || item.description.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
   }
   else return Array(0);
 }
