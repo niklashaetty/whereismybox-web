@@ -301,6 +301,8 @@ function trimString(maxLength: number, text: string) {
 }
 
 .boxie-icon {
+  width: 20px;
+  height: 20px;
   font-size: 16px;
   text-shadow:
   0 0.7px 0.5px rgba(0, 0, 0, 0.034),
