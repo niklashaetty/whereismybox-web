@@ -17,7 +17,6 @@ export class UsernameExistsError extends Error {
 }
 
 export default new class UserService {
-
   async createUser(username:string){
     const createUserRequest = { username: username };
     console.log("creating user!")
@@ -30,8 +29,6 @@ export default new class UserService {
         throw new Error("FailedToCreateUser");
     }
   }
-
-  
 
   async getUser(userId:string){
     let path = `/api/users/${userId}`

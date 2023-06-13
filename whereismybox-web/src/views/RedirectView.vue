@@ -41,7 +41,6 @@ onMounted(async () => {
   getCurrentUser();
 });
 
-
 </script>
 <template>
   <Header />

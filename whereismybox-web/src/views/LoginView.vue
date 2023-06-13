@@ -48,7 +48,7 @@ import ImageCard from '@/components/ImageCard.vue'
   
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .logincontainer {
   margin-top: 10px;
   width: 300px;
@@ -93,12 +93,14 @@ import ImageCard from '@/components/ImageCard.vue'
 }
 
 .info-cards {
-  display:flex;
-  width: 900px;
   margin-left: auto;
   margin-right: auto;
   justify-content: space-evenly;
-  
+  @media (min-width: 500px) {
+    display:flex;
+    width: 900px;
+    justify-content: space-evenly;
+  }
 }
 
 </style>
