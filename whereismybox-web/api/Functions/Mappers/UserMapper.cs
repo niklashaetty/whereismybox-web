@@ -12,4 +12,10 @@ public static class UserMapper
         ArgumentNullException.ThrowIfNull(user);
         return new UserDto(user.UserId.Value, user.Username, user.PrimaryCollectionId.Value);
     }
+
+    public static CollectionContributor ToApiCollectionContributor(this User user)
+    {
+        ArgumentNullException.ThrowIfNull(user);
+        return new CollectionContributor(user.UserId.Value, user.Username);
+    }
 }

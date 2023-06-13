@@ -5,6 +5,7 @@ import PrimeVue from 'primevue/config';
 import Card from 'primevue/card';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import DialogService from 'primevue/dialogservice';
 import Tooltip from 'primevue/tooltip';
 import { createPinia } from 'pinia'
 
@@ -32,6 +33,7 @@ app.use(PrimeVue);
 app.use(ToastService);
 app.use(ConfirmationService);
 app.use(pinia)
+app.use(DialogService);
 
 app.directive('tooltip', Tooltip);
 

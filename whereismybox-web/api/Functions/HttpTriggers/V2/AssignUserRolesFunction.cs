@@ -67,21 +67,7 @@ public class AssignUserRolesFunction
         }
         catch (UserNotFoundException)
         {
-            var externalUser = req.ParseExternalUser();
-            log.LogInformation("User with externalId {ExternalUserId} not found, will create a new",
-                externalUser.ExternalUserId);
-            
-            var newUser = new User(new UserId(), externalUser.ExternalUserId, externalUser.ExternalIdentityProvider,
-                externalUser.Username, CollectionId.GenerateNew());
-            await _createUserCommandHandler.Execute(new CreateUserCommand(newUser.UserId, newUser.ExternalUserId,
-                newUser.ExternalIdentityProvider, newUser.Username, newUser.PrimaryCollectionId));
-            
-            log.LogInformation("Created new user {UserId} with primaryCollectionId {PrimaryCollectionId}",
-                newUser.UserId, newUser.PrimaryCollectionId);
-            var response = newUser.AsRolesResponse();
-            var asString = JsonConvert.SerializeObject(response);
-            log.LogInformation("AssignRolesResponse]: {AsString}", asString);
-            return new OkObjectResult(response);
+            return new NotFoundObjectResult(new ErrorResponse("Not found", "User not found"));
         }
     }
 }

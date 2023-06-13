@@ -10,5 +10,4 @@ public interface IQueryHandler<in TQuery, TResult>
 
 public interface IQuery
 {
-    public ExternalUserId ExternalUserId { get; }
 }
