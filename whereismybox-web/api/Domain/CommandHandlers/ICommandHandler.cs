@@ -10,5 +10,4 @@ public interface ICommandHandler<in T> where T: ICommand
 
 public interface ICommand
 {
-    public ExternalUserId ExternalUserId { get; }
 };

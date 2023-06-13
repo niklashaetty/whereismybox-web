@@ -3,6 +3,7 @@ using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Cosmos.Linq;
+using Newtonsoft.Json;
 using InvalidOperationException = System.InvalidOperationException;
 using User = Domain.Models.User;
 
@@ -122,5 +123,57 @@ public class UserRepository : IUserRepository
                     IfMatchEtag = cosmosAwareUser.ETag
                 });
         return cosmosResponse.Resource;
+    }
+
+    public async Task<List<User>> SearchByCollectionId(CollectionId collectionId)
+    {
+        var query = new QueryDefinition(
+            $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.ContributorCollections, '{collectionId.Value}')");
+        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
+
+        if (!iterator.HasMoreResults)
+        {
+            return new List<User>();
+        }
+
+        var response = await iterator.ReadNextAsync();
+        var res = new List<User>();
+        res.AddRange(response.Resource.ToList());
+        return res;
+    }
+
+    private async Task<User> GetCollectionOwner(CollectionId collectionId)
+    {
+        var query = new QueryDefinition(
+
+            $"SELECT * FROM c WHERE c.{nameof(CosmosAwareUser.PrimaryCollectionId)} = '{collectionId}'");
+        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
+
+        if (!iterator.HasMoreResults)
+        {
+            throw new CollectionNotFoundException(collectionId);
+        }
+
+        var response = await iterator.ReadNextAsync();
+
+        return response.Resource.First();
+    }
+    
+    private async Task<List<User>> GetCollectionContributors(CollectionId collectionId)
+    {
+        var query = new QueryDefinition(
+            $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.{nameof(CosmosAwareUser.ContributorCollections)}, {collectionId})"
+        );
+        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
+
+        if (!iterator.HasMoreResults)
+        {
+            return new List<User>();
+        }
+
+        var response = await iterator.ReadNextAsync();
+        var res = new List<User>();
+        res.AddRange(response.Resource.ToList());
+        return res;
     }
 }

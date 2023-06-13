@@ -1,6 +1,7 @@
 import User from '@/models/User';
 import axios from 'axios';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
+import Contributor from '@/models/Contributor';
 
 export class UsernameExistsError extends Error {
   constructor(msg: string) {
@@ -61,6 +62,46 @@ export default new class UserService {
     catch(e){
       console.log("Error!: " + e);
       throw new Error("UserNotFound");
+    }
+  }
+
+  async getCollectionContributors(collectionId: string){
+    const path = `/api/collections/${collectionId}/contributors`
+    try {
+      const res = await axios.get<Contributor[]>(path);
+      
+      return res;
+    }
+    catch(e){
+      console.log("Error!: " + e);
+      throw new Error("Failed to get contributors");
+    }
+  }
+
+  async addCollectionContributor(username:string, collectionId: string){
+    const addContributorRequest = { username: username };
+    const path = `/api/collections/${collectionId}/contributors`
+    try {
+      const res = await axios.post(path, addContributorRequest);
+      
+      return res;
+    }
+    catch(e){
+      console.log("Error!: " + e);
+      throw new Error("Failed to add contributor");
+    }
+  }
+
+  async deleteCollectionContributor(userId:string, collectionId: string){
+    const path = `/api/collections/${collectionId}/contributors/${userId}`
+    try {
+      const res = await axios.delete(path);
+    
+      return res;
+    }
+    catch(e){
+      console.log("Error!: " + e);
+      throw new Error("Failed to delete contributor");
     }
   }
 } 

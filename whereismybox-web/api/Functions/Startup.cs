@@ -59,12 +59,16 @@ namespace Functions
             builder.Services.AddSingleton<ICommandHandler<DeleteItemCommand>, DeleteItemCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<DeleteUnattachedItemCommand>, DeleteUnattachedItemCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<MoveUnattachedItemToBoxCommand>, MoveUnattachedItemToCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<AddContributorCommand>, AddContributorCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<DeleteContributorCommand>, DeleteContributorCommandHandler>();
             
             // QueryHandlers
             builder.Services.AddSingleton<IQueryHandler<GetBoxCollectionQuery, List<Box>>, GetBoxCollectionQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetUserPermissionsQuery, Permissions>, GetUserPermissionsQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetBoxQuery, Box>, GetBoxQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUserByExternalUserIdQuery, User>, GetUserByExternalUserIdQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>, GetUnattachedItemsQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetCollectionContributorsQuery, List<User>>, GetCollectionContributorsQueryHandler>();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();

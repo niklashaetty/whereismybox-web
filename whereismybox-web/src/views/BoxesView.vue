@@ -6,28 +6,34 @@ import InputNumber from 'primevue/inputnumber';
 import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import DataView from 'primevue/dataview'
 import type Box from '@/models/Box';
 import type UnattachedItem from '@/models/UnattachedItem';
 import { BoxEvents } from '@/services/eventservice';
-import ConfirmPopup from 'primevue/confirmpopup';
-import Toast from 'primevue/toast'
 import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
+import UserService from '@/services/userservice';
+import type Contributor from '@/models/Contributor';
 
 let boxes = ref<Box[]>([]);
+let contributors = ref<Contributor[]>([]);
+let contributorsLoaded = ref(false);
 let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
+const newContributorUsername = ref("");
 const boxNumber = ref(99);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
+const displayManageCollectionAccessDialog = ref(false)
 const searchQuery = ref("");
 const currentCollectionId = ref("");
+const disableAddContributor = ref(false);
 
 async function getBoxes(showLoading: boolean) {
   if(showLoading){
@@ -83,14 +89,46 @@ EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => {
 
 function closeDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = false;
-  console.log(displayCreateBoxDialog);
 }
 
 function openDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = true;
   boxName.value = "";
   boxNumber.value = getlowestFreeBoxNumber();
+}
 
+function openManageCollectionAccessDialog() {
+  getContributors();
+  displayManageCollectionAccessDialog.value = true;
+}
+
+function closeManageCollectionAccessDialog() {
+  contributorsLoaded.value = false;
+  contributors.value = [];
+  displayManageCollectionAccessDialog.value = false;
+  newContributorUsername.value = "";
+  disableAddContributor.value = false;
+}
+
+function getContributors() {
+  UserService.getCollectionContributors(currentCollectionId.value)
+  .then((c) => contributors.value = c.data)
+  .then(() => contributorsLoaded.value = true)
+}
+
+function removeContributor(userId: string, collectionId: string) {
+  UserService.deleteCollectionContributor(userId, collectionId)
+  .then(getContributors)
+}
+
+function addContributor(username: string, collectionId: string) {
+  disableAddContributor.value = true;
+  UserService.addCollectionContributor(username, collectionId)
+  .then(getContributors)
+  .then(() => {
+    disableAddContributor.value = false;
+    newContributorUsername.value = "";
+  })
 }
 
 function getlowestFreeBoxNumber(){
@@ -140,6 +178,7 @@ function trimString(maxLength: number, text: string) {
         <div class="sectiontitle">
           <SectionTitle title="My collection" >
             <template #right>
+              <i style="margin-right: 10px;" class="pi pi-share-alt boxie-icon clickable" @click="openManageCollectionAccessDialog" />
               <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
             </template>
           </SectionTitle>
@@ -176,30 +215,93 @@ function trimString(maxLength: number, text: string) {
           </UnattachedItemAccordion>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
 
 <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
-         <div class="card">
-          <p style="font-size:10px; margin-bottom: 10px;"> A box must have a name, for example "Kitchen stuff", and a unique number larger than 0. We've filled in the lowest unoccupied number for you, but feel free to change it! </p>
-          <div class="field">
-            <InputText v-model="boxName" type="text" placeholder="Name" />
-          </div>
-          <div class="field">
-            <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="2" />
-          </div>
-          <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
-        </div>
-        <template #footer>
-          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
-        </template>
-      </Dialog>
+  <div class="card">
+    <p style="font-size:10px; margin-bottom: 10px;"> A box must have a name, for example "Kitchen stuff", and a unique number larger than 0. We've filled in the lowest unoccupied number for you, but feel free to change it! </p>
+    <div class="field">
+      <InputText v-model="boxName" type="text" placeholder="Name" />
+    </div>
+    <div class="field">
+      <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="2" />
+    </div>
+    <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
+  </div>
+  <template #footer>
+    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
+  </template>
+</Dialog>
+
+<Dialog v-model:visible="displayManageCollectionAccessDialog" :style="{ width: '650px' }" header="Share collection" :modal="true">
+  <div class="card">
+    <p style="margin-bottom: 10px;"> Once a collection is shared with someone, they can access and edit the collection until you revoke their access here.</p>
+    
+    <DataView dataKey="userId" v-show="contributorsLoaded" :value="contributors">
+            <template #header>
+              Collection shared with
+            </template>
+            <template #list="slotProps">
+                <div class="col-12">
+                    <div class="flex flex-column xl:flex-row xl:align-items-start p-2 gap-1">
+                        <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-1">
+                            <div class="flex flex-column align-items-center sm:align-items-start gap-1">
+                                <div class="text-l text-1000">{{ slotProps.data.username }}</div>
+                            </div>
+                            <div class="flex sm:flex-column align-items-center sm:align-items-end gap-1 sm:gap-1">
+                                <Button @click="removeContributor(slotProps.data.userId, currentCollectionId)" p-button-sm icon="pi pi-times" rounded outlined  severity="danger"></Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </DataView>
+    <!---
+    <p style="margin-bottom: 10px;"> Your collection is currently shared with: </p>
+    <div v-if="contributorsLoaded" v-for="contributor in contributors" class="collection-sharee"> 
+      <p> {{ contributor.username }}</p>
+      <Button label="Revoke" severity="danger" icon="pi pi-times" class="p-button-text" @click="removeContributor(contributor.userId, currentCollectionId)" />
+    </div>
+    <div v-if="contributorsLoaded"> 
+      <div style="margin-top: 20px;display: flex;">   
+        <span class="p-float-label">
+          <InputText id="username" v-model="newContributorUsername" />
+          <label for="username">Username</label>
+        </span>
+        <Button @click="addContributor(newContributorUsername, currentCollectionId)" type="submit" label="Share" class="p-button-text" /> 
+      </div>  
+    </div>
+  -->
+  </div>
+  <div style="margin-top: 30px;display: flex;">   
+        <span class="p-float-label">
+          <InputText v-show="!disableAddContributor" id="username" v-model="newContributorUsername" />
+          <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
+          <label v-show="!disableAddContributor" for="username">Username</label>
+        </span>
+        <Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, currentCollectionId)" outlined>
+          <i class="pi pi-share-alt px-2"></i>
+          <span class="px-3">Share</span>
+        </Button>
+´
+        <Button style="width:110px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
+          <i class="pi pi-spin pi-spinner px-2"></i>
+          <span class="px-3">Share</span>
+        </Button>
+
+        
+      </div> 
+  <template #footer>
+    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />
+  </template>
+</Dialog>
 </template>
 
 <style scoped lang="scss">
+@import 'primeflex/primeflex.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
 
@@ -237,6 +339,12 @@ function trimString(maxLength: number, text: string) {
 .searchinput{
   width: 100%;
   height: 100%;
+}
+
+.collection-sharee{
+  display: flex;
+  height: 30px;
+  line-height: 30px;
 }
 
 .add-new-icon {
@@ -279,7 +387,6 @@ function trimString(maxLength: number, text: string) {
 }
 .c-bc-boxes-empty-text{
   margin-top: 20px;
-  text-align: center;
   color:white;
 }
 
