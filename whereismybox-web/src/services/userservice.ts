@@ -1,7 +1,7 @@
 import User from '@/models/User';
 import axios from 'axios';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
-import Contributor from '@/models/Contributor';
+import type Contributor from '@/models/Contributor';
 
 export class UsernameExistsError extends Error {
   constructor(msg: string) {
