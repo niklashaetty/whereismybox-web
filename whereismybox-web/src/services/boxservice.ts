@@ -71,7 +71,6 @@ export default new class BoxService {
     let boxesPath = `/api/collections/${collectionId}/boxes`
     return axios.post(boxesPath, postBoxRequest)
     .then((response) => EventService.BoxAdded(response.data.boxId))
-    .then(() => console.log("Box added boxservice!"))
   }
 }
 

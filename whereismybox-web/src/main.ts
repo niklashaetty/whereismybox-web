@@ -7,6 +7,7 @@ import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import DialogService from 'primevue/dialogservice';
 import Tooltip from 'primevue/tooltip';
+import Vue3Html2pdf from 'vue3-html2pdf'
 import { createPinia } from 'pinia'
 
 

@@ -19,6 +19,8 @@ import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
+import html2pdf from 'html2pdf.js';
+import Vue3Html2pdf from 'vue3-html2pdf';
 
 let box = ref<Box>(Object())
 const boxName = ref("");
@@ -43,8 +45,8 @@ async function getBox(showLoading: boolean) {
       loadingBox.value = false});
 }
 
-
 onMounted(async () => {
+  console.log("M08jted!")
   getBox(true);
 });
 
@@ -68,76 +70,40 @@ function trimString(maxLength: number, text: string) {
 
 </script>
 <template>
-<Header />
-<div class="container">
+  <vue3-html2pdf
+        :show-layout="false"
+        :float-layout="true"
+        :enable-download="true"
+        :preview-modal="true"
+        :paginate-elements-by-height="1400"
+        filename="hee hee"
+        :pdf-quality="2"
+        :manual-pagination="false"
+        pdf-format="a4"
+        pdf-orientation="landscape"
+        pdf-content-width="800px"
+        ref="html2Pdf"
+    >
+    <template  v-slot:pdf-content>
+      <div class="container">
+        <div class="boxes">
+          <Sticker qrCodeLink="www.google.com" boxNumber="1" />
+          <Sticker qrCodeLink="www.google.com" boxNumber="2" />
+          <Sticker qrCodeLink="www.google.com" boxNumber="3" />
+        </div>
+      </div>
+    </template>
+    </vue3-html2pdf>
 
-  <Toast/>
-  <div class="searchbar">
-    <SectionTitle title="Search" />
-    
-    <span class="p-input-icon-right p-input-icon-left testt">
-        <InputText class="searchinput" type="text" v-model="filter" placeholder="Type something to start filter" />
-        <i v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
-        <i v-else class="pi pi-search" style="width: 10px;" />
-    </span>
-
-  </div>
-  <div class="boxes">
-    
-    <div class="accordioncontainer">
-      <BoxAccordion v-if="loadingBox" :box="Object()" v-for="box in Array(1)" :isLoading="loadingBox"/>
-      <BoxAccordion v-else :box="box" :alwaysExpandedItems="true" />
-    </div>
-  </div>
-</div>
 </template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
-
-.myboxestitle{
-  display: flex;
-}
-
-
 .container {  
   margin: auto;
   min-height: 1000px;
   max-width: 800px;;
-  
-}
-
-.boxes { 
-  margin-top: 50px;
-  grid-area: boxes;
-
-}
-
-.testt{
-  width: 100%;
-  height: 50px;
-  box-shadow:
-  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
-  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
-  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
-  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
-  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
-  background-color: white;
-  border-radius: 3px;
-}
-
-.searchinput {
-  width: 100%;
-  height: 50px;
-  box-shadow:
-  0 0.7px 0.5px rgba(0, 0, 0, 0.034),
-  0 1.5px 1.7px rgba(0, 0, 0, 0.048),
-  0 3.5px 2.5px rgba(0, 0, 0, 0.06),
-  0 4.3px 4.9px rgba(0, 0, 0, 0.072),
-  0 10.8px 8.4px rgba(0, 0, 0, 0.086);
-  background-color: white;
-  border-radius: 3px;
 }
 
 </style>

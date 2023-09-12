@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { defineProps, computed} from 'vue'
+import { computed} from 'vue'
 
 const props = defineProps({
   title: {
@@ -16,7 +16,7 @@ const title = computed(() => props.title);
 <template>
 <div class="titlecontainer">
   <div class="icon">
-    <i class="pi pi-angle-right" style="color: slateblue; padding-right: 5px;"></i>
+    
   </div>
   <div class="title">
     <p> {{ title }}</p>
@@ -35,16 +35,16 @@ const title = computed(() => props.title);
   display: flex;
   height: 30px;
   font-size: 14px;
-  padding-left: 10px;
+
   width:100%;
   @media (min-width: 500px) {
-    font-size: 18px;
+    font-size: 20px;
     height: 40px;
   }
 }
 
 .icon {
-  width:20px;
+  width:10px;
 }
 
 

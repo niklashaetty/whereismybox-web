@@ -1,16 +1,7 @@
 <script setup lang="ts">
 
-import { ref, onMounted} from 'vue'
-import router from '@/router';
-
-import { defineProps, computed} from 'vue'
-
-import UserService from '@/services/userservice';
-import Avatar from 'primevue/avatar';
-import { useConfirm } from "primevue/useconfirm";
+import {computed} from 'vue'
 import QrcodeVue from 'qrcode.vue'
-
-const collectionId = router.currentRoute.value.params.collectionId as string;
 
 const props = defineProps({
   boxNumber:  {

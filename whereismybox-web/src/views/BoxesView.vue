@@ -13,6 +13,7 @@ import { BoxEvents } from '@/services/eventservice';
 import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
+import QrStickersView from '@/views/QrStickersView.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
@@ -31,6 +32,7 @@ const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
 const displayCreateBoxDialog = ref(false)
 const displayManageCollectionAccessDialog = ref(false)
+const displayPrintableQrStickersDialog = ref(false)
 const searchQuery = ref("");
 const currentCollectionId = ref("");
 const disableAddContributor = ref(false);
@@ -45,8 +47,7 @@ async function getBoxes(showLoading: boolean) {
       boxes.value = response.data.boxes
       filteredBoxes.value = response.data.boxes;
     })
-    .then(() => {
-      loadingBoxes.value = false});
+    .then(() => loadingBoxes.value = false);
 }
 
 async function getUnattachedItems(showLoading: boolean) {
@@ -95,6 +96,14 @@ function openDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = true;
   boxName.value = "";
   boxNumber.value = getlowestFreeBoxNumber();
+}
+
+function openPrintableQrStickersDialog(){
+  displayPrintableQrStickersDialog.value = true;
+}
+
+function closePrintableQrStickersDialog(){
+  displayPrintableQrStickersDialog.value = false;
 }
 
 function openManageCollectionAccessDialog() {
@@ -178,6 +187,7 @@ function trimString(maxLength: number, text: string) {
         <div class="sectiontitle">
           <SectionTitle title="My collection" >
             <template #right>
+              <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
               <i style="margin-right: 10px;" class="pi pi-share-alt boxie-icon clickable" @click="openManageCollectionAccessDialog" />
               <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
             </template>
@@ -233,6 +243,12 @@ function trimString(maxLength: number, text: string) {
   </div>
   <template #footer>
     <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
+  </template>
+</Dialog>
+<Dialog v-model:visible="displayPrintableQrStickersDialog" :style="{ width: '650px' }" header="Printable QR stickers" :modal="true">
+  <QrStickersView />
+  <template #footer>
+    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closePrintableQrStickersDialog" />
   </template>
 </Dialog>
 
