@@ -19,7 +19,6 @@ import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
-import html2pdf from 'html2pdf.js';
 import Vue3Html2pdf from 'vue3-html2pdf';
 
 let box = ref<Box>(Object())
@@ -69,21 +68,6 @@ function trimString(maxLength: number, text: string) {
 }
 
 </script>
-<template>
-  <vue3-html2pdf
-        :show-layout="false"
-        :float-layout="true"
-        :enable-download="true"
-        :preview-modal="true"
-        :paginate-elements-by-height="1400"
-        filename="hee hee"
-        :pdf-quality="2"
-        :manual-pagination="false"
-        pdf-format="a4"
-        pdf-orientation="landscape"
-        pdf-content-width="800px"
-        ref="html2Pdf"
-    >
     <template  v-slot:pdf-content>
       <div class="container">
         <div class="boxes">
@@ -93,9 +77,7 @@ function trimString(maxLength: number, text: string) {
         </div>
       </div>
     </template>
-    </vue3-html2pdf>
 
-</template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
