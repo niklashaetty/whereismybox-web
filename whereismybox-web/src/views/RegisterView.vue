@@ -48,8 +48,6 @@ function handleCreateUserError(error: Error){
           <label for="username">Username</label>
         </span>
         <Button @click="createUser" style="margin-top: 20px; margin-left: auto;margin-right: auto;" type="submit" label="Start using Boxie!" text raised /> 
-        
-          
     </div>
     </div>
   </div>

@@ -45,7 +45,6 @@ async function getBox(showLoading: boolean) {
 }
 
 onMounted(async () => {
-  console.log("M08jted!")
   getBox(true);
 });
 
@@ -62,7 +61,6 @@ function clearFilter() {
   filter.value = "";
 }
 
-
 function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 }
@@ -77,7 +75,6 @@ function trimString(maxLength: number, text: string) {
         </div>
       </div>
     </template>
-
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');

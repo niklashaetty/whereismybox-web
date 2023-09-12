@@ -5,11 +5,23 @@ import router from '@/router';
 
 import UserService from '@/services/userservice';
 import Avatar from 'primevue/avatar';
+import Menu from 'primevue/menu';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
 
 const collectionId = router.currentRoute.value.params.collectionId as string;
 const loggedInUserStore = useLoggedInUserStore()
 const avatarLetter = ref("");
+
+const menu: any = ref(null);
+const menuItems = ref([
+    { separator: true },
+    {
+        label: 'Log out',
+        icon: 'pi pi-sign-out',
+        route: "/hello"
+    },
+    { separator: true }
+]);
 
 onMounted(async () => {
   await getCurrentUserInformation();
@@ -33,18 +45,30 @@ function pushToIndex(){
   router.push({ path: `/`});
 }
 
+function toggleBoxMenu(event: MouseEvent)  { 
+  menu.value?.toggle(event);
+}
+
 </script>
 
 <template>
 <div class="headercontainer">
   <div class="logo" @click="pushToIndex()">
     <i class="fa-solid fa-box-open"></i>
-    <i class="pi pi-box boxlogo" ></i>
+    <i class="pi pi-box boxlogo"></i>
     <h2 style="margin-left: 5px; "> Boxie</h2>
   </div>
   <div class="filler"></div>
-  <div class="username"  @click="pushToIndex()">
-    <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" />
+  <div class="username" >
+    <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" @click="toggleBoxMenu($event)"/>
+    <Menu id="overlay_menu" ref="menu"  :popup="true">
+            <template #end>
+                <button style="height: 30px;padding-left: 10px; align-items: center; display: flex;" class="p-link">
+                    <i class="pi pi-sign-out" />
+                    <a href="/.auth/logout?post_logout_redirect_uri=/" style="padding-left: 10px;">Log out</a>
+                </button>
+            </template>
+    </Menu>
     <p class="username-text" style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
   </div>
 </div>
@@ -53,15 +77,13 @@ function pushToIndex(){
 <style scoped lang="scss">
 .headercontainer {
   display: grid; 
-  grid-template-columns: 0.7fr 1.9fr 0.8fr; 
-  grid-template-rows: 0.2fr 1.8fr 1fr; 
+  grid-template-columns: 0.7fr 1.9fr 0.01fr 0.8fr; 
+  grid-template-rows: 0.2fr; 
   gap: 0px 0px; 
   grid-template-areas: 
-    "logo filler username"
-    ". . ."
-    ". . ."; 
+    "logo filler logout username";
   width: 100%;
-  height:60px;
+  height: 60px;
 }
 
 .logo { 
@@ -81,6 +103,15 @@ function pushToIndex(){
 
 .username { 
   grid-area: username; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  height: 60px;
+}
+
+.logout { 
+  grid-area: logout; 
   display: flex;
   justify-content: center;
   align-items: center;
