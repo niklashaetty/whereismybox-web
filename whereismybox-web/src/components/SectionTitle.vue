@@ -15,9 +15,6 @@ const title = computed(() => props.title);
 
 <template>
 <div class="titlecontainer">
-  <div class="icon">
-    
-  </div>
   <div class="title">
     <p> {{ title }}</p>
   </div>
@@ -31,6 +28,7 @@ const title = computed(() => props.title);
 
 <style scoped lang="scss">
 .titlecontainer{
+  padding-left: 5px;
   color: white;
   align-items: center;
   display: flex;
@@ -38,15 +36,9 @@ const title = computed(() => props.title);
   font-size: 20px;
   width:100%;
   @media (min-width: 500px) {
-    
     height: 40px;
   }
 }
-
-.icon {
-  width:10px;
-}
-
 
 .right-content {
   max-width: 100px;
@@ -59,7 +51,6 @@ const title = computed(() => props.title);
 .right-slot {
   height: 30px;
   line-height: 30px;
-
 
 }
 </style>
