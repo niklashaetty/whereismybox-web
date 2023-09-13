@@ -9,29 +9,24 @@ const isLoadingSlow = ref(false);
 const isLoadingSuperSlow = ref(false);
 
 async function getCurrentUser(){
-  console.log("Redirecting user!")
   var isUserAuthenticated = await UserService.isUserAuthenticated();
   if(isUserAuthenticated){
-    console.log("User is authenticated");
   await UserService.getRegisteredUser()
-  .then((user) => pushToCollection(user.primaryCollectionId))
+  .then((user) => pushToDashboard())
   .catch(pushToRegistration)
   } else {
     pushToLogin();
   }
 }
-function pushToCollection(collectionId:string){
-  console.log("User is registered");
-  router.push({path: `collections/${collectionId}`});
+function pushToDashboard(){
+  router.push({path: `/dashboard`});
 }
 
 function pushToLogin(){
-  console.log("User is not authenticated");
   router.push("/login")
 }
 
 function pushToRegistration(){
-  console.log("User is not registered");
   router.push("/register")
 }
 

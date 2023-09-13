@@ -62,7 +62,6 @@ const expanded = computed(() => {
 })
 
 watch(searchQuery, (newValue, oldValue) => {
-  console.log(newValue, oldValue);
   if (newValue) {
     isClicked.value = true
   } else {

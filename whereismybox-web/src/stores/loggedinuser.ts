@@ -5,14 +5,16 @@ export const useLoggedInUserStore = defineStore('loggedInUser', {
       return { 
         username: "",
         userId: "",
-        primaryCollectionId: ""
+        primaryCollectionId: "",
+        sharedCollectionIds: []
      }
     },
     actions: {
-      setLoggedInUser(userId: string, username: string, primaryCollectionId: string) {
+      setLoggedInUser(userId: string, username: string, primaryCollectionId: string, sharedCollectionId: []) {
         this.userId = userId;
         this.username = username;
         this.primaryCollectionId = primaryCollectionId;
+        this.sharedCollectionIds = sharedCollectionId;
       },
     },
   })

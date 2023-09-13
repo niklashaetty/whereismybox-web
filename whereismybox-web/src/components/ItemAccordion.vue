@@ -86,7 +86,6 @@ function toggleItemMenu(event: MouseEvent)  {
 
 <style scoped lang="scss">
 
-
 .itemaccordion-container {  display: grid;
   grid-template-columns: 1fr 1.7fr 0.3fr;
   grid-template-rows: 0.1fr;

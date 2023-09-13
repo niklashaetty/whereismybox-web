@@ -19,13 +19,11 @@ export class UsernameExistsError extends Error {
 export default new class UserService {
   async createUser(username:string){
     const createUserRequest = { username: username };
-    console.log("creating user!")
     try {
       var res = await axios.post('/api/users', createUserRequest)
-      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId);
+      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId, res.data.c);
       return user;
     } catch(e){
-        console.log("Error creating user" + e);
         throw new Error("FailedToCreateUser");
     }
   }
@@ -52,12 +50,11 @@ export default new class UserService {
     try {
       const res = await axios.get(path);
 
-      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId);
-      loggedInUser.setLoggedInUser(user.userId, user.username, user.primaryCollectionId);
+      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId, res.data.contributorCollections);
+      loggedInUser.setLoggedInUser(user.userId, user.username, user.primaryCollectionId, user.sharedCollectionIds);
       return user;
     }
     catch(e){
-      console.log("Error!: " + e);
       throw new Error("UserNotFound");
     }
   }
@@ -70,7 +67,6 @@ export default new class UserService {
       return res;
     }
     catch(e){
-      console.log("Error!: " + e);
       throw new Error("Failed to get contributors");
     }
   }
@@ -84,7 +80,6 @@ export default new class UserService {
       return res;
     }
     catch(e){
-      console.log("Error!: " + e);
       throw new Error("Failed to add contributor");
     }
   }
@@ -97,7 +92,6 @@ export default new class UserService {
       return res;
     }
     catch(e){
-      console.log("Error!: " + e);
       throw new Error("Failed to delete contributor");
     }
   }
