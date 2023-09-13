@@ -318,15 +318,9 @@ function trimString(maxLength: number, text: string) {
           <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
           <label v-show="!disableAddContributor" for="username">Username</label>
         </span>
-        <Button style="width:110px;" v-show="!disableAddContributor" @click="addContributor(newContributorUsername, currentCollectionId)" outlined>
-          <i class="pi pi-share-alt px-2"></i>
-          <span class="px-3">Share</span>
-        </Button>
-´
-        <Button style="width:110px;" disabled v-show="disableAddContributor" outlined>
-          <i class="pi pi-spin pi-spinner px-2"></i>
-          <span class="px-3">Share</span>
-        </Button>
+        <Button severity="plain" text raised icon="pi pi-share-alt" label="Share" style="margin-left: 0.5em" v-show="!disableAddContributor" @click="addContributor(newContributorUsername, currentCollectionId)"/>
+        <Button severity="plain" text raised icon="pi pi-spin pi-spinner" label="Share" style="margin-left: 0.5em" disabled v-show="disableAddContributor"/>
+
       </div> 
   <template #footer>
     <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />
