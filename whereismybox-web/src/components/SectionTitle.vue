@@ -35,11 +35,10 @@ const title = computed(() => props.title);
   align-items: center;
   display: flex;
   height: 30px;
-  font-size: 14px;
-
+  font-size: 20px;
   width:100%;
   @media (min-width: 500px) {
-    font-size: 20px;
+    
     height: 40px;
   }
 }

@@ -118,7 +118,7 @@ async function pushToCollection(collectionId: string) {
           </SectionTitle>
         </div>
         <div class="c-ui-unattacheditems">
-          <Card v-show="sharedCollectionsLoaded" class="shared-collection-card" style="width: 25em; margin-bottom: 10px;" v-for="collectionId in loggedInUserStore.sharedCollectionIds">
+          <Card v-show="sharedCollectionsLoaded" class="shared-collection-card" v-for="collectionId in loggedInUserStore.sharedCollectionIds">
             <template #title> <p style="font-size: 18px;">Collection with id {{collectionId}}</p> </template>
             <template #subtitle><p>Shared by {{ sharedCollections.get(collectionId) }}</p></template>
             <template #footer>
@@ -216,7 +216,7 @@ async function pushToCollection(collectionId: string) {
 
 
 .my-collection-card {
-  width: 25em;
+  width: 20em;
 
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
@@ -247,7 +247,8 @@ async function pushToCollection(collectionId: string) {
 }
 
 .shared-collection-card {
-  width: 25em;
+  width: 20em;
+  margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
     width: 40em;
