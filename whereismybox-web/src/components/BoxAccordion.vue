@@ -21,7 +21,6 @@ import { usePaperizer } from 'paperizer'
 const { paperize } = usePaperizer('print', {
   styles: [
     '/testx.css',
-  
   ]
 })
 const print = () => {

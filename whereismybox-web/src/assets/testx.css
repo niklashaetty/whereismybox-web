@@ -39,3 +39,11 @@
     height: 115px;
     background-color: white;
   }
+
+  .sticker-containers {
+    display: flex;
+    margin-top: 10mm;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }

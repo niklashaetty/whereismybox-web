@@ -20,6 +20,7 @@ import BoxService from '@/services/boxservice';
 import UserService from '@/services/userservice';
 import type Contributor from '@/models/Contributor';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
+import { usePaperizer } from 'paperizer'
 
 
 let boxes = ref<Box[]>([]);
@@ -38,6 +39,15 @@ const displayPrintableQrStickersDialog = ref(false)
 const searchQuery = ref("");
 const currentCollectionId = ref("");
 const disableAddContributor = ref(false);
+
+const { paperize } = usePaperizer('qr-stickers-view', {
+  styles: [
+    '/testx.css',
+  ]
+})
+const print = () => {
+  paperize()
+}
 
 const loggedInUserStore = useLoggedInUserStore()
 
@@ -267,8 +277,12 @@ function trimString(maxLength: number, text: string) {
   </template>
 </Dialog>
 <Dialog v-model:visible="displayPrintableQrStickersDialog" :style="{ width: '650px' }" header="Printable QR stickers" :modal="true">
-  <QrStickersView />
+  
+  <div id="qr-stickers-view">
+    <QrStickersView :collectionId="currentCollectionId" :boxes="boxes"/>'
+  </div>
   <template #footer>
+    <Button label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
     <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closePrintableQrStickersDialog" />
   </template>
 </Dialog>
@@ -312,8 +326,6 @@ function trimString(maxLength: number, text: string) {
           <i class="pi pi-spin pi-spinner px-2"></i>
           <span class="px-3">Share</span>
         </Button>
-
-        
       </div> 
   <template #footer>
     <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />

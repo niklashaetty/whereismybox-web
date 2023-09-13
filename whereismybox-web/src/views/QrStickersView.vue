@@ -7,7 +7,7 @@ import InputNumber from 'primevue/inputnumber';
 import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
-import type Box from '@/models/Box';
+
 import type Item from '@/models/Item';
 import type UnattachedItem from '@/models/UnattachedItem';
 import { BoxEvents } from '@/services/eventservice';
@@ -18,59 +18,34 @@ import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
+import Sticker from '@/components/Sticker.vue'
 import BoxService from '@/services/boxservice';
+import Box from '@/models/Box';
 
-let box = ref<Box>(Object())
-const boxName = ref("");
-const collectionId = router.currentRoute.value.params.collectionId as string;
-const boxId = router.currentRoute.value.params.boxId as string;
-const loadingBox = ref(true);
+import {computed} from 'vue'
 
-let filteredItems = ref<Item[]>([]);
-const filter = ref("");
-
-async function getBox(showLoading: boolean) {
-  if(showLoading){
-    loadingBox.value = true;
-  }
-  BoxService.getBox(collectionId, boxId)
-    .then((response) => {
-      box.value = response.data
-      filteredItems.value = response.data.items;
-      boxName.value = response.data.boxName;
-    })
-    .then(() => {
-      loadingBox.value = false});
-}
-
-onMounted(async () => {
-  getBox(true);
+const props = defineProps({
+  boxes:  {
+      type: Object,
+      required: true
+  },
+  collectionId: {
+      type: String,
+      required: true
+    }
 });
+const boxes = computed(() => props.boxes);
+const collectionId = computed(() => props.collectionId);
 
-/* Events */
-
-EventBus.on(BoxEvents.ITEM_CHANGED,  () => { 
-      getBox(false);
-});
-
-
-const filterBoxes = () => box.value?.items.filter((item) => !filter.value || item.name.toLowerCase().includes(filter.value.toLowerCase()))
-
-function clearFilter() {
-  filter.value = "";
+function makeLinkToBox(collectionId: string, boxId: string){
+  return window.location.origin + "collections/" + collectionId + "/boxes/" +boxId;
 }
-
-function trimString(maxLength: number, text: string) {
-  return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
-}
-
 </script>
 <template>
-      <div class="container">
-        <div class="boxes">
-          <Sticker qrCodeLink="www.google.com" boxNumber="1" />
-          <Sticker qrCodeLink="www.google.com" boxNumber="2" />
-          <Sticker qrCodeLink="www.google.com" boxNumber="3" />
+<div class="sticker-containers">
+        
+        <div class="stickers-content">
+          <Sticker v-for="box in boxes" :qrCodeLink="makeLinkToBox(collectionId, box.boxId)" :boxNumber="box.number" :title="box.name" />
         </div>
       </div>
 </template>
@@ -78,10 +53,13 @@ function trimString(maxLength: number, text: string) {
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
-.container {  
-  margin: auto;
-  min-height: 1000px;
-  max-width: 800px;;
-}
+
+.sticker-containers {
+    display: flex;
+    margin-top: 10mm;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
 
 </style>
