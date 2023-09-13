@@ -1,0 +1,37 @@
+.sticker-container{
+    width: 300px;
+    height: 300px;
+    background: white;
+    border: 1px solid;
+    border-color: black;
+    border: 5px solid;
+    padding: 20px;
+    background-color: #a0ac95;
+    margin: auto;
+  }
+  
+  .number {
+    display:table; 
+    line-height: 1;
+    margin: auto;
+    color: #f2f2f2;
+    font-size: 80px;
+  }
+  .title {
+    display:table; 
+    margin: auto;
+    color: #f2f2f2;
+    font-size: 30px;
+  }
+  
+  .qrcode {
+    display: flex;
+    margin: auto;
+    border: 2px solid;
+    border-color: white;
+    padding: 5px;
+    border-radius: 3px;
+    width: 115px;
+    height: 115px;
+    background-color: white;
+  }

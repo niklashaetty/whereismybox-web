@@ -16,6 +16,20 @@ import Sticker from '@/components/Sticker.vue'
 import Skeleton from 'primevue/skeleton';
 import Dialog from 'primevue/dialog'
 
+import { usePaperizer } from 'paperizer'
+
+const { paperize } = usePaperizer('print', {
+  styles: [
+    'assets/testx.css',
+    './assets/testx.css',
+    '../assets/testx.css',
+    '../../assets/testx.css',
+    '/assets/testx.css',
+  ]
+})
+const print = () => {
+  paperize()
+}
 const props = defineProps(
   {
     box:  {
@@ -149,7 +163,12 @@ onMounted(async () => {
 
 <template>
     <Dialog v-model:visible="displayStickerDialog" :style="{ width: '450px' }" header="Printable QR code sticker" :modal="true">
-         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" :title="box.name" />
+      <button class="print-button" @click="print">
+    Print
+    </button>
+    <div id="print">
+        <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" :title="box.name" />
+    </div>
         <template #footer>
           <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog" />
         </template>
