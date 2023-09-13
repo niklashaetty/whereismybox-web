@@ -19,5 +19,11 @@
   "navigationFallback": {
     "rewrite": "/index.html",
     "exclude": ["/images/*.{png,jpg,gif}", "/css/*"]
-  }
+  },
+  "routes": [
+    {
+      "route": "/logout",
+      "redirect": "/.auth/logout"
+    }
+  ]
 }

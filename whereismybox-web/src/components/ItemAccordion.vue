@@ -35,7 +35,9 @@ const menuItems = ref([
               removeSelectedItemFromBox(collectionId, boxId.value, item.value.itemId);
             }
         },
-        {label: 'Delete item', icon: 'pi pi-trash',
+        {
+          label: 'Delete item', 
+          icon: 'pi pi-trash',
             command: () => {
               confirmHardDeleteItem(collectionId, boxId.value, item.value.itemId)
             }
