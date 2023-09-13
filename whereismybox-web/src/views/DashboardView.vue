@@ -6,6 +6,7 @@ import InputNumber from 'primevue/inputnumber';
 import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import DataView from 'primevue/dataview'
 import Card from 'primevue/card'
 import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'

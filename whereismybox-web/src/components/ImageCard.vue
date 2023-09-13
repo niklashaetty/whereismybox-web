@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed, onMounted, watch} from 'vue'
+import { computed, onMounted, watch} from 'vue'
 
 import router from '@/router';
 import Button from 'primevue/button';

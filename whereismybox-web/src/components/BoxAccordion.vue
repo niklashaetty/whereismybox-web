@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineProps, computed, onMounted, watch} from 'vue'
+import { computed, onMounted, watch} from 'vue'
 
 import router from '@/router';
 import Button from 'primevue/button';
@@ -149,7 +149,7 @@ onMounted(async () => {
 
 <template>
     <Dialog v-model:visible="displayStickerDialog" :style="{ width: '450px' }" header="Printable QR code sticker" :modal="true">
-         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" />
+         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" :title="box.name" />
         <template #footer>
           <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog" />
         </template>

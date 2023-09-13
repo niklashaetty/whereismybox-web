@@ -12,17 +12,23 @@ const props = defineProps({
     type: String,
     required: true
   },
+  title: {
+    type: String,
+    required: true
+  },
 }
 );
 const boxNumber = computed(() => props.boxNumber);
 const qrCodeLink = computed(() => props.qrCodeLink);
+const title = computed(() => props.title);
 
 </script>
 
 <template>
 <div class="sticker-container">
     <h1 class="number"> {{ boxNumber }} </h1>
-    <qrcode-vue class="qrcode" style="margin: auto" :size="100" :value="qrCodeLink"></qrcode-vue>
+    <h1 class="title"> {{ title }} </h1>
+    <qrcode-vue class="qrcode" style="margin: auto" :size="125" :value="qrCodeLink"></qrcode-vue>
 </div>
 </template>
 
@@ -41,10 +47,16 @@ const qrCodeLink = computed(() => props.qrCodeLink);
 
 .number {
   display:table; 
+  line-height: 1;
   margin: auto;
   color: #f2f2f2;
   font-size: 80px;
-
+}
+.title {
+  display:table; 
+  margin: auto;
+  color: #f2f2f2;
+  font-size: 30px;
 }
 
 .qrcode {
