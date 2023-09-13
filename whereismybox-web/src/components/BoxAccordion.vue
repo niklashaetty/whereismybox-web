@@ -20,11 +20,8 @@ import { usePaperizer } from 'paperizer'
 
 const { paperize } = usePaperizer('print', {
   styles: [
-    'assets/testx.css',
-    './assets/testx.css',
-    '../assets/testx.css',
-    '../../assets/testx.css',
-    '/assets/testx.css',
+    '/testx.css',
+  
   ]
 })
 const print = () => {
@@ -162,15 +159,14 @@ onMounted(async () => {
 </script>
 
 <template>
-    <Dialog v-model:visible="displayStickerDialog" :style="{ width: '450px' }" header="Printable QR code sticker" :modal="true">
-      <button class="print-button" @click="print">
-    Print
-    </button>
+    <Dialog v-model:visible="displayStickerDialog" :style="{ width: '450px' }" header="QR code sticker" :modal="true">
+
     <div id="print">
         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" :title="box.name" />
     </div>
         <template #footer>
-          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog" />
+          <Button label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
+          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog()" />
         </template>
       </Dialog>
 <div v-if="isFullyLoaded" class="accordion-container">

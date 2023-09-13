@@ -1,4 +1,5 @@
 .sticker-container{
+  
     width: 300px;
     height: 300px;
     background: white;
@@ -13,14 +14,17 @@
   .number {
     display:table; 
     line-height: 1;
+    padding-bottom: 20px;
     margin: auto;
     color: #f2f2f2;
-    font-size: 80px;
+    font-family: 'Roboto', sans-serif;
+    font-size: 90px;
   }
   .title {
     display:table; 
     margin: auto;
     color: #f2f2f2;
+    font-family: 'Roboto', sans-serif;
     font-size: 30px;
   }
   

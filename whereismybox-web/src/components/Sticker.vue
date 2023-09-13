@@ -28,7 +28,7 @@ const title = computed(() => props.title);
 <div class="sticker-container">
     <h1 class="number"> {{ boxNumber }} </h1>
     <h1 class="title"> {{ title }} </h1>
-    <qrcode-vue class="qrcode" style="margin: auto" :size="125" :value="qrCodeLink"></qrcode-vue>
+    <qrcode-vue class="qrcode" style="margin: auto" :size="125" :value="qrCodeLink" render-as="svg"></qrcode-vue>
 </div>
 </template>
 
@@ -66,8 +66,7 @@ const title = computed(() => props.title);
   border-color: white;
   padding: 5px;
   border-radius: 3px;
-  width: 115px;
-  height: 115px;
+
   background-color: white;
 }
 
