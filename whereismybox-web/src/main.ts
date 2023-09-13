@@ -7,9 +7,8 @@ import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
 import DialogService from 'primevue/dialogservice';
 import Tooltip from 'primevue/tooltip';
-import Vue3Html2pdf from 'vue3-html2pdf'
 import { createPinia } from 'pinia'
-
+import Paperizer from 'paperizer'
 
 import './assets/main.css'
 
@@ -35,6 +34,7 @@ app.use(ToastService);
 app.use(ConfirmationService);
 app.use(pinia)
 app.use(DialogService);
+app.use(Paperizer);
 
 app.directive('tooltip', Tooltip);
 
@@ -45,4 +45,3 @@ app.provide('emitter', emitter);
 app.component('Card', Card);
 app.component('font-awesome-icon', FontAwesomeIcon)
 app.mount('#app')
-
