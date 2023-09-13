@@ -19,7 +19,6 @@ import BoxAccordion from '@/components/BoxAccordion.vue';
 import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
-import Vue3Html2pdf from 'vue3-html2pdf';
 
 let box = ref<Box>(Object())
 const boxName = ref("");
@@ -66,7 +65,7 @@ function trimString(maxLength: number, text: string) {
 }
 
 </script>
-<template  v-slot:pdf-content>
+<template>
       <div class="container">
         <div class="boxes">
           <Sticker qrCodeLink="www.google.com" boxNumber="1" />
