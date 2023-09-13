@@ -72,8 +72,6 @@ function trimString(maxLength: number, text: string) {
 
   <Toast/>
   <div class="searchbar">
-    <SectionTitle title="Search" />
-    
     <span class="p-input-icon-right p-input-icon-left testt">
         <InputText class="searchinput" type="text" v-model="filter" placeholder="Type something to start filter" />
         <i v-if=filter style="width: 10px;" class="pi pi-times" @click="clearFilter()" />
