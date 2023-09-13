@@ -23,7 +23,6 @@ const qrCodeLink = computed(() => props.qrCodeLink);
 const title = computed(() => props.title);
 
 </script>
-
 <template>
 <div class="sticker-container">
     <h1 class="number"> {{ boxNumber }} </h1>
