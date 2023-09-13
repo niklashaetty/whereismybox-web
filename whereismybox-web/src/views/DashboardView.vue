@@ -90,7 +90,7 @@ async function pushToCollection(collectionId: string) {
 <template>
 <Header />
 <div class="wrapper">
-  <div class="container">
+  <div class="dashboardcontainer">
     <div class="content">
       <div class="c-boxcollection">
         <div class="sectiontitle">
@@ -102,8 +102,8 @@ async function pushToCollection(collectionId: string) {
             <template #subtitle> <p>Created by you</p> </template>
           
             <template #footer>
-                <Button icon="pi pi-check" label="Open" @click="pushToCollection(loggedInUserStore.primaryCollectionId)"/>
-                <Button icon="pi pi-share-alt" label="Share" severity="secondary" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog()"/>
+                <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(loggedInUserStore.primaryCollectionId)"/>
+                <Button severity="plain" text raised icon="pi pi-share-alt" label="Share" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog()"/>
             </template>
         </Card>
         </div>
@@ -122,7 +122,7 @@ async function pushToCollection(collectionId: string) {
             <template #title> <p style="font-size: 18px;">Collection with id {{collectionId}}</p> </template>
             <template #subtitle><p>Shared by {{ sharedCollections.get(collectionId) }}</p></template>
             <template #footer>
-                <Button icon="pi pi-check" label="Open" @click="pushToCollection(collectionId)"/>
+                <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(collectionId)"/>
             </template>
           </Card>
         </div>
@@ -183,7 +183,7 @@ async function pushToCollection(collectionId: string) {
 <style scoped lang="scss">
 @import 'primeflex/primeflex.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
-.container {
+.dashboardcontainer {
   width: 95%;
   max-width: 1250px;  
   min-width: 350px;
@@ -191,7 +191,7 @@ async function pushToCollection(collectionId: string) {
   margin: auto;
   padding: 10px;
   @media (min-width: 1000px) {
-    width: 80%;
+    width: 70%;
   }
   @media (min-width: 500px) {
     width:90%;
