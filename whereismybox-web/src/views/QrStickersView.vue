@@ -66,7 +66,7 @@ function trimString(maxLength: number, text: string) {
 }
 
 </script>
-    <template  v-slot:pdf-content>
+<template  v-slot:pdf-content>
       <div class="container">
         <div class="boxes">
           <Sticker qrCodeLink="www.google.com" boxNumber="1" />
@@ -74,7 +74,7 @@ function trimString(maxLength: number, text: string) {
           <Sticker qrCodeLink="www.google.com" boxNumber="3" />
         </div>
       </div>
-    </template>
+</template>
 
 <style scoped>
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
