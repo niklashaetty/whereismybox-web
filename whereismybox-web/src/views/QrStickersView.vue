@@ -38,7 +38,7 @@ const boxes = computed(() => props.boxes);
 const collectionId = computed(() => props.collectionId);
 
 function makeLinkToBox(collectionId: string, boxId: string){
-  return window.location.origin + "collections/" + collectionId + "/boxes/" +boxId;
+  return window.location.origin + "/collections/" + collectionId + "/boxes/" +boxId;
 }
 </script>
 <template>
