@@ -16,7 +16,6 @@ import Toast from 'primevue/toast'
 import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import BoxAccordion from '@/components/BoxAccordion.vue';
-import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
 

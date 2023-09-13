@@ -31,6 +31,7 @@ const title = computed(() => props.title);
 
 <style scoped lang="scss">
 .titlecontainer{
+  color: white;
   align-items: center;
   display: flex;
   height: 30px;

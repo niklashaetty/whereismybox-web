@@ -97,8 +97,9 @@ async function pushToCollection(collectionId: string) {
         </div>
         <div class="c-bc-boxes">
           <Card class="my-collection-card">
-            <template #title> <p>Collection with id {{loggedInUserStore.primaryCollectionId}}</p> </template>
+            <template #title> <p style="font-size: 18px;">Collection with id {{loggedInUserStore.primaryCollectionId}}</p> </template>
             <template #subtitle> <p>Created by you</p> </template>
+          
             <template #footer>
                 <Button icon="pi pi-check" label="Open" @click="pushToCollection(loggedInUserStore.primaryCollectionId)"/>
                 <Button icon="pi pi-share-alt" label="Share" severity="secondary" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog()"/>
@@ -117,7 +118,7 @@ async function pushToCollection(collectionId: string) {
         </div>
         <div class="c-ui-unattacheditems">
           <Card v-show="sharedCollectionsLoaded" class="shared-collection-card" style="width: 25em; margin-bottom: 10px;" v-for="collectionId in loggedInUserStore.sharedCollectionIds">
-            <template #title> <p>Collection with id {{collectionId}}</p> </template>
+            <template #title> <p style="font-size: 18px;">Collection with id {{collectionId}}</p> </template>
             <template #subtitle><p>Shared by {{ sharedCollections.get(collectionId) }}</p></template>
             <template #footer>
                 <Button icon="pi pi-check" label="Open" @click="pushToCollection(collectionId)"/>
@@ -215,10 +216,33 @@ async function pushToCollection(collectionId: string) {
 
 .my-collection-card {
   width: 25em;
+
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
     width: 40em;
   }
+}
+
+.c-bc-boxes::v-deep .p-card .p-card-content {
+  padding: 0 !important;
+}
+
+.c-bc-boxes::v-deep .p-card .p-card-body {
+  padding: 10px !important;
+}
+
+.c-ui-unattacheditems::v-deep .p-card .p-card-content {
+  padding: 0 !important;
+}
+
+.c-ui-unattacheditems::v-deep .p-card .p-card-body {
+  padding: 10px !important;
+}
+
+
+
+.p-card-content {
+  padding: 0px;
 }
 
 .shared-collection-card {
@@ -227,12 +251,6 @@ async function pushToCollection(collectionId: string) {
   @media (min-width: 1000px) {
     width: 40em;
   }
-}
-
-
-.searchinput{
-  width: 100%;
-  height: 100%;
 }
 
 .collection-sharee{
