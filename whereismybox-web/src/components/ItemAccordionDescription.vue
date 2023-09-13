@@ -60,10 +60,11 @@ function addNewItem() {
           <div class="field">
             <InputText v-model="itemDescription" type="text" placeholder="Description - e.g. Ferrari, red with white stripes" />
           </div>
-          <Button @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
+          
         </div>
         <template #footer>
-          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeAddItemDialog" />
+          <Button icon="pi pi-plus" style="margin-top: 10px;" severity="success" text raised @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
+          <Button severity="plain" text raised label="Close" icon="pi pi-times" class="p-button-text" @click="closeAddItemDialog" />
         </template>
       </Dialog>
   </div>

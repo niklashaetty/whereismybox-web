@@ -270,9 +270,10 @@ function trimString(maxLength: number, text: string) {
     <div class="field">
       <InputNumber v-model="boxNumber" :min="0" :max="100" placeholder="2" />
     </div>
-    <Button @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
+    
   </div>
   <template #footer>
+    <Button severity="success" icon="pi pi-plus" text raised @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
     <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
   </template>
 </Dialog>
@@ -317,12 +318,12 @@ function trimString(maxLength: number, text: string) {
           <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
           <label v-show="!disableAddContributor" for="username">Username</label>
         </span>
-        <Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, currentCollectionId)" outlined>
+        <Button style="width:110px;" v-show="!disableAddContributor" @click="addContributor(newContributorUsername, currentCollectionId)" outlined>
           <i class="pi pi-share-alt px-2"></i>
           <span class="px-3">Share</span>
         </Button>
 ´
-        <Button style="width:110px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
+        <Button style="width:110px;" disabled v-show="disableAddContributor" outlined>
           <i class="pi pi-spin pi-spinner px-2"></i>
           <span class="px-3">Share</span>
         </Button>
