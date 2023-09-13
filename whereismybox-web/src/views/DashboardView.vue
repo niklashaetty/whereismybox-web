@@ -11,17 +11,74 @@ import Header from '@/components/Header.vue'
 import SectionTitle from '@/components/SectionTitle.vue'
 import UserService from '@/services/userservice';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
+import type Contributor from '@/models/Contributor';
 
 const loggedInUserStore = useLoggedInUserStore()
 
+let sharedCollectionIds = ref([]);
+let sharedCollections = ref(new Map());
+let sharedCollectionsLoaded = ref(false);
+
+// Share collection dialog
+const disableAddContributor = ref(false);
+const displayManageCollectionAccessDialog = ref(false)
+let contributors = ref<Contributor[]>([]);
+let contributorsLoaded = ref(false);
+const newContributorUsername = ref("");
+
+function openManageCollectionAccessDialog() {
+  getContributors()
+  .then(() => displayManageCollectionAccessDialog.value = true)
+}
+
+async function getContributors() {
+  UserService.getCollectionContributors(loggedInUserStore.primaryCollectionId)
+  .then((c) => contributors.value = c.data)
+  .then(() => contributorsLoaded.value = true)
+}
+
+function removeContributor(userId: string, collectionId: string) {
+  UserService.deleteCollectionContributor(userId, collectionId)
+  .then(getContributors)
+}
+
+function addContributor(username: string, collectionId: string) {
+  disableAddContributor.value = true;
+  UserService.addCollectionContributor(username, collectionId)
+  .then(getContributors)
+  .then(() => {
+    disableAddContributor.value = false;
+    newContributorUsername.value = "";
+  })
+}
+
+function closeManageCollectionAccessDialog() {
+  contributorsLoaded.value = false;
+  contributors.value = [];
+  displayManageCollectionAccessDialog.value = false;
+  newContributorUsername.value = "";
+  disableAddContributor.value = false;
+}
+
 onMounted(async () => {
   await getCurrentUserInformation();
+  sharedCollectionIds.value = loggedInUserStore.sharedCollectionIds;
+  getCurrentSharedCollections(sharedCollectionIds.value);
 });
 
 async function getCurrentUserInformation() {
   if(!loggedInUserStore.username){
     await UserService.getRegisteredUser();
   }
+}
+
+async function getCurrentSharedCollections(sharedCollectionIds: string[]) {
+  
+  for (const sharedCollectionId of sharedCollectionIds) {
+    const collectionOwnerResponse = await UserService.getCollectionOwner(sharedCollectionId);
+    sharedCollections.value.set(sharedCollectionId, collectionOwnerResponse.data.username)
+  }
+  sharedCollectionsLoaded.value = true;
 }
 
 async function pushToCollection(collectionId: string) {
@@ -40,11 +97,11 @@ async function pushToCollection(collectionId: string) {
         </div>
         <div class="c-bc-boxes">
           <Card class="my-collection-card">
-            <template #title> {{loggedInUserStore.primaryCollectionId}} </template>
-            <template #subtitle> Created by you </template>
+            <template #title> <p>Collection with id {{loggedInUserStore.primaryCollectionId}}</p> </template>
+            <template #subtitle> <p>Created by you</p> </template>
             <template #footer>
                 <Button icon="pi pi-check" label="Open" @click="pushToCollection(loggedInUserStore.primaryCollectionId)"/>
-                <Button icon="pi pi-share-alt" label="Share" severity="secondary" style="margin-left: 0.5em" />
+                <Button icon="pi pi-share-alt" label="Share" severity="secondary" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog()"/>
             </template>
         </Card>
         </div>
@@ -59,18 +116,66 @@ async function pushToCollection(collectionId: string) {
           </SectionTitle>
         </div>
         <div class="c-ui-unattacheditems">
-          <Card style="width: 25em; margin-bottom: 10px;" v-for="collectionId in loggedInUserStore.sharedCollectionIds">
-            <template #title> {{collectionId}} </template>
-            <template #subtitle> Shared by someone</template>
+          <Card v-show="sharedCollectionsLoaded" class="shared-collection-card" style="width: 25em; margin-bottom: 10px;" v-for="collectionId in loggedInUserStore.sharedCollectionIds">
+            <template #title> <p>Collection with id {{collectionId}}</p> </template>
+            <template #subtitle><p>Shared by {{ sharedCollections.get(collectionId) }}</p></template>
             <template #footer>
                 <Button icon="pi pi-check" label="Open" @click="pushToCollection(collectionId)"/>
             </template>
-        </Card>
+          </Card>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+
+<Dialog v-model:visible="displayManageCollectionAccessDialog" :style="{ width: '650px' }" header="Share collection" :modal="true">
+  <div class="card">
+    <p style="margin-bottom: 10px;"> Once a collection is shared with someone, they can access and edit the collection until you revoke their access here.</p>
+    
+    <DataView dataKey="userId" v-show="contributorsLoaded" :value="contributors">
+            <template #header>
+              Collection shared with
+            </template>
+            <template #list="slotProps">
+                <div class="col-12">
+                    <div class="flex flex-column xl:flex-row xl:align-items-start p-2 gap-1">
+                        <div class="flex flex-column sm:flex-row justify-content-between align-items-center xl:align-items-start flex-1 gap-1">
+                            <div class="flex flex-column align-items-center sm:align-items-start gap-1">
+                                <div class="text-l text-1000">{{ slotProps.data.username }}</div>
+                            </div>
+                            <div class="flex sm:flex-column align-items-center sm:align-items-end gap-1 sm:gap-1">
+                                <Button @click="removeContributor(slotProps.data.userId, loggedInUserStore.primaryCollectionId)" p-button-sm icon="pi pi-times" rounded outlined  severity="danger"></Button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </template>
+        </DataView>
+  </div>
+  <div style="margin-top: 30px;display: flex;">   
+        <span class="p-float-label">
+          <InputText v-show="!disableAddContributor" id="username" v-model="newContributorUsername" />
+          <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
+          <label v-show="!disableAddContributor" for="username">Username</label>
+        </span>
+        <Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, loggedInUserStore.primaryCollectionId)" outlined>
+          <i class="pi pi-share-alt px-2"></i>
+          <span class="px-3">Share</span>
+        </Button>
+
+        <Button style="width:110px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
+          <i class="pi pi-spin pi-spinner px-2"></i>
+          <span class="px-3">Share</span>
+        </Button>
+
+        
+      </div> 
+  <template #footer>
+    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />
+  </template>
+</Dialog>
 </template>
 
 <style scoped lang="scss">
@@ -118,10 +223,12 @@ async function pushToCollection(collectionId: string) {
 
 .shared-collection-card {
   width: 25em;
+  font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
     width: 40em;
   }
 }
+
 
 .searchinput{
   width: 100%;

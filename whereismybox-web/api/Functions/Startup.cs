@@ -69,6 +69,7 @@ namespace Functions
             builder.Services.AddSingleton<IQueryHandler<GetUserByExternalUserIdQuery, User>, GetUserByExternalUserIdQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>, GetUnattachedItemsQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetCollectionContributorsQuery, List<User>>, GetCollectionContributorsQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetCollectionOwnerQuery, User>, GetCollectionOwnerQueryHandler>();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();

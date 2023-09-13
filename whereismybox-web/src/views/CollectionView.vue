@@ -19,6 +19,8 @@ import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
 import UserService from '@/services/userservice';
 import type Contributor from '@/models/Contributor';
+import { useLoggedInUserStore } from '@/stores/loggedinuser'
+
 
 let boxes = ref<Box[]>([]);
 let contributors = ref<Contributor[]>([]);
@@ -36,6 +38,14 @@ const displayPrintableQrStickersDialog = ref(false)
 const searchQuery = ref("");
 const currentCollectionId = ref("");
 const disableAddContributor = ref(false);
+
+const loggedInUserStore = useLoggedInUserStore()
+
+async function getCurrentUserInformation() {
+  if(!loggedInUserStore.username){
+    await UserService.getRegisteredUser();
+  }
+}
 
 async function getBoxes(showLoading: boolean) {
   if(showLoading){
@@ -68,6 +78,7 @@ onMounted(async () => {
   currentCollectionId.value = router.currentRoute.value.params.collectionId as string;
   getBoxes(true);
   getUnattachedItems(true);
+  getCurrentUserInformation();
 });
 
 /* Events */
@@ -87,6 +98,10 @@ EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => {
     getUnattachedItems(false);
     getBoxes(false);
 });
+
+function isMyCollection(){
+  return currentCollectionId.value === loggedInUserStore.primaryCollectionId;
+}
 
 function closeDisplayCreateBoxDialog() {
   displayCreateBoxDialog.value = false;
@@ -185,10 +200,16 @@ function trimString(maxLength: number, text: string) {
     <div class="content">
       <div class="c-boxcollection">
         <div class="sectiontitle">
-          <SectionTitle title="My collection" >
+          <SectionTitle v-if="isMyCollection()" title="My collection" >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
               <i style="margin-right: 10px;" class="pi pi-share-alt boxie-icon clickable" @click="openManageCollectionAccessDialog" />
+              <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
+            </template>
+          </SectionTitle>
+          <SectionTitle v-else :title=" `Shared collection ` + currentCollectionId " >
+            <template #right>
+              <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
               <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
             </template>
           </SectionTitle>
@@ -275,22 +296,6 @@ function trimString(maxLength: number, text: string) {
                 </div>
             </template>
         </DataView>
-    <!---
-    <p style="margin-bottom: 10px;"> Your collection is currently shared with: </p>
-    <div v-if="contributorsLoaded" v-for="contributor in contributors" class="collection-sharee"> 
-      <p> {{ contributor.username }}</p>
-      <Button label="Revoke" severity="danger" icon="pi pi-times" class="p-button-text" @click="removeContributor(contributor.userId, currentCollectionId)" />
-    </div>
-    <div v-if="contributorsLoaded"> 
-      <div style="margin-top: 20px;display: flex;">   
-        <span class="p-float-label">
-          <InputText id="username" v-model="newContributorUsername" />
-          <label for="username">Username</label>
-        </span>
-        <Button @click="addContributor(newContributorUsername, currentCollectionId)" type="submit" label="Share" class="p-button-text" /> 
-      </div>  
-    </div>
-  -->
   </div>
   <div style="margin-top: 30px;display: flex;">   
         <span class="p-float-label">

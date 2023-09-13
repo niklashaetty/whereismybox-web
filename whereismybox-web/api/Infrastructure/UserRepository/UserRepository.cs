@@ -142,7 +142,7 @@ public class UserRepository : IUserRepository
         return res;
     }
 
-    private async Task<User> GetCollectionOwner(CollectionId collectionId)
+    public async Task<User> GetCollectionOwner(CollectionId collectionId)
     {
         var query = new QueryDefinition(
 

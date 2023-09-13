@@ -70,6 +70,16 @@ export default new class UserService {
       throw new Error("Failed to get contributors");
     }
   }
+  async getCollectionOwner(collectionId: string){
+    const path = `/api/collections/${collectionId}/owner`
+    try {
+      const res = await axios.get<User>(path);
+      return res;
+    }
+    catch(e){
+      throw new Error("Failed to get Owner");
+    }
+  }
 
   async addCollectionContributor(username:string, collectionId: string){
     const addContributorRequest = { username: username };
