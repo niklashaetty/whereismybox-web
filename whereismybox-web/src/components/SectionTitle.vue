@@ -16,7 +16,7 @@ const title = computed(() => props.title);
 <template>
 <div class="titlecontainer">
   <div class="title">
-    <p> {{ title }}</p>
+    <p>// {{ title }}</p>
   </div>
   <div class="right-content">
     <slot class="right-slot" name="right"></slot>

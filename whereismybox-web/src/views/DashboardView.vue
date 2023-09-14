@@ -92,7 +92,7 @@ async function pushToCollection(collectionId: string) {
 <div class="wrapper">
   <div class="dashboardcontainer">
     <div class="content">
-      <div class="c-boxcollection">
+      <div class="content-left">
         <div class="sectiontitle">
           <SectionTitle title="My collection" />
         </div>
@@ -108,7 +108,7 @@ async function pushToCollection(collectionId: string) {
         </Card>
         </div>
       </div>
-      <div class="c-unattacheditems">
+      <div class="content-right">
         <div class="sectiontitle">
           <SectionTitle title="Shared collections" >
             <template #right>
@@ -216,11 +216,10 @@ async function pushToCollection(collectionId: string) {
 
 
 .my-collection-card {
-  width: 20em;
-
+  width: 100%;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
-    width: 40em;
+    width: 100%;
   }
 }
 
@@ -247,11 +246,11 @@ async function pushToCollection(collectionId: string) {
 }
 
 .shared-collection-card {
-  width: 20em;
+  width: 100%;
   margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
-    width: 40em;
+    width: 100%;
   }
 }
 
@@ -273,7 +272,7 @@ async function pushToCollection(collectionId: string) {
   }
 }
 
-.c-boxcollection {
+.content-left {
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -281,10 +280,10 @@ async function pushToCollection(collectionId: string) {
   margin-left: auto;
   margin-right: auto;
   @media (min-width: 1000px) {
-    width: 65%;
+    width: 45%;
   }
   @media (min-width: 1400px) {
-    width: 70%;
+    width: 45%;
   }
 }
 
@@ -308,16 +307,16 @@ async function pushToCollection(collectionId: string) {
   cursor: pointer;
 }
 
-.c-unattacheditems {
+.content-right {
   width: 100%;
   margin-top: 15px;
   margin-left: auto;
   margin-right: auto;
   @media (min-width: 1000px) {
-    width: 35%;
+    width: 45%;
   }
   @media (min-width: 1400px) {
-    width: 30%;
+    width: 45%;
   }
 }
 

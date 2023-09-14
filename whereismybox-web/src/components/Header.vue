@@ -60,7 +60,7 @@ function toggleBoxMenu(event: MouseEvent)  {
   <div class="logo" @click="pushToIndex()">
     <i class="fa-solid fa-box-open"></i>
     <i class="pi pi-box boxlogo"></i>
-    <h2 style="margin-left: 5px; "> Boxie</h2>
+    <h2 class="logo-text"> Boxie</h2>
   </div>
   <div class="filler"></div>
   <div class="username" >
@@ -73,7 +73,7 @@ function toggleBoxMenu(event: MouseEvent)  {
                 </button>
             </template>
     </Menu>
-    <p class="username-text" style="margin-left: 10px">{{ loggedInUserStore.username }} </p>
+    <p class="username-text">{{ loggedInUserStore.username }} </p>
   </div>
 </div>
 </template>
@@ -99,10 +99,16 @@ function toggleBoxMenu(event: MouseEvent)  {
   cursor: pointer;
 }
 
+.logo-text {
+  font-size: 30px;
+  margin-left: 5px; 
+  color: white;
+}
+
 .boxlogo {
   color: #f7faf8;
-  font-size: 1rem;
   padding-right: 5px;
+  font-size: 20px;
 }
 
 .username { 
@@ -124,6 +130,8 @@ function toggleBoxMenu(event: MouseEvent)  {
 }
 
 .username-text{
+  color: white;
+  margin-left: 10px;
   display: none;
   @media (min-width: 1000px) {
     display: inline;
