@@ -82,7 +82,6 @@ watch(searchQuery, (newValue, oldValue) => {
 const menu: any = ref(null);
 const menuItems = ref([
     {
-        label: '',
         items: [
         {label: 'Go to box', icon: 'pi pi-qrcode',
         command: () => {
