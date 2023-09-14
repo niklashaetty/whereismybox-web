@@ -19,6 +19,7 @@ const loggedInUserStore = useLoggedInUserStore()
 let sharedCollectionIds = ref([]);
 let sharedCollections = ref(new Map());
 let sharedCollectionsLoaded = ref(false);
+let currentUserInfoLoaded = ref(false);
 
 // Share collection dialog
 const disableAddContributor = ref(false);
@@ -71,6 +72,7 @@ async function getCurrentUserInformation() {
   if(!loggedInUserStore.username){
     await UserService.getRegisteredUser();
   }
+  currentUserInfoLoaded.value = true;
 }
 
 async function getCurrentSharedCollections(sharedCollectionIds: string[]) {
@@ -97,7 +99,7 @@ async function pushToCollection(collectionId: string) {
           <SectionTitle title="My collection" />
         </div>
         <div class="c-bc-boxes">
-          <Card class="my-collection-card">
+          <Card v-show="currentUserInfoLoaded" class="my-collection-card">
             <template #title> <p style="font-size: 18px;">Collection with id {{loggedInUserStore.primaryCollectionId}}</p> </template>
             <template #subtitle> <p>Created by you</p> </template>
           
@@ -105,7 +107,12 @@ async function pushToCollection(collectionId: string) {
                 <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(loggedInUserStore.primaryCollectionId)"/>
                 <Button severity="plain" text raised icon="pi pi-share-alt" label="Share" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog()"/>
             </template>
-        </Card>
+          </Card>
+          <Card v-show="!currentUserInfoLoaded" class="my-collection-card">
+            <template #title> <Skeleton style="width: 300px;"/> </template>
+            <template #subtitle> <Skeleton style="width: 200px; margin-bottom: 40px;"/> </template>
+            <template #footer> <Skeleton style="width: 100px;"/></template>
+          </Card>
         </div>
       </div>
       <div class="content-right">
@@ -124,6 +131,11 @@ async function pushToCollection(collectionId: string) {
             <template #footer>
                 <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(collectionId)"/>
             </template>
+          </Card>
+          <Card v-show="!sharedCollectionsLoaded" class="shared-collection-card">
+            <template #title> <Skeleton style="width: 300px;"/> </template>
+            <template #subtitle> <Skeleton style="width: 200px; margin-bottom: 40px;"/> </template>
+            <template #footer> <Skeleton style="width: 100px;"/></template>
           </Card>
         </div>
       </div>
@@ -214,9 +226,9 @@ async function pushToCollection(collectionId: string) {
   border-radius: 3px;
 }
 
-
 .my-collection-card {
   width: 100%;
+  height: 145px;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
     width: 100%;
@@ -239,14 +251,13 @@ async function pushToCollection(collectionId: string) {
   padding: 10px !important;
 }
 
-
-
 .p-card-content {
   padding: 0px;
 }
 
 .shared-collection-card {
   width: 100%;
+  height: 145px;
   margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
