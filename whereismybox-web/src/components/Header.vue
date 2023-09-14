@@ -64,7 +64,7 @@ function toggleBoxMenu(event: MouseEvent)  {
   <div class="filler"></div>
   <div class="username" >
     <Avatar v-if="avatarLetter" :label="avatarLetter"  style="background-color: #f7faf8" class="mr-2"  shape="circle" @click="toggleBoxMenu($event)"/>
-    <Menu id="overlay_menu" :model="menuItems" ref="menu"  :popup="true">
+    <Menu id="overlay_menu" label="hello" :model="menuItems" ref="menu"  :popup="true">
             <template #end>
                 <button style="height: 30px;padding-left: 10px; align-items: center; display: flex;" class="p-link">
                     <i class="pi pi-sign-out" />
