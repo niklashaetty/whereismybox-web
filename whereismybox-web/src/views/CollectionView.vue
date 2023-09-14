@@ -7,6 +7,7 @@ import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 import DataView from 'primevue/dataview'
+import Menu from 'primevue/menu';
 import type Box from '@/models/Box';
 import type UnattachedItem from '@/models/UnattachedItem';
 import { BoxEvents } from '@/services/eventservice';
@@ -50,6 +51,29 @@ const print = () => {
 }
 
 const loggedInUserStore = useLoggedInUserStore()
+
+const menu: any = ref(null);
+const menuItems = ref([
+    {
+        label: 'Create box',
+        icon: 'pi pi-plus',
+        command: () => openDisplayCreateBoxDialog()      
+    },
+    {
+        label: 'Share collection',
+        icon: 'pi pi-share-alt',
+        command: () => openManageCollectionAccessDialog()      
+    },
+    {
+        label: 'QR sticker',
+        icon: 'pi pi-qrcode',
+        command: () => openPrintableQrStickersDialog()      
+    },
+]);
+
+function toggleBoxMenu(event: MouseEvent)  { 
+  menu.value?.toggle(event);
+}
 
 async function getCurrentUserInformation() {
   if(!loggedInUserStore.username){
@@ -212,9 +236,8 @@ function trimString(maxLength: number, text: string) {
         <div class="sectiontitle">
           <SectionTitle v-if="isMyCollection()" title="My collection" >
             <template #right>
-              <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
-              <i style="margin-right: 10px;" class="pi pi-share-alt boxie-icon clickable" @click="openManageCollectionAccessDialog" />
-              <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
+              <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
+              <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
             </template>
           </SectionTitle>
           <SectionTitle v-else :title=" `Shared collection ` + currentCollectionId " >

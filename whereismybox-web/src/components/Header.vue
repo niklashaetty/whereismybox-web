@@ -17,8 +17,7 @@ const menuItems = ref([
     {
         label: 'Dashboard',
         icon: 'pi pi-home',
-        command: () => pushToDashboard()
-            
+        command: () => pushToDashboard()      
     },
     { separator: true }
 ]);
