@@ -8,12 +8,12 @@ namespace Domain.CommandHandlers;
 
 public class DeleteContributorCommandHandler : ICommandHandler<DeleteContributorCommand>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly ICollectionRepository _collectionRepository;
 
-    public DeleteContributorCommandHandler(IUserRepository userRepository)
+    public DeleteContributorCommandHandler(ICollectionRepository collectionRepository)
     {
-        ArgumentNullException.ThrowIfNull(userRepository);
-        _userRepository = userRepository;
+        ArgumentNullException.ThrowIfNull(collectionRepository);
+        _collectionRepository = collectionRepository;
     }
 
     public async Task Execute(DeleteContributorCommand command)
@@ -24,13 +24,8 @@ public class DeleteContributorCommandHandler : ICommandHandler<DeleteContributor
             throw new ForbiddenCollectionAccessException();
         }
 
-        var userToBeRemoved = await _userRepository.Get(command.UserToBeRemoved);
-        if (userToBeRemoved is null)
-        {
-            return;
-        }
-        
-        userToBeRemoved.RemoveAsContributor(command.CollectionId);
-        await _userRepository.PersistUpdate(userToBeRemoved);
+        var collection = await _collectionRepository.Get(command.CollectionId);
+        collection.RemoveAsContributor(command.UserToBeRemoved);
+        await _collectionRepository.PersistUpdate(collection);
     }
 }

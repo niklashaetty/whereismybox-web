@@ -65,28 +65,6 @@ public class UserRepository : IUserRepository
         return response.Resource.FirstOrDefault();
     }
 
-    public async Task<User> Get(CollectionId collectionId)
-    {
-        var queryAble = _container
-            .GetItemLinqQueryable<CosmosAwareUser>()
-            .Where(u => u.PrimaryCollectionId == collectionId);
-
-        var iterator = queryAble.ToFeedIterator();
-        var results = new List<CosmosAwareUser>();
-        while (iterator.HasMoreResults)
-        {
-            results.AddRange(await iterator.ReadNextAsync());
-        }
-
-        var res = results.FirstOrDefault();
-        if (res is null)
-        {
-            throw new UserNotFoundException(collectionId);
-        }
-
-        return res;
-    }
-    
     public async Task<User> Get(ExternalUserId externalUserId)
     {
         var queryAble = _container
@@ -129,41 +107,6 @@ public class UserRepository : IUserRepository
     {
         var query = new QueryDefinition(
             $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.ContributorCollections, '{collectionId.Value}')");
-        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
-
-        if (!iterator.HasMoreResults)
-        {
-            return new List<User>();
-        }
-
-        var response = await iterator.ReadNextAsync();
-        var res = new List<User>();
-        res.AddRange(response.Resource.ToList());
-        return res;
-    }
-
-    public async Task<User> GetCollectionOwner(CollectionId collectionId)
-    {
-        var query = new QueryDefinition(
-
-            $"SELECT * FROM c WHERE c.{nameof(CosmosAwareUser.PrimaryCollectionId)} = '{collectionId}'");
-        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
-
-        if (!iterator.HasMoreResults)
-        {
-            throw new CollectionNotFoundException(collectionId);
-        }
-
-        var response = await iterator.ReadNextAsync();
-
-        return response.Resource.First();
-    }
-    
-    private async Task<List<User>> GetCollectionContributors(CollectionId collectionId)
-    {
-        var query = new QueryDefinition(
-            $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.{nameof(CosmosAwareUser.ContributorCollections)}, {collectionId})"
-        );
         var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
 
         if (!iterator.HasMoreResults)

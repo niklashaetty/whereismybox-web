@@ -7,27 +7,30 @@ namespace Domain.Authorization;
 public class AuthorizationService : IAuthorizationService
 {
     private readonly IUserRepository _userRepository;
+    private readonly ICollectionRepository _collectionRepository;
 
-    public AuthorizationService(IUserRepository userRepository)
+    public AuthorizationService(IUserRepository userRepository, ICollectionRepository collectionRepository)
     {
         ArgumentNullException.ThrowIfNull(userRepository);
+        ArgumentNullException.ThrowIfNull(collectionRepository);
         _userRepository = userRepository;
+        _collectionRepository = collectionRepository;
     }
 
     public async Task EnsureCollectionAccessAllowed(ExternalUserId externalUserId, CollectionId collectionId)
     {
         var user = await _userRepository.SearchByExternalUserId(externalUserId);
+        var collection = await _collectionRepository.Get(collectionId);
 
-
-        if (user is null || IsOwnerOrContributor(user, collectionId) is false)
+        if (user is null || IsOwnerOrContributor(user, collection) is false)
         {
             throw new ForbiddenCollectionAccessException();
         }
     }
 
-    private static bool IsOwnerOrContributor(User user, CollectionId collectionId)
+    private static bool IsOwnerOrContributor(User user, Collection collection)
     {
-        return user.PrimaryCollectionId.Equals(collectionId) ||
-               user.ContributorCollections.Any(c => c.Equals(collectionId));
+        return collection.Owner.Equals(user.UserId) ||
+               collection.Contributors.Any(u => u.Equals(user.UserId));
     }
 }

@@ -28,8 +28,4 @@ public interface IUserRepository
     /// </summary>
     /// <throws>UserNotFoundException</throws>
     public Task<User> PersistUpdate(User updatedUser);
-    
-    public Task<List<User>> SearchByCollectionId(CollectionId collectionId);
-    
-    public Task<User> GetCollectionOwner(CollectionId collectionId);
 }

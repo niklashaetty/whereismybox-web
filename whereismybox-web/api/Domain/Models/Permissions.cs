@@ -5,16 +5,16 @@ namespace Domain.Models;
 public class Permissions
 {
     public UserId UserId { get; }
-    public CollectionId PrimaryCollectionId { get; }
-    public List<CollectionId> ContributorCollections { get; }
+    public List<Collection> OwnedCollections { get; }
+    public List<Collection> ContributorCollections { get; }
 
-    public Permissions(UserId userId, CollectionId primaryCollectionId, List<CollectionId> contributorCollections)
+    public Permissions(UserId userId, List<Collection> ownedCollections, List<Collection> contributorCollections)
     {
         ArgumentNullException.ThrowIfNull(userId);
-        ArgumentNullException.ThrowIfNull(primaryCollectionId);
+        ArgumentNullException.ThrowIfNull(ownedCollections);
         ArgumentNullException.ThrowIfNull(contributorCollections);
         UserId = userId;
-        PrimaryCollectionId = primaryCollectionId;
+        OwnedCollections = ownedCollections;
         ContributorCollections = contributorCollections;
     }
 
@@ -26,8 +26,8 @@ public class Permissions
         {
             return false;
         }
-        return collectionId.Equals(PrimaryCollectionId) ||
-               ContributorCollections.Any(c => c.Equals(collectionId));
+        return OwnedCollections.Any(c => c.CollectionId.Equals(collectionId)) ||
+               ContributorCollections.Any(c => c.CollectionId.Equals(collectionId));
     }
     
     public bool IsOwner(UserId userId, CollectionId collectionId)
@@ -37,6 +37,6 @@ public class Permissions
             return false;
         }
         ArgumentNullException.ThrowIfNull(collectionId);
-        return collectionId.Equals(PrimaryCollectionId);
+        return OwnedCollections.Any(c => c.CollectionId.Equals(collectionId));
     }
 }

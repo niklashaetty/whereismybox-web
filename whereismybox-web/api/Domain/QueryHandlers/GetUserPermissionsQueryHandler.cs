@@ -7,22 +7,18 @@ namespace Domain.QueryHandlers;
 
 public class GetUserPermissionsQueryHandler : IQueryHandler<GetUserPermissionsQuery, Permissions>
 {
-    private readonly IUserRepository _userRepository;
+    private readonly ICollectionRepository _collectionRepository;
     
-    public GetUserPermissionsQueryHandler(IUserRepository userRepository)
+    public GetUserPermissionsQueryHandler(ICollectionRepository collectionRepository)
     {
-        ArgumentNullException.ThrowIfNull(userRepository);
-        _userRepository = userRepository;
+        ArgumentNullException.ThrowIfNull(collectionRepository);
+        _collectionRepository = collectionRepository;
     }
     
     public async Task<Permissions> Handle(GetUserPermissionsQuery query)
     {
-        var existingUser = await _userRepository.Get(query.UserId);
-        if (existingUser is null)
-        {
-            throw new UserNotFoundException(query.UserId);
-        }
-
-        return new Permissions(query.UserId, existingUser.PrimaryCollectionId, existingUser.ContributorCollections);
+        var contributorCollections = await _collectionRepository.GetCollectionsWhereUserIsContributor(query.UserId);
+        var ownedCollections = await _collectionRepository.GetOwnedCollections(query.UserId);
+        return new Permissions(query.UserId, ownedCollections, contributorCollections);
     }
 }

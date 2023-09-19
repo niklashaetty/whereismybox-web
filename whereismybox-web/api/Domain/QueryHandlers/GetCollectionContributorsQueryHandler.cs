@@ -9,11 +9,14 @@ namespace Domain.QueryHandlers;
 
 public class GetCollectionContributorsQueryHandler : IQueryHandler<GetCollectionContributorsQuery, List<User>>
 {
+    private readonly ICollectionRepository _collectionRepository;
     private readonly IUserRepository _userRepository;
     
-    public GetCollectionContributorsQueryHandler(IUserRepository userRepository)
+    public GetCollectionContributorsQueryHandler(ICollectionRepository collectionRepository, IUserRepository userRepository)
     {
+        ArgumentNullException.ThrowIfNull(collectionRepository);
         ArgumentNullException.ThrowIfNull(userRepository);
+        _collectionRepository = collectionRepository;
         _userRepository = userRepository;
     }
     
@@ -23,7 +26,14 @@ public class GetCollectionContributorsQueryHandler : IQueryHandler<GetCollection
         {
             throw new ForbiddenCollectionAccessException();
         }
-        
-        return await _userRepository.SearchByCollectionId(query.CollectionId);
+
+        var users = new List<User>();
+        var collection = await _collectionRepository.Get(query.CollectionId);
+        foreach (var userId in collection.Contributors)
+        {
+            users.Add(await _userRepository.Get(userId));
+        }
+
+        return users;
     }
 }

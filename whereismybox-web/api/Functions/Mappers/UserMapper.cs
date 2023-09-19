@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using Api;
 using Domain.Models;
 
@@ -10,8 +9,7 @@ public static class UserMapper
     public static UserDto ToApiModel(this User user)
     {
         ArgumentNullException.ThrowIfNull(user);
-        return new UserDto(user.UserId.Value, user.Username, user.PrimaryCollectionId.Value,
-            user.ContributorCollections.Select(c => c.Value).ToList());
+        return new UserDto(user.UserId.Value, user.Username);
     }
 
     public static CollectionContributor ToApiCollectionContributor(this User user)

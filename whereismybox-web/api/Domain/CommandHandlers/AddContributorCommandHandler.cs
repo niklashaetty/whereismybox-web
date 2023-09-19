@@ -8,11 +8,14 @@ namespace Domain.CommandHandlers;
 public class AddContributorCommandHandler : ICommandHandler<AddContributorCommand>
 {
     private readonly IUserRepository _userRepository;
+    private readonly ICollectionRepository _collectionRepository;
 
-    public AddContributorCommandHandler(IUserRepository userRepository)
+    public AddContributorCommandHandler(IUserRepository userRepository, ICollectionRepository collectionRepository)
     {
         ArgumentNullException.ThrowIfNull(userRepository);
+        ArgumentNullException.ThrowIfNull(collectionRepository);
         _userRepository = userRepository;
+        _collectionRepository = collectionRepository;
     }
 
     public async Task Execute(AddContributorCommand command)
@@ -28,8 +31,9 @@ public class AddContributorCommandHandler : ICommandHandler<AddContributorComman
         {
             throw new UserNotFoundException($"User with username {command.UsernameToBeAddedAsContributor}");
         }
-        
-        newContributor.AddAsContributor(command.CollectionId);
-        await _userRepository.PersistUpdate(newContributor);
+
+        var collection = await _collectionRepository.Get(command.CollectionId);
+        collection.AddContributor(newContributor);
+        await _collectionRepository.PersistUpdate(collection);
     }
 }

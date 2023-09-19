@@ -9,6 +9,7 @@ using Domain.QueryHandlers;
 using Domain.Repositories;
 using Functions;
 using Infrastructure.BoxRepository;
+using Infrastructure.CollectionRepository;
 using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
@@ -45,6 +46,9 @@ namespace Functions
             builder.Services.AddSingleton(new UnattachedItemRepositoryConfiguration(
                 config["CosmosConnectionString"], 
                 "WhereIsMyBox", "UnattachedItemsV2"));
+            builder.Services.AddSingleton(new CollectionRepositoryConfiguration(
+                config["CosmosConnectionString"], 
+                "WhereIsMyBox", "Collections"));
 
             builder.Services.AddLogging();
             
@@ -53,6 +57,7 @@ namespace Functions
             
             // CommandHandlers
             builder.Services.AddSingleton<ICommandHandler<AddItemCommand>, AddItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<CreateCollectionCommand>, CreateCollectionCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
             builder.Services.AddSingleton<ICommandHandler<DeleteBoxCommand>, DeleteBoxCommandHandler>();
@@ -70,9 +75,13 @@ namespace Functions
             builder.Services.AddSingleton<IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>>, GetUnattachedItemsQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetCollectionContributorsQuery, List<User>>, GetCollectionContributorsQueryHandler>();
             builder.Services.AddSingleton<IQueryHandler<GetCollectionOwnerQuery, User>, GetCollectionOwnerQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetCollectionQuery, Collection>, GetCollectionQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetOwnedCollectionQuery, List<Collection>>, GetOwnedCollectionsQueryHandler>();
+            builder.Services.AddSingleton<IQueryHandler<GetContributorCollectionsQuery, List<Collection>>, GetContributorCollectionsQueryHandler>();
             
             // Repositories
             builder.Services.AddSingleton<IBoxRepository, BoxRepository>();
+            builder.Services.AddSingleton<ICollectionRepository, CollectionRepository>();
             builder.Services.AddSingleton<IUserRepository, UserRepository>();
             builder.Services.AddSingleton<IUnattachedItemRepository, UnattachedItemRepository>();
 

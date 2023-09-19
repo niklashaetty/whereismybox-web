@@ -6,6 +6,8 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Authorization;
+using Domain.CommandHandlers;
+using Domain.Commands;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -16,49 +18,47 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
+using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 
-public class GetBoxCollectionFunction
+public class GetCollectionFunction
 {
-    private const string OperationId = "GetBoxCollection";
+    private const string OperationId = "GetCollectionFunction";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetBoxCollectionQuery, List<Box>> _queryHandler;
+    private readonly IQueryHandler<GetCollectionQuery, Collection> _queryHandler;
 
-    public GetBoxCollectionFunction(
-        IQueryHandler<GetBoxCollectionQuery, List<Box>> queryHandler)
+    public GetCollectionFunction(ILoggerFactory loggerFactory,
+        IQueryHandler<GetCollectionQuery, Collection> queryHandler)
     {
+        ArgumentNullException.ThrowIfNull(loggerFactory);
         ArgumentNullException.ThrowIfNull(queryHandler);
         _queryHandler = queryHandler;
     }
 
     [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
-        Summary = "Get an entire collection of boxes and their items")]
+        Summary = "Get the metadata of a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
-    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(BoxCollectionDto))]
+    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(CollectionDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "collections/{collectionId}/boxes")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "collections/{collectionId}")]
         HttpRequest req,
         string collectionId)
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
             {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
             }
-
-            var boxCollection =
-                await _queryHandler.Handle(new GetBoxCollectionQuery(domainCollectionId, externalUser.ExternalUserId));
-            return new OkObjectResult(new BoxCollectionDto(domainCollectionId.Value,
-                boxCollection.Select(b => b.ToApiModel()).ToList()));
-        }
-        catch (UnparsableExternalUserException)
+            var collection = await _queryHandler.Handle(new GetCollectionQuery(domainCollectionId));
+            return new OkObjectResult(collection.ToApiModel());
+        } 
+        catch (UnparsableExternalUserException e)
         {
             return new UnauthorizedResult();
         }

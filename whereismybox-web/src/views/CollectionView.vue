@@ -19,6 +19,7 @@ import UnattachedItemAccordion from '@/components/UnattachedItemAccordion.vue';
 import EventBus from '@/services/eventbus';
 import BoxService from '@/services/boxservice';
 import UserService from '@/services/userservice';
+import CollectionService from '@/services/collectionservice';
 import type Contributor from '@/models/Contributor';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
 import { usePaperizer } from 'paperizer'
@@ -31,6 +32,7 @@ let unattachedItems = ref<UnattachedItem[]>([]);
 let filteredBoxes = ref();
 const boxName = ref("");
 const newContributorUsername = ref("");
+const currentCollectionName = ref("");
 const boxNumber = ref(99);
 const loadingBoxes = ref(false);
 const loadingUnattachedItems = ref(false);
@@ -39,6 +41,7 @@ const displayManageCollectionAccessDialog = ref(false)
 const displayPrintableQrStickersDialog = ref(false)
 const searchQuery = ref("");
 const currentCollectionId = ref("");
+const currentCollectionOwner = ref("");
 const disableAddContributor = ref(false);
 
 const { paperize } = usePaperizer('qr-stickers-view', {
@@ -103,6 +106,15 @@ async function getUnattachedItems(showLoading: boolean) {
   .then(() => loadingUnattachedItems.value = false)
 }
 
+async function getCollectionMetadata(collectionId : string) {
+
+  CollectionService.getCollection(collectionId)
+  .then((response) => {
+    currentCollectionName.value = response.data.name
+    currentCollectionOwner.value = response.data.owner
+  })
+}
+
 async function createNewBox() {
   BoxService.createBox(currentCollectionId.value, boxNumber.value, boxName.value)
     .then(closeDisplayCreateBoxDialog)
@@ -111,6 +123,7 @@ async function createNewBox() {
 onMounted(async () => {
   currentCollectionId.value = router.currentRoute.value.params.collectionId as string;
   getBoxes(true);
+  getCollectionMetadata(currentCollectionId.value);
   getUnattachedItems(true);
   getCurrentUserInformation();
 });
@@ -134,7 +147,9 @@ EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => {
 });
 
 function isMyCollection(){
-  return currentCollectionId.value === loggedInUserStore.primaryCollectionId;
+  console.log("Current user " + loggedInUserStore.userId);
+  console.log("Current collection owner " + currentCollectionOwner.value);
+  return loggedInUserStore.userId === currentCollectionOwner.value;
 }
 
 function closeDisplayCreateBoxDialog() {
@@ -234,13 +249,13 @@ function trimString(maxLength: number, text: string) {
     <div class="content">
       <div class="c-boxcollection">
         <div class="sectiontitle">
-          <SectionTitle v-if="isMyCollection()" title="My collection" >
+          <SectionTitle v-if="isMyCollection()" :title="`My collection ` + currentCollectionName "  >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
             </template>
           </SectionTitle>
-          <SectionTitle v-else :title=" `Shared collection ` + currentCollectionId " >
+          <SectionTitle v-else :title="`Shared collection ` + currentCollectionName " >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
               <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
@@ -282,7 +297,6 @@ function trimString(maxLength: number, text: string) {
     </div>
   </div>
 </div>
-
 
 <Dialog v-model:visible="displayCreateBoxDialog" :style="{ width: '450px' }" header="Create new box" :modal="true">
   <div class="card">

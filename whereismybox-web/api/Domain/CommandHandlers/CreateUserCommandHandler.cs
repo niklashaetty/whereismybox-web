@@ -20,8 +20,7 @@ public class CreateUserCommandHandler : ICommandHandler<CreateUserCommand>
     {
         ArgumentNullException.ThrowIfNull(command);
         
-        var user = new User(command.UserId, command.ExternalUserId, command.ExternalIdentityProvider, command.Username,
-            command.PrimaryCollectionId, new List<CollectionId>());
+        var user = new User(command.UserId, command.ExternalUserId, command.ExternalIdentityProvider, command.Username);
         var userWithConflictingUsername = await _userRepository.SearchByUsername(command.Username);
         var userWithConflictingExternalUserId = await _userRepository.SearchByExternalUserId(command.ExternalUserId);
 

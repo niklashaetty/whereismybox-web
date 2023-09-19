@@ -51,9 +51,9 @@ public class CreateUserV2Function
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createUserRequest = JsonConvert.DeserializeObject<CreateUserRequest>(body);
             var newUser = new User(new UserId(), externalUser.ExternalUserId, externalUser.ExternalIdentityProvider,
-                createUserRequest.UserName, CollectionId.GenerateNew(), new List<CollectionId>());
+                createUserRequest.UserName);
             var command = new CreateUserCommand(newUser.UserId, newUser.ExternalUserId,
-                newUser.ExternalIdentityProvider, newUser.Username, newUser.PrimaryCollectionId);
+                newUser.ExternalIdentityProvider, newUser.Username);
 
             await _commandHandler.Execute(command);
             return new CreatedResult($"/api/users/{newUser.UserId}",

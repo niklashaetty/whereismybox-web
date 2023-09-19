@@ -13,7 +13,7 @@ export default new class BoxService {
   }
 
   async getBoxCollection(collectionId:string){
-    let path = `/api/collections/${collectionId}`
+    let path = `/api/collections/${collectionId}/boxes`
     return axios.get(path);
   }
 
