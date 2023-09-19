@@ -19,7 +19,7 @@ import { useLoggedInUserStore } from '@/stores/loggedinuser'
 const loggedInUserStore = useLoggedInUserStore()
 
 let sharedCollections = ref(new Array<CollectionMetadata>());
-let sharedCollectionsWithUsername = ref(new Map());
+let sharedCollectionsWithUsername = ref(new Map<string, Contributor>());
 let sharedCollectionsLoaded = ref(false);
 
 let ownedCollections = ref(new Array<CollectionMetadata>());
@@ -75,11 +75,13 @@ async function getOwnedCollections() {
 
 async function getSharedCollections() {
   return CollectionService.getContributedCollections(loggedInUserStore.userId)
-  .then((res) => getCollectionOwnerInfo(res.data))
+  .then((res) => sharedCollections.value = res.data)
+  .then((res) => getCollectionOwnerInfo(res))
   .then(() => sharedCollectionsLoaded.value = true);
 }
 
 async function getCollectionOwnerInfo(collections: CollectionMetadata[]){
+  console.log(JSON.stringify(collections));
   for (const sharedCollection of collections) {
     const collectionOwnerResponse = await CollectionService.getCollectionOwnerInfo(sharedCollection.collectionId);
     sharedCollectionsWithUsername.value.set(sharedCollection.collectionId, collectionOwnerResponse.data)
@@ -132,8 +134,8 @@ async function createCollection() {
         </div>
         <div class="c-ui-unattacheditems">
           <Card v-show="sharedCollectionsLoaded" class="shared-collection-card" v-for="collection in sharedCollections">
-            <template #title> <p style="font-size: 18px;">Collection -  {{collection.name}}</p> </template>
-            <template #subtitle><p>Shared by {{ sharedCollectionsWithUsername.get(collection.collectionId) }}</p></template>
+            <template #title> <p style="font-size: 18px;">{{collection.name}}</p> </template>
+            <template #subtitle><p>Shared by {{ sharedCollectionsWithUsername.get(collection.collectionId)?.username }}</p></template>
             <template #footer>
                 <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(collection.collectionId)"/>
             </template>

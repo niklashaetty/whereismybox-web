@@ -35,7 +35,7 @@ export default new class CollectionService {
   async getCollectionOwnerInfo(collectionId: string){
     let path = `/api/collections/${collectionId}/owner`
     try {
-      const res = await axios.get<Contributor[]>(path);
+      const res = await axios.get<Contributor>(path);
       return res;
     }
     catch(e){
