@@ -270,7 +270,6 @@ function trimString(maxLength: number, text: string) {
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItemsForContributor" :popup="true" />
-              
             </template>
           </SectionTitle>
         </div>
