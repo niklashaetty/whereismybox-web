@@ -32,6 +32,18 @@ import ImageCard from '@/components/ImageCard.vue'
         </div>
       </div>
     </a>
+
+    <!-- Google -->
+    <a href="/.auth/login/facebook?post_login_redirect_uri=/">
+      <div class="loginsection">
+        <div class="logo"> 
+          <img src="../assets/google-logo-normal.svg" width="60px" height="60px"> 
+        </div>
+        <div class="text" >
+          <p class="logintext" > Sign in with Facebook</p>
+        </div>
+      </div>
+    </a>
   </div>
   </div>
   
