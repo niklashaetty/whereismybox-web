@@ -18,18 +18,16 @@ const value = ref("");
 
 async function createUser(){
   UserService.createUser(value.value)
-  .then((user) => pushToCollection(user.primaryCollectionId))
+  .then((user) => pushToDashboard())
   .catch(handleCreateUserError);
 }
 
-function pushToCollection(collectionId:string){
-  router.push({path: `collections/${collectionId}`});
+function pushToDashboard(){
+  router.push({path: `dashboard`});
 }
 
 function handleCreateUserError(error: Error){
-  console.log("This is an error!")
 }
-
 
 </script>
 <template>
