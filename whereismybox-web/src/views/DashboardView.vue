@@ -106,7 +106,7 @@ async function createCollection() {
         </div>
         <div class="c-bc-boxes">
           <Card v-for="collection in ownedCollections" v-show="ownedCollectionsLoaded" class="my-collection-card">
-            <template #title> <p style="font-size: 18px;">Collection -  {{ collection.name}}</p> </template>
+            <template #title> <p style="font-size: 18px;">{{ collection.name}}</p> </template>
             <template #subtitle> <p>Created by you</p> </template>
           
             <template #footer>
