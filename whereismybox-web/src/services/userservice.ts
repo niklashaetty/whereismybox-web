@@ -21,7 +21,7 @@ export default new class UserService {
     const createUserRequest = { username: username };
     try {
       var res = await axios.post('/api/users', createUserRequest)
-      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId, res.data.c);
+      let user = new User(res.data.userId, res.data.username);
       return user;
     } catch(e){
         throw new Error("FailedToCreateUser");
@@ -30,11 +30,6 @@ export default new class UserService {
 
   async getUser(userId:string){
     let path = `/api/users/${userId}`
-    return axios.get(path);
-  }
-
-  async getUserByCollectionId(collectionId:string){
-    let path = `/api/users?primaryCollectionId=${collectionId}`
     return axios.get(path);
   }
 
@@ -50,8 +45,8 @@ export default new class UserService {
     try {
       const res = await axios.get(path);
 
-      let user = new User(res.data.userId, res.data.username, res.data.primaryCollectionId, res.data.contributorCollections);
-      loggedInUser.setLoggedInUser(user.userId, user.username, user.primaryCollectionId, user.sharedCollectionIds);
+      let user = new User(res.data.userId, res.data.username);
+      loggedInUser.setLoggedInUser(user.userId, user.username);
       return user;
     }
     catch(e){

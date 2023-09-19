@@ -56,7 +56,7 @@ const print = () => {
 const loggedInUserStore = useLoggedInUserStore()
 
 const menu: any = ref(null);
-const menuItems = ref([
+const menuItemsForOwner = ref([
     {
         label: 'Create box',
         icon: 'pi pi-plus',
@@ -66,6 +66,19 @@ const menuItems = ref([
         label: 'Share collection',
         icon: 'pi pi-share-alt',
         command: () => openManageCollectionAccessDialog()      
+    },
+    {
+        label: 'QR sticker',
+        icon: 'pi pi-qrcode',
+        command: () => openPrintableQrStickersDialog()      
+    },
+]);
+
+const menuItemsForContributor = ref([
+    {
+        label: 'Create box',
+        icon: 'pi pi-plus',
+        command: () => openDisplayCreateBoxDialog()      
     },
     {
         label: 'QR sticker',
@@ -147,8 +160,6 @@ EventBus.on(BoxEvents.UNATTACHED_ITEMS_CHANGED,  () => {
 });
 
 function isMyCollection(){
-  console.log("Current user " + loggedInUserStore.userId);
-  console.log("Current collection owner " + currentCollectionOwner.value);
   return loggedInUserStore.userId === currentCollectionOwner.value;
 }
 
@@ -252,13 +263,14 @@ function trimString(maxLength: number, text: string) {
           <SectionTitle v-if="isMyCollection()" :title="`My collection ` + currentCollectionName "  >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
-              <Menu id="overlay_menu" ref="menu" :model="menuItems" :popup="true" />
+              <Menu id="overlay_menu" ref="menu" :model="menuItemsForOwner" :popup="true" />
             </template>
           </SectionTitle>
           <SectionTitle v-else :title="`Shared collection ` + currentCollectionName " >
             <template #right>
-              <i style="margin-right: 10px;" class="pi pi-qrcode boxie-icon clickable" @click="openPrintableQrStickersDialog" />
-              <i class="pi pi-plus-circle boxie-icon clickable" @click="openDisplayCreateBoxDialog" />
+              <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
+              <Menu id="overlay_menu" ref="menu" :model="menuItemsForContributor" :popup="true" />
+              
             </template>
           </SectionTitle>
         </div>

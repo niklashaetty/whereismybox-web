@@ -81,7 +81,6 @@ async function getSharedCollections() {
 }
 
 async function getCollectionOwnerInfo(collections: CollectionMetadata[]){
-  console.log(JSON.stringify(collections));
   for (const sharedCollection of collections) {
     const collectionOwnerResponse = await CollectionService.getCollectionOwnerInfo(sharedCollection.collectionId);
     sharedCollectionsWithUsername.value.set(sharedCollection.collectionId, collectionOwnerResponse.data)
@@ -94,6 +93,21 @@ async function pushToCollection(collectionId: string) {
 
 async function createCollection() {
   await CollectionService.createCollection("Vind");
+}
+
+function removeContributor(userId: string, collectionId: string) {
+  UserService.deleteCollectionContributor(userId, collectionId)
+  .then(() => getContributors(collectionId));
+}
+
+function addContributor(username: string, collectionId: string) {
+  disableAddContributor.value = true;
+  UserService.addCollectionContributor(username, collectionId)
+  .then(() => getContributors(collectionId))
+  .then(() => {
+    disableAddContributor.value = false;
+    newContributorUsername.value = "";
+  })
 }
 
 </script>
@@ -168,7 +182,7 @@ async function createCollection() {
                                 <div class="text-l text-1000">{{ slotProps.data.username }}</div>
                             </div>
                             <div class="flex sm:flex-column align-items-center sm:align-items-end gap-1 sm:gap-1">
-                                <!--<Button @click="removeContributor(slotProps.data.userId, loggedInUserStore.primaryCollectionId)" p-button-sm icon="pi pi-times" rounded outlined  severity="danger"></Button>-->
+                                <Button @click="removeContributor(slotProps.data.userId, currentCollection)" p-button-sm icon="pi pi-times" rounded outlined  severity="danger"></Button>
                             </div>
                         </div>
                     </div>
@@ -182,10 +196,10 @@ async function createCollection() {
           <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
           <label v-show="!disableAddContributor" for="username">Username</label>
         </span>
-      <!--<Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, loggedInUserStore.primaryCollectionId)" outlined>
+      <Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, currentCollection)" outlined>
           <i class="pi pi-share-alt px-2"></i>
           <span class="px-3">Share</span>
-        </Button>-->
+        </Button>
 
         <Button style="width:110px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
           <i class="pi pi-spin pi-spinner px-2"></i>
