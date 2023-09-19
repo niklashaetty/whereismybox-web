@@ -4,6 +4,7 @@ import RegisterView from '../views/RegisterView.vue'
 import CollectionView from '../views/CollectionView.vue'
 import DashboardView from '../views/DashboardView.vue'
 import SingleBoxView from '@/views/SingleBoxView.vue'
+import PrivacyPolicyView from '@/views/PrivacyPolicyView.vue'
 import LoginView from '@/views/LoginView.vue'
 
 const router = createRouter({
@@ -38,6 +39,11 @@ const router = createRouter({
       path: '/collections/:collectionId/boxes/:boxId', 
       name: 'singlebox', 
       component: SingleBoxView
+    },
+    {
+      path: '/privacy-policy', 
+      name: 'privacypolicy', 
+      component: PrivacyPolicyView
     }
   ]
 })
