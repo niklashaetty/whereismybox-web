@@ -67,6 +67,7 @@ namespace Functions
             builder.Services.AddSingleton<ICommandHandler<MoveUnattachedItemToBoxCommand>, MoveUnattachedItemToCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<AddContributorCommand>, AddContributorCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<DeleteContributorCommand>, DeleteContributorCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<RegisterUserCommand>, RegisterUserCommandHandler>();
             
             // QueryHandlers
             builder.Services.AddSingleton<IQueryHandler<GetBoxCollectionQuery, List<Box>>, GetBoxCollectionQueryHandler>();

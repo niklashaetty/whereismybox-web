@@ -28,7 +28,6 @@ namespace Functions.HttpTriggers.V2;
 public class AssignUserRolesFunction
 {
     private const string OperationId = "GetRoles";
-    private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _getUserByExternalIdQueryHandler;
     private readonly ICommandHandler<CreateUserCommand> _createUserCommandHandler;
 
@@ -52,22 +51,26 @@ public class AssignUserRolesFunction
         HttpRequest req,
         ILogger log)
     {
+        User user;
+        var body = await new StreamReader(req.Body).ReadToEndAsync();
+        var rolesRequest = JsonConvert.DeserializeObject<RolesRequest>(body);
+        var externalUser = rolesRequest.AsExternalUser();
         try
         {
-            var body = await new StreamReader(req.Body).ReadToEndAsync();
             log.LogInformation("[AssignRolesRequest]: {Body}", body);
-            var rolesRequest = JsonConvert.DeserializeObject<RolesRequest>(body);
-            var externalUser = rolesRequest.AsExternalUser();
-
-            var user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
-            var response = user.AsRolesResponse();
-            var asString = JsonConvert.SerializeObject(response);
-            log.LogInformation("AssignRolesResponse]: {AsString}", asString);
-            return new OkObjectResult(response);
+            user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
         }
         catch (UserNotFoundException)
         {
-            return new NotFoundObjectResult(new ErrorResponse("Not found", "User not found"));
+            var temporaryUsername = externalUser.Username + "-" + CollectionId.GenerateNew();
+            await _createUserCommandHandler.Execute(new CreateUserCommand(new UserId(), externalUser.ExternalUserId,
+                externalUser.ExternalIdentityProvider, temporaryUsername));
+            user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
         }
+        
+        var response = user.AsRolesResponse();
+        var asString = JsonConvert.SerializeObject(response);
+        log.LogInformation("AssignRolesResponse]: {AsString}", asString);
+        return new OkObjectResult(response);
     }
 }

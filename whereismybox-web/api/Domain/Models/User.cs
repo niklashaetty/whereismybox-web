@@ -10,6 +10,8 @@ public class User
     [JsonProperty] public string ExternalIdentityProvider { get; private set; }
     [JsonProperty] public string Username { get; private set; }
 
+    [JsonProperty] public bool IsRegistered { get; private set; } = true;
+
     [JsonConstructor]
     protected User()
     {
@@ -25,6 +27,12 @@ public class User
         ExternalUserId = externalUserId;
         ExternalIdentityProvider = externalIdentityProvider;
         Username = username;
+        IsRegistered = false;
     }
 
+    public void RegisterUsername(string username)
+    {
+        Username = username;
+        IsRegistered = true;
+    }
 }

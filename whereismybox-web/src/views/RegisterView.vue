@@ -17,8 +17,8 @@ const toast = useToast();
 const value = ref("");
 
 async function createUser(){
-  UserService.createUser(value.value)
-  .then((user) => pushToDashboard())
+  UserService.registerUser(value.value)
+  .then(() => pushToDashboard())
   .catch(handleCreateUserError);
 }
 

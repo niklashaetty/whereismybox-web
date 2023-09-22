@@ -17,12 +17,10 @@ export class UsernameExistsError extends Error {
 }
 
 export default new class UserService {
-  async createUser(username:string){
+  async registerUser(username:string){
     const createUserRequest = { username: username };
     try {
-      var res = await axios.post('/api/users', createUserRequest)
-      let user = new User(res.data.userId, res.data.username);
-      return user;
+      await axios.post('/api/users/register', createUserRequest)
     } catch(e){
         throw new Error("FailedToCreateUser");
     }

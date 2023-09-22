@@ -11,6 +11,8 @@ using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
+using Domain.Queries;
+using Domain.QueryHandlers;
 using Functions.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -24,40 +26,36 @@ namespace Functions.HttpTriggers.V2;
 
 public class CreateUserV2Function
 {
-    private const string OperationId = "CreateUserV2";
+    private const string OperationId = "RegisterUser";
     private const string FunctionName = OperationId + "Function";
-    private readonly ICommandHandler<CreateUserCommand> _commandHandler;
+    private readonly ICommandHandler<RegisterUserCommand> _commandHandler;
 
-    public CreateUserV2Function(ICommandHandler<CreateUserCommand> commandHandler)
+    public CreateUserV2Function(ICommandHandler<RegisterUserCommand> commandHandler)
     {
         ArgumentNullException.ThrowIfNull(commandHandler);
         _commandHandler = commandHandler;
     }
 
     [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"},
-        Summary = "Creates a new user")]
-    [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateUserRequest))]
+        Summary = "Register a user")]
+    [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(RegisterUserRequest))]
     [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(UserDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users/register")]
         HttpRequest req)
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             var body = await new StreamReader(req.Body).ReadToEndAsync();
-            var createUserRequest = JsonConvert.DeserializeObject<CreateUserRequest>(body);
-            var newUser = new User(new UserId(), externalUser.ExternalUserId, externalUser.ExternalIdentityProvider,
-                createUserRequest.UserName);
-            var command = new CreateUserCommand(newUser.UserId, newUser.ExternalUserId,
-                newUser.ExternalIdentityProvider, newUser.Username);
+            var registerUserRequest = JsonConvert.DeserializeObject<RegisterUserRequest>(body);
+            var userId = req.ParseUserId();
+            var command = new RegisterUserCommand(userId, registerUserRequest.UserName);
 
             await _commandHandler.Execute(command);
-            return new CreatedResult($"/api/users/{newUser.UserId}",
-                newUser.ToApiModel());
+            return new NoContentResult();
         }
         catch (UserAlreadyExistException)
         {

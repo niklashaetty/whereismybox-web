@@ -14,10 +14,16 @@ public class UserDto
         Default = "John Doe")]
     public string Username { get; set; }
     
-    public UserDto(Guid userId, string username)
+    
+    [JsonRequired]
+    [OpenApiProperty(Description = "Indicates if the user has registered their username or is using a temporary one")]
+    public bool IsRegistered { get; set; }
+    
+    public UserDto(Guid userId, string username, bool isRegistered)
     {
         ArgumentNullException.ThrowIfNull(username);
         UserId = userId;
         Username = username;
+        IsRegistered = isRegistered;
     }
 }
