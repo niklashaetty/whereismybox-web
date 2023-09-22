@@ -62,6 +62,7 @@ namespace Functions
             builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
             builder.Services.AddSingleton<ICommandHandler<DeleteBoxCommand>, DeleteBoxCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<DeleteItemCommand>, DeleteItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<DeleteCollectionCommand>, DeleteCollectionCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<DeleteUnattachedItemCommand>, DeleteUnattachedItemCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<MoveUnattachedItemToBoxCommand>, MoveUnattachedItemToCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<AddContributorCommand>, AddContributorCommandHandler>();

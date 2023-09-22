@@ -25,15 +25,11 @@ public class CreateCollectionFunction
     private const string OperationId = "CreateCollection";
     private const string FunctionName = OperationId + "Function";
     private readonly ICommandHandler<CreateCollectionCommand> _commandHandler;
-    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
 
-    public CreateCollectionFunction(ICommandHandler<CreateCollectionCommand> commandHandler,
-        IQueryHandler<GetUserByExternalUserIdQuery, User> queryHandler)
+    public CreateCollectionFunction(ICommandHandler<CreateCollectionCommand> commandHandler)
     {
         ArgumentNullException.ThrowIfNull(commandHandler);
-        ArgumentNullException.ThrowIfNull(queryHandler);
         _commandHandler = commandHandler;
-        _queryHandler = queryHandler;
     }
 
     [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
@@ -45,19 +41,27 @@ public class CreateCollectionFunction
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "collections")]
-        HttpRequest req)
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users/{userId}/collections")]
+        HttpRequest req,
+        string userId)
     {
         try
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createCollectionRequest = JsonConvert.DeserializeObject<CreateCollectionRequest>(body);
             
-            var externalUser = req.ParseExternalUser();
-            var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
+            if (UserId.TryParse(userId, out var pathUserId) is false)
+            {
+                return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid userId"));
+            }
+            var tokenUserId = req.ParseUserId();
+            if (tokenUserId != pathUserId)
+            {
+                return new ForbidResult();
+            }
 
             var collectionId = CollectionId.GenerateNew();
-            var command = new CreateCollectionCommand(user.UserId, collectionId, createCollectionRequest.Name);
+            var command = new CreateCollectionCommand(pathUserId, collectionId, createCollectionRequest.Name);
 
             await _commandHandler.Execute(command);
             return new CreatedResult($"/api/collections/{command.CollectionId}",

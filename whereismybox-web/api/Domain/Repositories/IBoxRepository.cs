@@ -25,4 +25,10 @@ public interface IBoxRepository
     /// List all boxes in a collection
     /// </summary>
     public Task<List<Box>> GetCollection(CollectionId collectionId);
+    
+    /// <summary>
+    /// Schedule a box for deletion. It will automatically be deleted after a certain time.
+    /// </summary>
+    public Task ScheduleForDeletion(CollectionId collectionId, Box box, int daysUntilDeletion);
+
 }

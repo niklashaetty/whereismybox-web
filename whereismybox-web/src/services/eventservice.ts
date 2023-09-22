@@ -4,7 +4,8 @@ export enum BoxEvents {
   ADDED = "BoxAdded",
   ITEM_CHANGED = "BoxItemsChanged",
   DELETED = "BoxDeleted",
-  UNATTACHED_ITEMS_CHANGED = "UnattachedItemsChanged"
+  UNATTACHED_ITEMS_CHANGED = "UnattachedItemsChanged",
+  COLLECTIONS_CHANGED = "CollectionsChanged"
 }
 
 export default new class EventService {
@@ -24,6 +25,10 @@ BoxItemsChanged(boxId: string) {
 
 UnattachedItemsChanged() {
   EventBus.emit(BoxEvents.UNATTACHED_ITEMS_CHANGED);
+}
+
+CollectionsChanged() {
+  EventBus.emit(BoxEvents.COLLECTIONS_CHANGED);
 }
 }
 

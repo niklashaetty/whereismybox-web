@@ -63,8 +63,8 @@ function addNewItem() {
           
         </div>
         <template #footer>
-          <Button icon="pi pi-plus" style="margin-top: 10px;" severity="success" text raised @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
-          <Button severity="plain" text raised label="Close" icon="pi pi-times" class="p-button-text" @click="closeAddItemDialog" />
+          <Button severity="success" text icon="pi pi-plus" style="margin-top: 10px;" @click="addNewItem" type="submit" label="Add new item" class="mt-2" />
+          <Button severity="secondary" text label="Close" icon="pi pi-times" class="p-button-text" @click="closeAddItemDialog" />
         </template>
       </Dialog>
   </div>

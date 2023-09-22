@@ -3,6 +3,7 @@ import router from '@/router';
 import { computed, onMounted, ref } from 'vue';
 import InputText from 'primevue/inputtext';
 import InputNumber from 'primevue/inputnumber';
+import { BoxEvents } from '@/services/eventservice';
 import Skeleton from 'primevue/skeleton'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
@@ -15,7 +16,13 @@ import CollectionService from '@/services/collectionservice';
 import type Contributor from '@/models/Contributor';
 import type CollectionMetadata from '@/models/CollectionMetadata';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
+import { useToast } from "primevue/usetoast";
+import EventBus from '@/services/eventbus';
+import { useConfirm } from "primevue/useconfirm";
 
+
+const confirm = useConfirm();
+const toast = useToast();
 const loggedInUserStore = useLoggedInUserStore()
 
 let sharedCollections = ref(new Array<CollectionMetadata>());
@@ -25,26 +32,21 @@ let sharedCollectionsLoaded = ref(false);
 let ownedCollections = ref(new Array<CollectionMetadata>());
 let ownedCollectionsLoaded = ref(false);
 
+
+
 // Share collection dialog
 const currentCollection = ref("");
 const disableAddContributor = ref(false);
 const displayManageCollectionAccessDialog = ref(false)
 let contributors = ref<Contributor[]>([]);
 let contributorsLoaded = ref(false);
-const newContributorUsername = ref("");
+const newContributorUsername = ref("")
 
 function openManageCollectionAccessDialog(collectionId: string) {
   getContributors(collectionId)
   .then(() => currentCollection.value = collectionId)
   .then(() => displayManageCollectionAccessDialog.value = true)
 }
-
-async function getContributors(collectionId: string) {
-  UserService.getCollectionContributors(collectionId)
-  .then((c) => contributors.value = c.data)
-  .then(() => contributorsLoaded.value = true)
-}
-
 
 function closeManageCollectionAccessDialog() {
   contributorsLoaded.value = false;
@@ -55,11 +57,37 @@ function closeManageCollectionAccessDialog() {
   disableAddContributor.value = false;
 }
 
+// Create collection dialog
+const displayCreateCollectionDialog = ref(false)
+const newCollectionName = ref("")
+const createCollectionButtonEnabled = ref(true)
+
+function openCreateCollectionDialog() {
+  displayCreateCollectionDialog.value = true;
+}
+
+function closeCreateCollectionsDialog() {
+  displayCreateCollectionDialog.value = false;
+  newContributorUsername.value = "";
+  createCollectionButtonEnabled.value = true;
+}
+
+async function getContributors(collectionId: string) {
+  UserService.getCollectionContributors(collectionId)
+  .then((c) => contributors.value = c.data)
+  .then(() => contributorsLoaded.value = true)
+}
+
+
 async function getCurrentUserInformation() {
   if(!loggedInUserStore.username){
     await UserService.getRegisteredUser();
   }
 }
+
+EventBus.on(BoxEvents.COLLECTIONS_CHANGED,  () => { 
+  getOwnedCollections();
+});
 
 onMounted(async () => {
  await getCurrentUserInformation();
@@ -80,6 +108,20 @@ async function getSharedCollections() {
   .then(() => sharedCollectionsLoaded.value = true);
 }
 
+async function createCollection(ownerUserId: string, name: string) {
+  createCollectionButtonEnabled.value = false;
+  CollectionService.createCollection(ownerUserId, name)
+  .then(() => {
+    toast.add({ severity: 'success', summary: 'Created', detail: `Created new collection ${name}`, life: 3000 })
+    console.log("toast")})
+  .then(() => createCollectionButtonEnabled.value = true)
+  .then(() => {
+
+    closeCreateCollectionsDialog()
+    console.log("Close")
+  });
+}
+
 async function getCollectionOwnerInfo(collections: CollectionMetadata[]){
   for (const sharedCollection of collections) {
     const collectionOwnerResponse = await CollectionService.getCollectionOwnerInfo(sharedCollection.collectionId);
@@ -89,10 +131,6 @@ async function getCollectionOwnerInfo(collections: CollectionMetadata[]){
 
 async function pushToCollection(collectionId: string) {
   router.push({path: `/collections/${collectionId}`});
-}
-
-async function createCollection() {
-  await CollectionService.createCollection("Vind");
 }
 
 function removeContributor(userId: string, collectionId: string) {
@@ -109,6 +147,23 @@ function addContributor(username: string, collectionId: string) {
     newContributorUsername.value = "";
   })
 }
+
+function deleteCollection(collectionId: string) {
+  CollectionService.deleteCollection(collectionId)
+  .then(() => toast.add({ severity: 'success', summary: 'Deleted', detail: `Collection deleted`, life: 3000 }))
+}
+
+function confirmDeleteCollection(collectionId: string){
+   
+   confirm.require({
+       message: `Are you sure you want to delete the collection? This action cannot be undone, and all boxes and items will be permanently lost.`,
+       header: `Deleting collection`,
+       icon: 'pi pi-info-circle',
+       acceptClass: 'p-button-danger',
+       accept: () => deleteCollection(collectionId),
+       reject: () => {}
+   });
+};
 
 </script>
 <template>
@@ -127,14 +182,19 @@ function addContributor(username: string, collectionId: string) {
           
             <template #footer>
                 <Button severity="success" text raised icon="pi pi-box" label="Open" @click="pushToCollection(collection.collectionId)"/>
-                <Button severity="plain" text raised icon="pi pi-share-alt" label="Share" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog(collection.collectionId)"/>
-            </template>
+                <Button severity="info" text raised icon="pi pi-share-alt" label="Share" style="margin-left: 0.5em" @click="openManageCollectionAccessDialog(collection.collectionId)"/>
+                <Button text rounded severity="danger" icon="pi pi-trash" style="margin-left: 0.5em; float: right;" @click="confirmDeleteCollection(collection.collectionId)"/>
+              </template>
           </Card>
           <Card v-show="!ownedCollectionsLoaded" class="my-collection-card">
             <template #title> <Skeleton style="width: 300px;"/> </template>
             <template #subtitle> <Skeleton style="width: 200px; margin-bottom: 40px;"/> </template>
             <template #footer> <Skeleton style="width: 100px;"/></template>
           </Card>
+        </div>
+        <div class="create-collection-button">
+          <Button v-show="createCollectionButtonEnabled" style="background: white;" severity="success"  text raised icon="pi pi-plus" label="Create new collection" @click="openCreateCollectionDialog()"/>
+          <Button v-show="!createCollectionButtonEnabled" style="background: white;" severity="secondary"  disabled text raised icon="pi pi-spin pi-spinner" label="Create new collection" @click="openCreateCollectionDialog()"/>
         </div>
       </div>
       <div class="content-right">
@@ -165,7 +225,7 @@ function addContributor(username: string, collectionId: string) {
   </div>
 </div>
 
-
+<!-- Share collection dialog -->
 <Dialog v-model:visible="displayManageCollectionAccessDialog" :style="{ width: '650px' }" header="Share collection" :modal="true">
   <div class="card">
     <p style="margin-bottom: 10px;"> Once a collection is shared with someone, they can access and edit the collection until you revoke their access here.</p>
@@ -196,12 +256,12 @@ function addContributor(username: string, collectionId: string) {
           <InputText disabled v-show="disableAddContributor" id="username" v-model="newContributorUsername" />
           <label v-show="!disableAddContributor" for="username">Username</label>
         </span>
-      <Button style="width:110px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, currentCollection)" outlined>
+      <Button severity="info" style="width:110px; margin-left: 10px;" v-show="!disableAddContributor" class="youtube p-0" @click="addContributor(newContributorUsername, currentCollection)" outlined>
           <i class="pi pi-share-alt px-2"></i>
           <span class="px-3">Share</span>
         </Button>
 
-        <Button style="width:110px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
+        <Button severity="info" style="width:110px; margin-left: 10px;" disabled v-show="disableAddContributor" class="youtube p-0" outlined>
           <i class="pi pi-spin pi-spinner px-2"></i>
           <span class="px-3">Share</span>
         </Button>
@@ -209,7 +269,21 @@ function addContributor(username: string, collectionId: string) {
         
       </div> 
   <template #footer>
-    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />
+    <Button severity="secondary" label="Close" icon="pi pi-times" class="p-button-text" @click="closeManageCollectionAccessDialog" />
+  </template>
+</Dialog>
+
+<!-- Create collection -->
+<Dialog :pt="{ header: { class: 'dialog-header' } }" class="create new eollection" v-model:visible="displayCreateCollectionDialog" :style="{ width: '650px' }" header="Create new collection" :modal="true">
+  <div class="card">
+    <div class="field">
+      <InputText v-model="newCollectionName" type="text" placeholder="Name" />
+    </div>
+
+  </div>
+  <template #footer>
+    <Button text severity="success" icon="pi pi-plus"  @click="createCollection(loggedInUserStore.userId, newCollectionName)" type="submit" label="Create"/>
+    <Button text severity="secondary" label="Close" icon="pi pi-times" @click="closeCreateCollectionsDialog" />
   </template>
 </Dialog>
 </template>
@@ -232,6 +306,8 @@ function addContributor(username: string, collectionId: string) {
   }
 }
 
+
+
 .searchbar {
   display: flex;
   width: 100%;
@@ -251,6 +327,7 @@ function addContributor(username: string, collectionId: string) {
 .my-collection-card {
   width: 100%;
   height: 145px;
+  margin-bottom: 10px;
   font-family: 'Roboto', sans-serif;
   @media (min-width: 1000px) {
     width: 100%;
@@ -259,6 +336,12 @@ function addContributor(username: string, collectionId: string) {
 
 .c-bc-boxes::v-deep .p-card .p-card-content {
   padding: 0 !important;
+}
+
+.wrapper::v-deep .p-dialog-header {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 100;
+  color: aqua;
 }
 
 .c-bc-boxes::v-deep .p-card .p-card-body {

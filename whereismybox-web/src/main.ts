@@ -12,7 +12,7 @@ import Paperizer from 'paperizer'
 
 import './assets/main.css'
 
-import 'primevue/resources/themes/saga-blue/theme.css'       //theme
+import 'primevue/resources/themes/saga-green/theme.css'       //theme
 import 'primevue/resources/primevue.min.css'                 //core css
 import 'primeicons/primeicons.css'                           //icons
 import { library } from '@fortawesome/fontawesome-svg-core'

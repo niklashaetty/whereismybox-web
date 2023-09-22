@@ -123,9 +123,7 @@ function confirmDeleteBox(){
 
 function deleteBox(collectionId:string, boxId:string) {
   BoxService.deleteBox(collectionId, boxId)
-  .then((response => {
-     toast.add({ severity: 'success', summary: 'Confirmed', detail: `Box ${box.value.name} deleted`, life: 3000 });
-  }))
+  .then(() => toast.add({ severity: 'success', summary: 'Deleted', detail: `Box ${box.value.name} deleted`, life: 3000 }))
 }
 
 function expandBox(){
@@ -163,8 +161,8 @@ onMounted(async () => {
         <Sticker :qrCodeLink="linkToBox" :boxNumber="box.number" :title="box.name" />
     </div>
         <template #footer>
-          <Button label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
-          <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog()" />
+          <Button severity="success" label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
+          <Button severity="secondary" label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog()" />
         </template>
       </Dialog>
 <div v-if="isFullyLoaded" class="accordion-container">

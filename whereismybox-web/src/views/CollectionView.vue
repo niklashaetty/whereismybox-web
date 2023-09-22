@@ -23,6 +23,7 @@ import CollectionService from '@/services/collectionservice';
 import type Contributor from '@/models/Contributor';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
 import { usePaperizer } from 'paperizer'
+import { useToast } from "primevue/usetoast";
 
 
 const boxes = ref<Box[]>([]);
@@ -54,7 +55,8 @@ const print = () => {
   paperize()
 }
 
-const loggedInUserStore = useLoggedInUserStore()
+const toast = useToast();
+const loggedInUserStore = useLoggedInUserStore();
 
 const menu: any = ref(null);
 const menuItemsForOwner = ref([
@@ -133,6 +135,7 @@ async function getCollectionMetadata(collectionId : string) {
 async function createNewBox() {
   BoxService.createBox(currentCollectionId.value, boxNumber.value, boxName.value)
     .then(closeDisplayCreateBoxDialog)
+    .then(() => toast.add({ severity: 'success', summary: 'Created', detail: `Box ${boxName.value} created`, life: 3000 }))
 }
 
 onMounted(async () => {
@@ -329,8 +332,8 @@ function trimString(maxLength: number, text: string) {
     
   </div>
   <template #footer>
-    <Button severity="success" icon="pi pi-plus" text raised @click="createNewBox" type="submit" label="Create new box" class="mt-2" />
-    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closeDisplayCreateBoxDialog" />
+    <Button severity="success" text icon="pi pi-plus" label="Create new box" type="submit"  @click="createNewBox" />
+    <Button severity="secondary" text icon="pi pi-times" label="Close" @click="closeDisplayCreateBoxDialog" />
   </template>
 </Dialog>
 <Dialog v-model:visible="displayPrintableQrStickersDialog" :style="{ width: '650px' }" header="Printable QR stickers" :modal="true">
@@ -339,8 +342,8 @@ function trimString(maxLength: number, text: string) {
     <QrStickersView :collectionId="currentCollectionId" :boxes="boxes"/>'
   </div>
   <template #footer>
-    <Button label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
-    <Button label="Close" icon="pi pi-times" class="p-button-text" @click="closePrintableQrStickersDialog" />
+    <Button severity="success" label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
+    <Button severity="secondary" label="Close" icon="pi pi-times" class="p-button-text" @click="closePrintableQrStickersDialog" />
   </template>
 </Dialog>
 

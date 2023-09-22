@@ -6,19 +6,25 @@ import type Contributor from '@/models/Contributor';
 
 export default new class CollectionService {
 
-  async createCollection(name:string){
+  async createCollection(userId: string, name:string){
     const requestBody = { Name: name};
-    let path = `/api/collections`
+    let path = `/api/users/${userId}/collections`
     return axios
-        .post(path, requestBody);
-        //.then(() => EventService.BoxItemsChanged(boxId));
+        .post(path, requestBody)
+        .then(() => EventService.CollectionsChanged());
   }
 
   async getCollection(collectionId:string){
     let path = `/api/collections/${collectionId}`
     return axios
         .get(path);
-        //.then(() => EventService.BoxItemsChanged(boxId));
+  }
+
+  async deleteCollection(collectionId:string){
+    let path = `/api/collections/${collectionId}`
+    return axios
+        .delete(path)
+        .then(() => EventService.CollectionsChanged());
   }
 
   async getOwnedCollections(userId: string){

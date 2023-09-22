@@ -30,6 +30,22 @@ public class BoxRepository : IBoxRepository
     {
         await _container.DeleteItemAsync<CosmosAwareBox>(boxId.ToString(), new PartitionKey(collectionId.ToString()));
     }
+    
+    public async Task ScheduleForDeletion(CollectionId collectionId, Box box, int daysUntilDeletion)
+    {
+        if (box is not CosmosAwareBox cosmosAwareBox)
+        {
+            throw new InvalidOperationException("Not a cosmos aware item");
+        }
+
+        cosmosAwareBox.TimeToLive = daysUntilDeletion * 60 * 60 * 24;
+        
+        await _container.ReplaceItemAsync(cosmosAwareBox, cosmosAwareBox.Id,
+            cosmosAwareBox.GetPartitionKey(), new ItemRequestOptions()
+            {
+                IfMatchEtag = cosmosAwareBox.ETag
+            });
+    }
 
     public async Task<Box> Get(CollectionId collectionId, BoxId boxId)
     {

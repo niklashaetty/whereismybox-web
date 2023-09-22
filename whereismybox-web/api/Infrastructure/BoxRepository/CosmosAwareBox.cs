@@ -10,6 +10,7 @@ public class CosmosAwareBox : Box, ICosmosAware
     [JsonProperty(PropertyName = "_etag")] public string ETag { get; set; }
 
     [JsonProperty(PropertyName = "id")] public string Id { get; set; }
+    [JsonProperty(PropertyName = "ttl")] public int TimeToLive { get; set; } = -1;
 
     public CosmosAwareBox(CollectionId collectionId, BoxId boxId, int number, string name, List<Item> items) : base(
         collectionId, boxId, number, name, items)
@@ -25,5 +26,10 @@ public class CosmosAwareBox : Box, ICosmosAware
     public PartitionKey GetPartitionKey()
     {
         return new PartitionKey(CollectionId.ToString());
+    }
+
+    public void SetTimeToLive(int days)
+    {
+        TimeToLive = days * 60 * 60 * 24;
     }
 }
