@@ -31,11 +31,5 @@
       "route": "/logout",
       "redirect": "/.auth/logout"
     }
-  ],
-  "responseOverrides": {
-    "401": {
-      "redirect": "/login?post_login_redirect_uri=.referrer",
-      "statusCode": 302
-    }
-  }
+  ]
 }

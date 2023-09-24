@@ -113,17 +113,14 @@ async function getBoxes(showLoading: boolean) {
       loadingBoxes.value = false;
     })
     .catch((error: AxiosError) => {
-      console.log("ERROR: " + error);
       if(error.response!.status === 403) {
-        console.log("CATCH 403");
         unauthorizedAccess.value = true;
         loadingBoxes.value = false;
         loadingUnattachedItems.value = false;
-        toast.add({ severity: 'error', summary: 'Unauthorized', detail: `You do not have access to this collection`, life: 5000 });
+        toast.add({ severity: 'error', summary: 'Unauthorized', detail: `You do not have access to this collection`, life: 6000 });
       }
       else if(error.response!.status === 401) {
-        console.log("CATCH 401");
-        toast.add({ severity: 'error', summary: 'Not logged in', detail: `You need to log in to see this page`, life: 5000 });
+        toast.add({ severity: 'error', summary: 'Not logged in', detail: `You need to log in to see this page`, life: 6000 });
         pushToLogin();
       }
     });
