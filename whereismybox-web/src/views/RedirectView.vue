@@ -12,8 +12,13 @@ async function getCurrentUser(){
   var isUserAuthenticated = await UserService.isUserAuthenticated();
   if(isUserAuthenticated){
   await UserService.getRegisteredUser()
-  .then((user) => pushToDashboard())
-  .catch(pushToRegistration)
+  .then((user) => {
+    if(user.isRegistered){
+      pushToDashboard()
+    } else {
+      pushToRegistration()
+    }
+  })
   } else {
     pushToLogin();
   }

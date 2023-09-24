@@ -16,7 +16,7 @@ const userExists = ref(true);
 const toast = useToast();
 const value = ref("");
 
-async function createUser(){
+async function registerUser(){
   UserService.registerUser(value.value)
   .then(() => pushToDashboard())
   .catch(handleCreateUserError);
@@ -45,7 +45,7 @@ function handleCreateUserError(error: Error){
           <InputText id="username" v-model="value" />
           <label for="username">Username</label>
         </span>
-        <Button @click="createUser" style="margin-top: 20px; margin-left: auto;margin-right: auto;" type="submit" label="Start using Boxie!" text raised /> 
+        <Button @click="registerUser" style="margin-top: 20px; margin-left: auto;margin-right: auto;" type="submit" label="Start using Boxie!" text raised /> 
     </div>
     </div>
   </div>

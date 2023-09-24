@@ -43,7 +43,7 @@ export default new class UserService {
     try {
       const res = await axios.get(path);
 
-      let user = new User(res.data.userId, res.data.username);
+      let user = new User(res.data.userId, res.data.username, res.data.isRegistered);
       loggedInUser.setLoggedInUser(user.userId, user.username);
       return user;
     }

@@ -24,13 +24,13 @@ using Newtonsoft.Json;
 
 namespace Functions.HttpTriggers.V2;
 
-public class CreateUserV2Function
+public class RegisterUserFunction
 {
-    private const string OperationId = "RegisterUser";
+    private const string OperationId = "RegisterUsername";
     private const string FunctionName = OperationId + "Function";
     private readonly ICommandHandler<RegisterUserCommand> _commandHandler;
 
-    public CreateUserV2Function(ICommandHandler<RegisterUserCommand> commandHandler)
+    public RegisterUserFunction(ICommandHandler<RegisterUserCommand> commandHandler)
     {
         ArgumentNullException.ThrowIfNull(commandHandler);
         _commandHandler = commandHandler;

@@ -4,7 +4,7 @@ export const useLoggedInUserStore = defineStore('loggedInUser', {
     state: () => {
       return { 
         username: "",
-        userId: "",
+        userId: ""
      }
     },
     actions: {
