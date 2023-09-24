@@ -24,7 +24,7 @@ import type Contributor from '@/models/Contributor';
 import { useLoggedInUserStore } from '@/stores/loggedinuser'
 import { usePaperizer } from 'paperizer'
 import { useToast } from "primevue/usetoast";
-import {  AxiosError } from 'axios'
+import type { AxiosError } from 'axios';
 
 const boxes = ref<Box[]>([]);
 const contributors = ref<Contributor[]>([]);
