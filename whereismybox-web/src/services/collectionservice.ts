@@ -30,8 +30,7 @@ export default new class CollectionService {
   async getOwnedCollections(userId: string){
     let path = `/api/users/${userId}/collections?filter=owner`
     try {
-      const res = await axios.get<CollectionMetadata[]>(path);
-      return res;
+      return await axios.get<CollectionMetadata[]>(path);
     }
     catch(e){
       throw new Error("Failed to get the collections a user owns");

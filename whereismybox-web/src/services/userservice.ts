@@ -40,16 +40,10 @@ export default new class UserService {
   async getRegisteredUser(){
     const loggedInUser = useLoggedInUserStore();
     const path = `/api/users/me`
-    try {
-      const res = await axios.get(path);
-
-      let user = new User(res.data.userId, res.data.username, res.data.isRegistered);
-      loggedInUser.setLoggedInUser(user.userId, user.username);
-      return user;
-    }
-    catch(e){
-      throw new Error("UserNotFound");
-    }
+    const res = await axios.get(path);
+    let user = new User(res.data.userId, res.data.username, res.data.isRegistered);
+    loggedInUser.setLoggedInUser(user.userId, user.username);
+    return user;
   }
 
   async getCollectionContributors(collectionId: string){

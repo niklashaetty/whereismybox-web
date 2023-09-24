@@ -1,6 +1,7 @@
 import type Item from '@/models/Item';
 import axios from 'axios';
 import EventService from '@/services/eventservice';
+import type Box from '@/models/Box';
 
 export default new class BoxService {
 
