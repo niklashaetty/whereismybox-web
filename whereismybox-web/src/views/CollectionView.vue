@@ -45,6 +45,7 @@ const searchQuery = ref("");
 const currentCollectionId = ref("");
 const currentCollectionOwner = ref("");
 const disableAddContributor = ref(false);
+const unauthorizedAccess = ref(false);
 
 const { paperize } = usePaperizer('qr-stickers-view', {
   styles: [
@@ -110,7 +111,13 @@ async function getBoxes(showLoading: boolean) {
       boxes.value = response.data.boxes
       filteredBoxes.value = response.data.boxes;
     })
-    .then(() => loadingBoxes.value = false);
+    .then(() => loadingBoxes.value = false)
+    .catch(() => {
+      unauthorizedAccess.value = true;
+      loadingBoxes.value = false;
+      loadingUnattachedItems.value = false;
+      toast.add({ severity: 'error', summary: 'Unauthorized', detail: `You do not have access to this collection`, life: 5000 });
+    });
 }
 
 async function getUnattachedItems(showLoading: boolean) {
@@ -253,13 +260,20 @@ function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 }
 
+function pushToDashboard(){
+  router.push({path: `/dashboard`});
+}
+
 </script>
 <template>
 <Header />
 <div class="wrapper">
   <div class="container">
+    <div v-show="unauthorizedAccess" class="unauthorized-info">
+      <Button style="background: white; margin: auto;" severity="success"  text raised icon="pi pi-home" label="Go to dashboard" @click="pushToDashboard()"/>
+    </div>
     
-    <div class="searchbar">
+    <div v-if="!unauthorizedAccess" class="searchbar">
     <span class="p-input-icon-right p-input-icon-left searchinput">
         <InputText class="searchinput" type="text" v-model="searchQuery" placeholder="Type something to start filtering items" />
         <i v-if=searchQuery class="pi pi-times boxie-icon clickable" @click="clearFilter()" />
@@ -267,27 +281,27 @@ function trimString(maxLength: number, text: string) {
       </span>
     
     </div>
-    <div class="content">
+    <div v-if="!unauthorizedAccess" class="content">
       <div class="c-boxcollection">
         <div class="sectiontitle">
-          <SectionTitle v-if="collectionMetadataLoaded && isMyCollection()" :title="`My collection ` + currentCollectionName "  >
+          <SectionTitle v-show="!unauthorizedAccess" v-if="collectionMetadataLoaded && isMyCollection()" :title="`My collection ` + currentCollectionName "  >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItemsForOwner" :popup="true" />
             </template>
           </SectionTitle>
-          <SectionTitle v-if="collectionMetadataLoaded && !isMyCollection()" :title="`Shared collection ` + currentCollectionName " >
+          <SectionTitle v-show="!unauthorizedAccess" v-if="collectionMetadataLoaded && !isMyCollection()" :title="`Shared collection ` + currentCollectionName " >
             <template #right>
               <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItemsForContributor" :popup="true" />
             </template>
           </SectionTitle>
-          <SectionTitle v-show="!collectionMetadataLoaded" title="" />
+          <SectionTitle v-show="!unauthorizedAccess && !collectionMetadataLoaded" title="" />
         </div>
         <div class="c-bc-boxes">
           <BoxAccordion v-if="loadingBoxes" :box="Object()" v-for="box in Array(4)" :isLoading="loadingBoxes"/>
           <BoxAccordion :searchQuery="searchQuery" :box="box" v-for="box in filterBoxes"  :alwaysExpandedItems="false"/>
-          <div v-show="!loadingBoxes && boxes.length === 0" class="c-bc-boxes-empty"> 
+          <div v-show="!unauthorizedAccess && !loadingBoxes && boxes.length === 0" class="c-bc-boxes-empty"> 
             <h3 class="c-bc-boxes-empty-text">This is your collection of boxes. </h3>
             <h3 class="c-bc-boxes-empty-text"> When you create your first box, it'll show up here!</h3>
           </div>
@@ -295,7 +309,7 @@ function trimString(maxLength: number, text: string) {
       </div>
       <div class="c-unattacheditems">
         <div class="sectiontitle">
-          <SectionTitle title="Unattached items" >
+          <SectionTitle v-if="!unauthorizedAccess" title="Unattached items" >
             <template #right>
               <i class="pi pi-info-circle boxie-icon" 
               v-tooltip.top="{ value: `<p>Here is a list 
@@ -391,6 +405,11 @@ function trimString(maxLength: number, text: string) {
 @import 'primeflex/primeflex.scss';
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap');
 
+.unauthorized-info{
+  width: 100%;
+  margin: auto;
+  margin-top: 100px;
+}
 
 .container {
   width: 95%;

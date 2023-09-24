@@ -18,6 +18,7 @@ const value = ref("");
 
 async function registerUser(){
   UserService.registerUser(value.value)
+  .then(UserService.getRegisteredUser)
   .then(() => pushToDashboard())
   .catch(handleCreateUserError);
 }
