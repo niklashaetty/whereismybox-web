@@ -1,6 +1,25 @@
-# whereismybox-web
+# Boxie
 
-You can run the applications together in two different ways.
+Welcome to Boxie.se, a simple web application to help organize your boxes in your attic, basement, or any other storage room.
+
+## Key features
+* Create boxes or collection of boxes representing your physical boxes in your attic
+* Printable QR-code stickers to put on the physical boxes  
+* Scan a sticker to quickly find out what's inside  
+* Search for items to figure out in which box you put your long lost bike lock  
+* Shared access to boxes with other users 
+* Sign in securely using Github or Google 
+
+## Tech stack
+
+* Vue3 frontend
+* .NET/C# backend using Azure Functions
+* Serverless hosting using Azure Static Web Apps
+
+
+## Local development
+
+You can run the applications locally together in two different ways.
 
 ## Pre-requisites
 * .NET 6.0
