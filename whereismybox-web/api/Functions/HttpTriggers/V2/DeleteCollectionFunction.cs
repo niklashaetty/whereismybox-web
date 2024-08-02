@@ -42,7 +42,6 @@ public class DeleteCollectionFunction
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
-    [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
