@@ -37,7 +37,7 @@ public class DeleteContributorFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Revoke access for another user to edit a collection")]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Contributors"}, Summary = "Revoke access for another user to edit a collection")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddContributorRequest))]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]

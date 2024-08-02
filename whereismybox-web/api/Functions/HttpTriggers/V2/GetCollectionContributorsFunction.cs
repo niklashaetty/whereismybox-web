@@ -43,7 +43,7 @@ public class GetCollectionContributorsFunction
         _permissionsQueryHandler = permissionsQueryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"UnattachedItems"},
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Contributors"},
         Summary = "Get unattached items in a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(List<CollectionContributor>))]

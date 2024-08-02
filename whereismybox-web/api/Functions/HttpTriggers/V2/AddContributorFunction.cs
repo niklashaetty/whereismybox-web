@@ -37,7 +37,7 @@ public class AddContributorFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Allow another user to edit a collection")]
+    [OpenApiOperation(operationId: OperationId, tags: new[] {"Contributors"}, Summary = "Allow another user to edit a collection")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddContributorRequest))]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
