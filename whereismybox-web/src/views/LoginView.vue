@@ -32,7 +32,38 @@ import ImageCard from '@/components/ImageCard.vue'
         </div>
       </div>
     </a>
-  </div>
+    </div>
+    
+    <div class="infocontainer">
+   
+        <h1 style="text-align: center;">
+          Welcome to Boxie
+        </h1>
+        <h3> 
+          Finding your stuff in the attic doesn't have to be a hassle. Use Boxie to organize your storage units and find what you're looking for in seconds.
+        </h3>
+        
+        <br>
+    
+        <h3 class="featuretext"><i class="pi pi-box featurelogo"></i> Organize all your boxes and items</h3>
+        <h3 class="featuretext"><i class="pi pi-search featurelogo"></i> Search for your items</h3>
+        <h3 class="featuretext"><i class="pi pi-qrcode featurelogo"></i> Print QR-code sticker</h3>
+        <h3 class="featuretext"><i class="pi pi-share-alt featurelogo"></i> Share access to others</h3>
+
+    </div>
+<!--
+    <div class="infocontainer">
+      <h1>How it works</h1>
+
+
+      <ol>
+        <li>Create a collection of boxes for your attic or basement</li>
+        <li>Create a box for every physical box and keep track of your items inside</li>
+        <li>Use the printable QR-code sticker to find the box your looking for</li>
+
+      </ol>
+    </div>>-->
+
   </div>
   
 </template>
@@ -40,8 +71,8 @@ import ImageCard from '@/components/ImageCard.vue'
 <style scoped lang="scss">
 .logincontainer {
   margin-top: 10px;
+  margin-bottom: 20px;
   width: 300px;
-
   padding: 10px;
   border-radius: 3px;
   align-items: center;
@@ -50,6 +81,33 @@ import ImageCard from '@/components/ImageCard.vue'
   display: block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.featuretext {
+  font-size: 24px;
+}
+
+.featurelogo{
+  font-size: 22px;
+}
+
+
+.infocontainer {
+  width: 500px;
+  font-size: 17px;
+  margin-bottom: 10px;
+  padding: 10px;
+  align-items: center;
+  user-select: none; /* Non-prefixed version, currently */
+  -webkit-user-select: none;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  color: whitesmoke;
+}
+.h1 {
+  font-size: 80px;
+  text-align: center;
 }
 
 .loginsection{
