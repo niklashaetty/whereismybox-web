@@ -77,6 +77,11 @@ public class FakeBoxRepository : IBoxRepository
 
         return Task.FromResult(result);
     }
+
+    public Task ScheduleForDeletion(CollectionId collectionId, Box box, int daysUntilDeletion)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 public class TestableBox

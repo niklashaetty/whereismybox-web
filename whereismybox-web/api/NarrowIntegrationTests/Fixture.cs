@@ -1,11 +1,11 @@
+using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Models;
-using Domain.Primitives;
 using Domain.Queries;
 using Domain.QueryHandlers;
-using Infrastructure.BoxRepository;
 using NarrowIntegrationTests.Fakes;
+using NarrowIntegrationTests.Fakes.FakeUserRepository;
 using Xunit.Abstractions;
 
 namespace NarrowIntegrationTests;
@@ -19,6 +19,9 @@ public class Fixture
     public FakeBoxRepository FakeBoxRepository { get; } = new();
     public FakeUserRepository FakeUserRepository { get; } = new();
     public FakeUnattachedItemRepository FakeUnattachedItemRepository { get; } = new();
+    public FakeCollectionRepository FakeCollectionRepository { get; } = new();
+    
+    public IAuthorizationService AuthorizationService { get; }
 
     // Commands
     public ICommandHandler<CreateUserCommand> CreateUserCommandHandler { get; }
@@ -28,10 +31,10 @@ public class Fixture
     public ICommandHandler<DeleteItemCommand> DeleteItemCommandHandler { get; }
     public ICommandHandler<DeleteUnattachedItemCommand> DeleteUnattachedItemCommandHandler { get; }
     public ICommandHandler<MoveUnattachedItemToBoxCommand> MoveUnattachedItemToBoxCommandHandler { get; }
+    public ICommandHandler<RegisterUserCommand> RegisterUserCommandHandler { get; }
 
     // Queries
-    public IQueryHandler<GetUserByCollectionIdQuery, User> GetUserByCollectionIdQueryHandler { get; }
-    public IQueryHandler<GetUserQuery, User> GetUserQueryHandler { get; }
+    public IQueryHandler<GetUserByExternalUserIdQuery, User> GetUserByExternalUserIdQueryHandler { get; }
     public IQueryHandler<GetBoxCollectionQuery, List<Box>> GetBoxCollectionQueryHandler { get; }
     public IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> GetUnattachedItemsQueryHandler { get; }
     public IQueryHandler<GetBoxQuery, Box> GetBoxQueryHandler { get; }
@@ -40,25 +43,26 @@ public class Fixture
     {
         var xunitLoggerFactory = new XunitLoggerFactory(testOutputHelper);
         XunitLoggerFactory = xunitLoggerFactory;
+        AuthorizationService = new AuthorizationService(FakeUserRepository, FakeCollectionRepository);
 
         // Commands
         CreateUserCommandHandler = new CreateUserCommandHandler(FakeUserRepository);
-        CreateBoxCommandHandler = new CreateBoxCommandHandler(FakeBoxRepository);
-        AddItemCommandHandler = new AddItemCommandHandler(FakeBoxRepository);
-        DeleteBoxCommandHandler = new DeleteBoxCommandHandler(FakeBoxRepository);
+        CreateBoxCommandHandler = new CreateBoxCommandHandler(AuthorizationService, FakeBoxRepository);
+        AddItemCommandHandler = new AddItemCommandHandler(AuthorizationService, FakeBoxRepository);
+        DeleteBoxCommandHandler = new DeleteBoxCommandHandler(AuthorizationService, FakeBoxRepository);
         DeleteItemCommandHandler =
-            new DeleteItemCommandHandler(XunitLoggerFactory, FakeBoxRepository, FakeUnattachedItemRepository);
+            new DeleteItemCommandHandler(AuthorizationService, XunitLoggerFactory, FakeBoxRepository, FakeUnattachedItemRepository);
         DeleteUnattachedItemCommandHandler =
-            new DeleteUnattachedItemCommandHandler(XunitLoggerFactory, FakeUnattachedItemRepository);
-        MoveUnattachedItemToBoxCommandHandler = new MoveUnattachedItemToCommandHandler(XunitLoggerFactory,
+            new DeleteUnattachedItemCommandHandler(AuthorizationService, XunitLoggerFactory, FakeUnattachedItemRepository);
+        MoveUnattachedItemToBoxCommandHandler = new MoveUnattachedItemToCommandHandler(AuthorizationService, XunitLoggerFactory,
             FakeBoxRepository, FakeUnattachedItemRepository);
+        RegisterUserCommandHandler = new RegisterUserCommandHandler(FakeUserRepository);
 
         // Queries
-        GetUserByCollectionIdQueryHandler = new GetUserByCollectionIdQueryHandler(FakeUserRepository);
-        GetUserQueryHandler = new GetUserQueryHandler(FakeUserRepository);
-        GetBoxCollectionQueryHandler = new GetBoxCollectionQueryHandler(FakeBoxRepository);
-        GetBoxQueryHandler = new GetBoxQueryHandler(FakeBoxRepository);
+        GetUserByExternalUserIdQueryHandler = new GetUserByExternalUserIdQueryHandler(FakeUserRepository);
+        GetBoxCollectionQueryHandler = new GetBoxCollectionQueryHandler(AuthorizationService, FakeBoxRepository);
+        GetBoxQueryHandler = new GetBoxQueryHandler(AuthorizationService, FakeBoxRepository);
         GetUnattachedItemsQueryHandler =
-            new GetUnattachedItemsQueryHandler(FakeUnattachedItemRepository, FakeBoxRepository);
+            new GetUnattachedItemsQueryHandler(AuthorizationService, FakeUnattachedItemRepository, FakeBoxRepository);
     }
 }

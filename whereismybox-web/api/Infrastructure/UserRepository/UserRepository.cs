@@ -65,28 +65,6 @@ public class UserRepository : IUserRepository
         return response.Resource.FirstOrDefault();
     }
 
-    public async Task<User> Get(ExternalUserId externalUserId)
-    {
-        var queryAble = _container
-            .GetItemLinqQueryable<CosmosAwareUser>()
-            .Where(u => u.ExternalUserId == externalUserId);
-
-        var iterator = queryAble.ToFeedIterator();
-        var results = new List<CosmosAwareUser>();
-        while (iterator.HasMoreResults)
-        {
-            results.AddRange(await iterator.ReadNextAsync());
-        }
-
-        var res = results.FirstOrDefault();
-        if (res is null)
-        {
-            throw new UserNotFoundException(externalUserId);
-        }
-
-        return res;
-    }
-
     public async Task<User> PersistUpdate(User updatedUser)
     {
         if (updatedUser is not CosmosAwareUser cosmosAwareUser)
@@ -101,22 +79,5 @@ public class UserRepository : IUserRepository
                     IfMatchEtag = cosmosAwareUser.ETag
                 });
         return cosmosResponse.Resource;
-    }
-
-    public async Task<List<User>> SearchByCollectionId(CollectionId collectionId)
-    {
-        var query = new QueryDefinition(
-            $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.ContributorCollections, '{collectionId.Value}')");
-        var iterator = _container.GetItemQueryIterator<CosmosAwareUser>(query);
-
-        if (!iterator.HasMoreResults)
-        {
-            return new List<User>();
-        }
-
-        var response = await iterator.ReadNextAsync();
-        var res = new List<User>();
-        res.AddRange(response.Resource.ToList());
-        return res;
     }
 }

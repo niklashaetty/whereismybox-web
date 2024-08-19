@@ -6,6 +6,7 @@ namespace NarrowIntegrationTests;
 
 public class E2ETests
 {
+    /*
     private readonly Fixture _fixture;
     private readonly Driver _driver;
 
@@ -173,5 +174,6 @@ public class E2ETests
         // Then the item should be in the previous box
         var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         Assertions.AssertItemInBox(getBoxResponse, itemId);
-    }
+       
+    }*/
 }

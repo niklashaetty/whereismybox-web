@@ -1,14 +1,12 @@
 using System;
 using System.Net;
 using System.Net.Mime;
-using System.Text;
 using System.Threading.Tasks;
 using Api;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
-using Domain.Primitives;
 using Domain.Queries;
 using Domain.QueryHandlers;
 using Functions.Mappers;
@@ -19,7 +17,6 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 
 namespace Functions.HttpTriggers.V2;
 
@@ -51,8 +48,7 @@ public class GetLoggedInUserFunction
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users/me")]
-        HttpRequest req,
-        ILogger log)
+        HttpRequest req)
     {
         try
         {

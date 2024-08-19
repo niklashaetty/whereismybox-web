@@ -48,8 +48,7 @@ public class AssignUserRolesFunction
     [FunctionName("GetRoles")]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")] 
-        HttpRequest req,
-        ILogger log)
+        HttpRequest req)
     {
         User user;
         var body = await new StreamReader(req.Body).ReadToEndAsync();
@@ -57,7 +56,6 @@ public class AssignUserRolesFunction
         var externalUser = rolesRequest.AsExternalUser();
         try
         {
-            log.LogInformation("[AssignRolesRequest]: {Body}", body);
             user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
         }
         catch (UserNotFoundException)
@@ -69,8 +67,6 @@ public class AssignUserRolesFunction
         }
         
         var response = user.AsRolesResponse();
-        var asString = JsonConvert.SerializeObject(response);
-        log.LogInformation("AssignRolesResponse]: {AsString}", asString);
         return new OkObjectResult(response);
     }
 }
