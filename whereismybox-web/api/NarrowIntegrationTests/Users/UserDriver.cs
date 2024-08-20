@@ -1,5 +1,6 @@
 using Api;
 using Api.Auth;
+using Functions.HttpTriggers.Users;
 using Functions.HttpTriggers.V2;
 using Microsoft.AspNetCore.Mvc;
 

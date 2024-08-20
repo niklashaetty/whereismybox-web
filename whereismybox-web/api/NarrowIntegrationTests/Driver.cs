@@ -89,7 +89,7 @@ public class Driver
 
     public async Task<IActionResult> InvokeGetBoxCollectionFunction(string collectionId)
     {
-        var sut = new GetBoxCollectionFunction(_fixture.GetBoxCollectionQueryHandler);
+        var sut = new GetAllBoxesInCollectionFunction(_fixture.GetBoxCollectionQueryHandler);
         var httpRequest = RequestHelper.CreateHttpRequest();
 
         return await sut.RunAsync(httpRequest, collectionId);

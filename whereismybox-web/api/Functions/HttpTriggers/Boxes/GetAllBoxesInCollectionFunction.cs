@@ -20,13 +20,13 @@ using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.V2;
 
-public class GetBoxCollectionFunction
+public class GetAllBoxesInCollectionFunction
 {
     private const string OperationId = "GetBoxCollection";
     private const string FunctionName = OperationId + "Function";
     private readonly IQueryHandler<GetBoxCollectionQuery, List<Box>> _queryHandler;
 
-    public GetBoxCollectionFunction(
+    public GetAllBoxesInCollectionFunction(
         IQueryHandler<GetBoxCollectionQuery, List<Box>> queryHandler)
     {
         ArgumentNullException.ThrowIfNull(queryHandler);
