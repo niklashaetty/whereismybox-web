@@ -6,8 +6,6 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Authorization;
-using Domain.CommandHandlers;
-using Domain.Commands;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -21,16 +19,17 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Collections;
 
 public class GetCollectionsFunction
 {
     private const string OperationId = "GetMyCollectionOwnerFunction";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetOwnedCollectionQuery, List<Collection>> _ownedCollectionsQueryHandler;
 
     private readonly IQueryHandler<GetContributorCollectionsQuery, List<Collection>>
         _contributedCollectionsQueryHandler;
+
+    private readonly IQueryHandler<GetOwnedCollectionQuery, List<Collection>> _ownedCollectionsQueryHandler;
 
     private readonly IQueryHandler<GetUserPermissionsQuery, Permissions> _permissionsQueryHandler;
 
@@ -48,7 +47,7 @@ public class GetCollectionsFunction
         _permissionsQueryHandler = permissionsQueryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
+    [OpenApiOperation(OperationId, "Collections",
         Summary = "Get the collection the user owns or contributes to")]
     [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(List<CollectionDto>))]
@@ -65,10 +64,7 @@ public class GetCollectionsFunction
             var filter = req.Query["filter"].ToString();
             var tokenUserId = req.ParseUserId();
             var pathUserId = new UserId(userId);
-            if (tokenUserId != pathUserId)
-            {
-                return new ForbidResult();
-            }
+            if (tokenUserId != pathUserId) return new ForbidResult();
 
             var permissions = await _permissionsQueryHandler.Handle(new GetUserPermissionsQuery(req.ParseUserId()));
             if (filter.Equals("owner"))
@@ -78,18 +74,17 @@ public class GetCollectionsFunction
                         new GetOwnedCollectionQuery(permissions, pathUserId));
                 return new OkObjectResult(ownedCollections.Select(c => c.ToApiModel()));
             }
-            else if (filter.Equals("contributor"))
+
+            if (filter.Equals("contributor"))
             {
                 var collectionIContributeTo =
                     await _contributedCollectionsQueryHandler.Handle(
                         new GetContributorCollectionsQuery(permissions, pathUserId));
                 return new OkObjectResult(collectionIContributeTo.Select(c => c.ToApiModel()));
             }
-            else
-            {
-                return new BadRequestObjectResult(new ErrorResponse("Validation error",
-                    "Invalid filter, owner or contributor is allowed"));
-            }
+
+            return new BadRequestObjectResult(new ErrorResponse("Validation error",
+                "Invalid filter, owner or contributor is allowed"));
         }
         catch (UnparsableExternalUserException e)
         {

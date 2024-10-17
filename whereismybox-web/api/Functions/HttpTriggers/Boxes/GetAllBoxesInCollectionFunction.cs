@@ -18,7 +18,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes;
 
 public class GetAllBoxesInCollectionFunction
 {
@@ -33,7 +33,7 @@ public class GetAllBoxesInCollectionFunction
         _queryHandler = queryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
+    [OpenApiOperation(OperationId, new[] {"Collections"},
         Summary = "Get an entire collection of boxes and their items")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(BoxCollectionDto))]
@@ -49,9 +49,7 @@ public class GetAllBoxesInCollectionFunction
         {
             var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
 
             var boxCollection =
                 await _queryHandler.Handle(new GetBoxCollectionQuery(domainCollectionId, externalUser.ExternalUserId));

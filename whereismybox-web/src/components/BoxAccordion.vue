@@ -238,6 +238,7 @@ onMounted(async () => {
   height: 40px;
   line-height: 40px;
   margin: 5px;
+  color: black;
 }
 
 .accordion-container:hover {  

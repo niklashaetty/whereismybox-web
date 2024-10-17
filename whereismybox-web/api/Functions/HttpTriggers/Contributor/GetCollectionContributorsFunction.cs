@@ -6,8 +6,6 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Authorization;
-using Domain.CommandHandlers;
-using Domain.Commands;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -21,15 +19,15 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Contributor;
 
 public class GetCollectionContributorsFunction
 {
     private const string OperationId = "GetCollectionContributors";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetCollectionContributorsQuery, List<User>> _queryHandler;
-    private readonly IQueryHandler<GetUserPermissionsQuery, Permissions> _permissionsQueryHandler;
     private readonly ILogger _logger;
+    private readonly IQueryHandler<GetUserPermissionsQuery, Permissions> _permissionsQueryHandler;
+    private readonly IQueryHandler<GetCollectionContributorsQuery, List<User>> _queryHandler;
 
     public GetCollectionContributorsFunction(ILoggerFactory loggerFactory,
         IQueryHandler<GetCollectionContributorsQuery, List<User>> queryHandler,
@@ -43,7 +41,7 @@ public class GetCollectionContributorsFunction
         _permissionsQueryHandler = permissionsQueryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Contributors"},
+    [OpenApiOperation(OperationId, new[] {"Contributors"},
         Summary = "Get unattached items in a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(List<CollectionContributor>))]
@@ -58,13 +56,11 @@ public class GetCollectionContributorsFunction
         try
         {
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
             var permissions = await _permissionsQueryHandler.Handle(new GetUserPermissionsQuery(req.ParseUserId()));
             var users = await _queryHandler.Handle(new GetCollectionContributorsQuery(permissions, domainCollectionId));
             return new OkObjectResult(users.Select(u => u.ToApiCollectionContributor()));
-        } 
+        }
         catch (UnparsableExternalUserException e)
         {
             return new UnauthorizedResult();

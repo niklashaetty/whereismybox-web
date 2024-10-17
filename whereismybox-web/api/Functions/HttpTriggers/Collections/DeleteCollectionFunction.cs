@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
@@ -7,7 +6,6 @@ using Api;
 using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
-using Domain.Exceptions;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -18,9 +16,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
-using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Collections;
 
 public class DeleteCollectionFunction
 {
@@ -38,7 +35,7 @@ public class DeleteCollectionFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"}, Summary = "Soft delete a collection")]
+    [OpenApiOperation(OperationId, new[] {"Collections"}, Summary = "Soft delete a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
@@ -51,9 +48,7 @@ public class DeleteCollectionFunction
         string collectionId)
     {
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-        {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
 
         try
         {

@@ -24,10 +24,11 @@ namespace Functions.HttpTriggers.Users;
 public class AssignUserRolesFunction
 {
     private const string OperationId = "GetRoles";
-    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _getUserByExternalIdQueryHandler;
     private readonly ICommandHandler<CreateUserCommand> _createUserCommandHandler;
+    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _getUserByExternalIdQueryHandler;
 
-    public AssignUserRolesFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> getUserByExternalIdQueryHandler, ICommandHandler<CreateUserCommand> createUserCommandHandler)
+    public AssignUserRolesFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> getUserByExternalIdQueryHandler,
+        ICommandHandler<CreateUserCommand> createUserCommandHandler)
     {
         ArgumentNullException.ThrowIfNull(getUserByExternalIdQueryHandler);
         ArgumentNullException.ThrowIfNull(createUserCommandHandler);
@@ -35,7 +36,7 @@ public class AssignUserRolesFunction
         _createUserCommandHandler = createUserCommandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"}, Summary = "Fetch the user object of the current logged in user")]
+    [OpenApiOperation(OperationId, new[] {"Users"}, Summary = "Fetch the user object of the current logged in user")]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(RolesResponse))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
@@ -43,7 +44,7 @@ public class AssignUserRolesFunction
         Summary = "User was not found")]
     [FunctionName("GetRoles")]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")] 
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")]
         HttpRequest req)
     {
         User user;
@@ -52,16 +53,18 @@ public class AssignUserRolesFunction
         var externalUser = rolesRequest.AsExternalUser();
         try
         {
-            user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
+            user = await _getUserByExternalIdQueryHandler.Handle(
+                new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
         }
         catch (UserNotFoundException)
         {
             var temporaryUsername = externalUser.Username + "-" + CollectionId.GenerateNew();
             await _createUserCommandHandler.Execute(new CreateUserCommand(new UserId(), externalUser.ExternalUserId,
                 externalUser.ExternalIdentityProvider, temporaryUsername));
-            user = await _getUserByExternalIdQueryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
+            user = await _getUserByExternalIdQueryHandler.Handle(
+                new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
         }
-        
+
         var response = user.AsRolesResponse();
         return new OkObjectResult(response);
     }

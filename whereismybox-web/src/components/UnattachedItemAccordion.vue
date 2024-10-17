@@ -107,6 +107,7 @@ function trimString(maxLength: number, text: string) {
   font-size: 12px;
   padding-left: 10px;
   background-color: white;
+  color: black;
   
 }
 

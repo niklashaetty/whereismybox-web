@@ -20,7 +20,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Contributor;
 
 public class AddContributorFunction
 {
@@ -29,7 +29,8 @@ public class AddContributorFunction
     private readonly ICommandHandler<AddContributorCommand> _commandHandler;
     private readonly IQueryHandler<GetUserPermissionsQuery, Permissions> _permissionsQueryHandler;
 
-    public AddContributorFunction(IQueryHandler<GetUserPermissionsQuery, Permissions> permissionsQueryHandler, ICommandHandler<AddContributorCommand> commandHandler)
+    public AddContributorFunction(IQueryHandler<GetUserPermissionsQuery, Permissions> permissionsQueryHandler,
+        ICommandHandler<AddContributorCommand> commandHandler)
     {
         ArgumentNullException.ThrowIfNull(permissionsQueryHandler);
         ArgumentNullException.ThrowIfNull(commandHandler);
@@ -37,7 +38,7 @@ public class AddContributorFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Contributors"}, Summary = "Allow another user to edit a collection")]
+    [OpenApiOperation(OperationId, new[] {"Contributors"}, Summary = "Allow another user to edit a collection")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddContributorRequest))]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
@@ -50,19 +51,18 @@ public class AddContributorFunction
         string collectionId)
     {
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-        {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
 
         try
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var addContributorRequest = JsonConvert.DeserializeObject<AddContributorRequest>(body);
-            
+
             var userId = req.ParseUserId();
             var permissions = await _permissionsQueryHandler.Handle(new GetUserPermissionsQuery(userId));
-            
-            var command = new AddContributorCommand(permissions, userId, addContributorRequest.Username, domainCollectionId);
+
+            var command =
+                new AddContributorCommand(permissions, userId, addContributorRequest.Username, domainCollectionId);
             await _commandHandler.Execute(command);
 
             return new NoContentResult();

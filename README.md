@@ -23,6 +23,7 @@ You can run the applications locally together in two different ways.
 ### Pre-requisites
 * .NET 6.0
 * Azure core functions tools version 4
+* @azure/static-web-apps-cli version 1.1.7 (higher might not work!!)
 * Npm v 16.*
 * Vue
 
@@ -41,3 +42,19 @@ The frontend application will hot reload. Note: If your applications start at di
 2. Start the emulation environment: ```npm run swa-dev```
 
 The swa environment will tell you where the application can be reached.
+
+
+### Logging in
+
+Azure static web apps does not provide a proper way to authenticate using a real identity provider (e.g. Github or Google). Instead, you will have to manually set all variables to fake a login. Here is a test user you can use:
+
+1. Login using Github  
+2. User ID: ```1337```
+3. Username: ```testuser```
+3. User roles should be ```
+anonymous
+authenticated
+userId.bc8e3597-bcf2-4447-861c-d74195be43b4 ```
+
+
+![Example](image.png)

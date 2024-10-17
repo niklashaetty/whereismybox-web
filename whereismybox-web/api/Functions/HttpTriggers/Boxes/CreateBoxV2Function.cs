@@ -17,7 +17,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes;
 
 public class CreateBoxV2Function
 {
@@ -31,7 +31,7 @@ public class CreateBoxV2Function
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Boxes"},
+    [OpenApiOperation(OperationId, new[] {"Boxes"},
         Summary = "Creates a new box in a given collection")]
     [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateBoxRequest))]
@@ -50,10 +50,8 @@ public class CreateBoxV2Function
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createBoxRequest = JsonConvert.DeserializeObject<CreateBoxRequest>(body);
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(
                     new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
 
             var boxId = new BoxId();
             var command = new CreateBoxCommand(externalUser.ExternalUserId, domainCollectionId, boxId,
@@ -76,6 +74,5 @@ public class CreateBoxV2Function
         {
             return new StatusCodeResult(403);
         }
-
     }
 }

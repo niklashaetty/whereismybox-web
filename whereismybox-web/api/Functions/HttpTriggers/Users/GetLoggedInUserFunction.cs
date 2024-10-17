@@ -15,17 +15,16 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Users;
 
 public class GetLoggedInUserFunction
 {
     private const string OperationId = "GetLoggedInUser";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
     private readonly ICommandHandler<CreateUserCommand> _commandHandler;
+    private readonly IQueryHandler<GetUserByExternalUserIdQuery, User> _queryHandler;
 
     public GetLoggedInUserFunction(IQueryHandler<GetUserByExternalUserIdQuery, User> queryHandler,
         ICommandHandler<CreateUserCommand> commandHandler)
@@ -36,7 +35,7 @@ public class GetLoggedInUserFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"},
+    [OpenApiOperation(OperationId, new[] {"Users"},
         Summary =
             "Get the current logged in user by its external user. If the user does not exist, will create the user first internally")]
     [OpenApiParameter("primaryCollectionId", In = ParameterLocation.Query, Required = true, Type = typeof(Guid))]

@@ -13,10 +13,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes.Items;
 
 public class RemoveItemV2Function
 {
@@ -30,11 +29,11 @@ public class RemoveItemV2Function
         _deleteItemCommandHandler = deleteItemCommandHandler;
     }
 
-    [OpenApiOperation(operationId:OperationId, tags: new[] {"Items"}, Summary = "Remove item from box")]
+    [OpenApiOperation(OperationId, new[] {"Items"}, Summary = "Remove item from box")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiParameter("itemId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
-    [OpenApiParameter("hardDelete", In = ParameterLocation.Query, Required = false, Type = typeof(bool), 
+    [OpenApiParameter("hardDelete", In = ParameterLocation.Query, Required = false, Type = typeof(bool),
         Summary = "Indicates if an item should be removed from a box or hard deleted. Defaults to false " +
                   "(item is just removed from box).")]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
@@ -42,26 +41,23 @@ public class RemoveItemV2Function
         Summary = "Invalid request")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "collections/{collectionId}/boxes/{boxId}/items/{itemId}")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "delete",
+            Route = "collections/{collectionId}/boxes/{boxId}/items/{itemId}")]
         HttpRequest req,
         string collectionId,
         Guid boxId,
         Guid itemId)
     {
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-        {
             return new BadRequestObjectResult(
                 new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
-        if (bool.TryParse(req.Query["hardDelete"], out var isHardDelete) is false)
-        {
-            isHardDelete = false;
-        }
+        if (bool.TryParse(req.Query["hardDelete"], out var isHardDelete) is false) isHardDelete = false;
 
         try
         {
             var externalUser = req.ParseExternalUser();
-            var command = new DeleteItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId), new ItemId(itemId), isHardDelete);
+            var command = new DeleteItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId),
+                new ItemId(itemId), isHardDelete);
             await _deleteItemCommandHandler.Execute(command);
             return new NoContentResult();
         }

@@ -17,7 +17,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes.Items;
 
 public class AddItemV2Function
 {
@@ -31,7 +31,7 @@ public class AddItemV2Function
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Items"}, Summary = "Create new item and add it to box")]
+    [OpenApiOperation(OperationId, new[] {"Items"}, Summary = "Create new item and add it to box")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddItemRequest))]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
@@ -49,9 +49,7 @@ public class AddItemV2Function
         var addItemRequest = JsonConvert.DeserializeObject<AddItemRequest>(body);
 
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-        {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
 
         try
         {

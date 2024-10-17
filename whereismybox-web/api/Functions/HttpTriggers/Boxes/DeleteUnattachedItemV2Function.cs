@@ -6,18 +6,15 @@ using Api;
 using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
-using Domain.Exceptions;
-using Domain.Models;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes;
 
 public class DeleteUnattachedItemV2Function
 {
@@ -32,7 +29,7 @@ public class DeleteUnattachedItemV2Function
         _deleteUnattachedItemCommandHandler = deleteUnattachedItemCommandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Unattached items"},
+    [OpenApiOperation(OperationId, new[] {"Unattached items"},
         Summary = "Remove an unattached item")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("itemId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
@@ -51,10 +48,8 @@ public class DeleteUnattachedItemV2Function
         {
             var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(
                     new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
 
             var command =
                 new DeleteUnattachedItemCommand(externalUser.ExternalUserId, domainCollectionId, new ItemId(itemId));

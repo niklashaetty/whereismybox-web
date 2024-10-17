@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 using Api;
 using Domain.CommandHandlers;
 using Domain.Commands;
-using Domain.Models;
 using Domain.Primitives;
-using Domain.Queries;
-using Domain.QueryHandlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
@@ -18,7 +15,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Collections;
 
 public class CreateCollectionFunction
 {
@@ -32,7 +29,7 @@ public class CreateCollectionFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
+    [OpenApiOperation(OperationId, new[] {"Collections"},
         Summary = "Creates a new collection")]
     [OpenApiParameter("userId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateCollectionRequest))]
@@ -49,16 +46,11 @@ public class CreateCollectionFunction
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createCollectionRequest = JsonConvert.DeserializeObject<CreateCollectionRequest>(body);
-            
+
             if (UserId.TryParse(userId, out var pathUserId) is false)
-            {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid userId"));
-            }
             var tokenUserId = req.ParseUserId();
-            if (tokenUserId != pathUserId)
-            {
-                return new ForbidResult();
-            }
+            if (tokenUserId != pathUserId) return new ForbidResult();
 
             var collectionId = CollectionId.GenerateNew();
             var command = new CreateCollectionCommand(pathUserId, collectionId, createCollectionRequest.Name);

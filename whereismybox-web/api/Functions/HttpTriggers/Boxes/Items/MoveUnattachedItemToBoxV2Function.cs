@@ -14,11 +14,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes.Items;
 
 public class MoveUnattachedItemToBoxV2Function
 {
@@ -32,7 +31,7 @@ public class MoveUnattachedItemToBoxV2Function
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"UnattachedItems"},
+    [OpenApiOperation(OperationId, new[] {"UnattachedItems"},
         Summary = "Move an unattached item to a new box")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddItemRequest))]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
@@ -52,9 +51,7 @@ public class MoveUnattachedItemToBoxV2Function
         var moveUnattachedItemToBoxRequest = JsonConvert.DeserializeObject<MoveUnattachedItemToBoxRequest>(body);
 
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-        {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-        }
 
         try
         {

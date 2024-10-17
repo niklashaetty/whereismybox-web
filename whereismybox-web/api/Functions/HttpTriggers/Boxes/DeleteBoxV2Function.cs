@@ -14,7 +14,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes;
 
 public class DeleteBoxV2Function
 {
@@ -28,7 +28,7 @@ public class DeleteBoxV2Function
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Boxes"}, Summary = "Delete a box")]
+    [OpenApiOperation(OperationId, new[] {"Boxes"}, Summary = "Delete a box")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
@@ -45,10 +45,8 @@ public class DeleteBoxV2Function
         {
             var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(
                     new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
 
             await _commandHandler.Execute(new DeleteBoxCommand(externalUser.ExternalUserId, domainCollectionId,
                 new BoxId(boxId)));

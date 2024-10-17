@@ -1,28 +1,20 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
-using Domain.Authorization;
 using Domain.CommandHandlers;
 using Domain.Commands;
 using Domain.Exceptions;
-using Domain.Models;
-using Domain.Primitives;
-using Domain.Queries;
-using Domain.QueryHandlers;
-using Functions.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Users;
 
 public class RegisterUserFunction
 {
@@ -36,7 +28,7 @@ public class RegisterUserFunction
         _commandHandler = commandHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Users"},
+    [OpenApiOperation(OperationId, new[] {"Users"},
         Summary = "Register a user")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(RegisterUserRequest))]
     [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(UserDto))]

@@ -1,13 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Authorization;
-using Domain.CommandHandlers;
-using Domain.Commands;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -21,7 +17,7 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Collections;
 
 public class GetCollectionFunction
 {
@@ -37,7 +33,7 @@ public class GetCollectionFunction
         _queryHandler = queryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"Collections"},
+    [OpenApiOperation(OperationId, new[] {"Collections"},
         Summary = "Get the metadata of a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(CollectionDto))]
@@ -52,12 +48,10 @@ public class GetCollectionFunction
         try
         {
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
             var collection = await _queryHandler.Handle(new GetCollectionQuery(domainCollectionId));
             return new OkObjectResult(collection.ToApiModel());
-        } 
+        }
         catch (UnparsableExternalUserException e)
         {
             return new UnauthorizedResult();

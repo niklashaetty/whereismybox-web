@@ -6,8 +6,6 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Api;
 using Domain.Authorization;
-using Domain.CommandHandlers;
-using Domain.Commands;
 using Domain.Models;
 using Domain.Primitives;
 using Domain.Queries;
@@ -21,14 +19,14 @@ using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.V2;
+namespace Functions.HttpTriggers.Boxes.Items;
 
 public class GetUnattachedItemsV2Function
 {
     private const string OperationId = "GetUnattachedItemsV2";
     private const string FunctionName = OperationId + "Function";
-    private readonly IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> _queryHandler;
     private readonly ILogger _logger;
+    private readonly IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> _queryHandler;
 
     public GetUnattachedItemsV2Function(ILoggerFactory loggerFactory,
         IQueryHandler<GetUnattachedItemsQuery, List<UnattachedItem>> queryHandler)
@@ -39,7 +37,7 @@ public class GetUnattachedItemsV2Function
         _queryHandler = queryHandler;
     }
 
-    [OpenApiOperation(operationId: OperationId, tags: new[] {"UnattachedItems"},
+    [OpenApiOperation(OperationId, new[] {"UnattachedItems"},
         Summary = "Get unattached items in a collection")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(UnattachedItemCollectionDto))]
@@ -55,14 +53,14 @@ public class GetUnattachedItemsV2Function
         {
             var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-            {
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
-            }
 
-            var unattachedItems = await _queryHandler.Handle(new GetUnattachedItemsQuery(externalUser.ExternalUserId, domainCollectionId));
+            var unattachedItems =
+                await _queryHandler.Handle(new GetUnattachedItemsQuery(externalUser.ExternalUserId,
+                    domainCollectionId));
             return new OkObjectResult(new UnattachedItemCollectionDto(domainCollectionId.Value,
                 unattachedItems.Select(b => b.ToApiModel()).ToList()));
-        } 
+        }
         catch (UnparsableExternalUserException e)
         {
             return new UnauthorizedResult();

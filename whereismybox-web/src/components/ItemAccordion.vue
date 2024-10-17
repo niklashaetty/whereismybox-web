@@ -105,6 +105,7 @@ function toggleItemMenu(event: MouseEvent)  {
   padding: 2px;
   padding-left: 10px;
   font-size: 12px;
+  color: black;
 }
 
 .itemaccordion-container:hover {  
