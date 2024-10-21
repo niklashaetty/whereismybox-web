@@ -57,6 +57,7 @@ namespace Functions
             
             // CommandHandlers
             builder.Services.AddSingleton<ICommandHandler<AddItemCommand>, AddItemCommandHandler>();
+            builder.Services.AddSingleton<ICommandHandler<MoveItemCommand>, MoveItemCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateCollectionCommand>, CreateCollectionCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateBoxCommand>, CreateBoxCommandHandler>();
             builder.Services.AddSingleton<ICommandHandler<CreateUserCommand>,CreateUserCommandHandler >();
