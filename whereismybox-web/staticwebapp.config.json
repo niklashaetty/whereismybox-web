@@ -1,4 +1,6 @@
 {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
   "auth": {
 	  "rolesSource": "/api/GetRoles",	
     "identityProviders": {
