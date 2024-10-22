@@ -7,8 +7,8 @@ public class Box
 {
     [JsonProperty] public CollectionId CollectionId { get; private set; }
     [JsonProperty] public BoxId BoxId { get; private set; }
-    [JsonProperty] public int Number { get; private set; }
-    [JsonProperty] public string Name { get; private set; }
+    [JsonProperty] public int Number { get; internal set; }
+    [JsonProperty] public string Name { get; internal set; }
     [JsonProperty] public List<Item> Items { get; private set; }
 
     public static Box Create(CollectionId collectionId, BoxId boxId, int boxNumber, string boxName)

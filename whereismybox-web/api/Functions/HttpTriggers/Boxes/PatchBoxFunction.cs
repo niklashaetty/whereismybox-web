@@ -19,47 +19,51 @@ using Newtonsoft.Json;
 
 namespace Functions.HttpTriggers.Boxes;
 
-public class CreateBoxV2Function
+public class PatchBoxFunction
 {
-    private const string OperationId = "CreateBoxV2";
+    private const string OperationId = "PatchBox";
     private const string FunctionName = OperationId + "Function";
-    private readonly ICommandHandler<CreateBoxCommand> _commandHandler;
+    private readonly ICommandHandler<UpdateBoxCommand> _commandHandler;
 
-    public CreateBoxV2Function(ICommandHandler<CreateBoxCommand> commandHandler)
+    public PatchBoxFunction(ICommandHandler<UpdateBoxCommand> commandHandler)
     {
         ArgumentNullException.ThrowIfNull(commandHandler);
         _commandHandler = commandHandler;
     }
 
     [OpenApiOperation(OperationId, new[] {"Boxes"},
-        Summary = "Creates a new box in a given collection")]
+        Summary = "Update a box metadata")]
     [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
-    [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(CreateBoxRequest))]
-    [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(BoxDto))]
-    [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
-        Summary = "Invalid request")]
+    [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
+    [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(UpdateBoxRequest))]
+    [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(BoxDto))]
+    [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json,
+        typeof(ErrorResponse), Summary = "Invalid request")]
+    [OpenApiResponseWithBody(HttpStatusCode.Conflict, MediaTypeNames.Application.Json, typeof(ErrorResponse),
+        Summary = "The new box number is already taken")]
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
-        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "collections/{collectionId}/boxes")]
+        [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "collections/{collectionId}/boxes/{boxId}")]
         HttpRequest req,
-        string collectionId)
+        string collectionId,
+        Guid boxId)
     {
         try
         {
             var externalUser = req.ParseExternalUser();
             var body = await new StreamReader(req.Body).ReadToEndAsync();
-            var createBoxRequest = JsonConvert.DeserializeObject<CreateBoxRequest>(body);
+            var patchBoxRequest = JsonConvert.DeserializeObject<UpdateBoxRequest>(body);
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
-                return new BadRequestObjectResult(
-                    new ErrorResponse("Validation error", "Invalid collectionId"));
+            {
+                return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
+            }
 
-            var boxId = new BoxId();
-            var command = new CreateBoxCommand(externalUser.ExternalUserId, domainCollectionId, boxId,
-                createBoxRequest.Number, createBoxRequest.Name);
+            var command = new UpdateBoxCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId),
+                patchBoxRequest.Number, patchBoxRequest.Name);
 
             await _commandHandler.Execute(command);
-            return new CreatedResult($"/api/collections/{command.CollectionId}/boxes/{command.BoxId}",
-                new CreateBoxResponse(command.CollectionId.Value, command.BoxId.Value));
+            return new OkObjectResult(new UpdateBoxResponse(collectionId, boxId, patchBoxRequest.Name,
+                patchBoxRequest.Number));
         }
         catch (NonUniqueBoxException)
         {
