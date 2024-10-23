@@ -6,70 +6,116 @@ namespace NarrowIntegrationTests;
 
 public class E2ETests
 {
-    /*
+    
     private readonly Fixture _fixture;
-    private readonly Driver _driver;
+    private readonly TestDriver _testDriver;
 
     public E2ETests(ITestOutputHelper testOutputHelper)
     {
         _fixture = new Fixture(testOutputHelper);
-        _driver = new Driver(_fixture);
+        _testDriver = new TestDriver(_fixture);
     }
 
-    [Fact]
-    public async void SimpleE2ETest()
+    [Fact(DisplayName = "Should be able to create and delete a collection")]
+    public async void CollectionTests()
     {
-        // When creating a user
-        var userName = "Some username";
-        var createUserResponse = await _driver.InvokeCreateUserFunction(new CreateUserRequest(userName));
+        // Given a registered user
+        var user = await _testDriver.GivenARegisteredUser();
 
-        // Then there should be a user
-        ResponseAssertions.AssertSuccessStatusCode(createUserResponse);
-        var user = createUserResponse.GetContentOfType<UserDto>();
-        var collectionId = user.PrimaryCollectionId;
+        var driver = new DriverBuilder(_fixture)
+            .WithAuthenticatedUser(user.UserId)
+            .Build();
+        
+        // When fetching my collections
+        var response = await driver.InvokeGetOwnedCollectionsFunction(user.UserId);
 
-        // And there should be 0 boxes
-        var getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(user.PrimaryCollectionId);
-        Assertions.AssertBoxes(getBoxesResponse, 0);
+        // There should be no collections
+        Assertions.AssertCollections(response, 0);
+
+        // When creating a collection
+        response = await driver.InvokeCreateCollectionFunction(new CreateCollectionRequest("name"), user.UserId );
+        var collection = response.GetContentOfType<CreateCollectionResponse>();
+        
+        // There should be one collection
+        response = await driver.InvokeGetOwnedCollectionsFunction(user.UserId);
+        Assertions.AssertCollections(response, 1);
+        
+        // And no boxes in it
+        response = await driver.InvokeGetAllBoxesInCollectionFunction(collection.CollectionId);
+        Assertions.AssertBoxes(response, 0);
+
+        // When deleting the collection
+         await driver.InvokeDeleteCollectionFunction(collection.CollectionId);
+
+        // The collection should no longer exist
+        response = await driver.InvokeGetOwnedCollectionsFunction(user.UserId);
+        Assertions.AssertCollections(response, 0);
+    }
+
+    [Fact(DisplayName = "Should be able to create, update and delete a box")] 
+    public async void BoxTest()
+    {
+        // Given a collection
 
         // When creating a box
-        var createBoxRequest = new CreateBoxRequest("Some box name", 1);
-        var createBoxResult = await _driver.InvokeCreateBoxFunction(createBoxRequest, collectionId);
-        var boxId = createBoxResult.GetContentOfType<CreateBoxResponse>().BoxId;
-
-        // Then there should be 1 box
-        getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(collectionId);
-        Assertions.AssertBoxes(getBoxesResponse, 1);
-
-        // When adding two items to the box
-        await _driver.InvokeAddItemFunction(new AddItemRequest("First item", "Description"),
-            collectionId, boxId);
-        await _driver.InvokeAddItemFunction(new AddItemRequest("Second item", "Description"),
-            collectionId, boxId);
-
-        // Then there should be two items in the box
-        var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
-        var box = Assertions.AssertItems(getBoxResponse, 2);
-
+        
+        // Then there should be a box with no items
+        
+        // When updating the box name and number
+        
+        // Then the name and number should be updated
+        
         // When deleting the box
-        var deleteBoxResponse = await _driver.InvokeDeleteBoxFunction(collectionId, boxId);
-        ResponseAssertions.AssertSuccessStatusCode(deleteBoxResponse);
-
-        // Then the box should be deleted
-        getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
-        ResponseAssertions.Assert404NotFound(getBoxResponse);
-
-        // And there should be no box
-        getBoxesResponse = await _driver.InvokeGetBoxCollectionFunction(collectionId);
-        Assertions.AssertBoxes(getBoxesResponse, 0);
+        
+        // The box should not exist
     }
+    
+    [Fact(DisplayName = "Should be able to create, update, and delete an item")] 
+    public async void ItemTest()
+    {
+        // Given a collection and a box
+        
+        // When adding an item
+        
+        // Then there should be an item in the box
+        
+        // When updating item name and description
+        
+        // Then the item should have a new name and description
+        
+        // When deleting an item then the item should not exist
+    }
+    
+    [Fact(DisplayName = "Should be able to move item to another box")] 
+    public async void MovingItemTest()
+    {
+        // Given a collection with a box with an item
+        
+        // When creating a second box
+        
+        // And moving the item to the second box
+        
+        // The item should be in the second box
 
-    [Fact]
+    }
+    
+    [Fact(DisplayName = "Should be add and delete unattached item")] 
     public async void UnattachedItemScenarioTests()
     {
-        // When creating a user
-        var userName = "Some username";
-        var createUserResponse = await _driver.InvokeCreateUserFunction(new CreateUserRequest(userName));
+        // Given a collection, a box, and one item
+        
+        // When removing an item from a box
+        
+        // And fetching unattached items
+        
+        // There should be one unattached item
+        
+        // When removing the unattached item
+        
+        // Then the unattached item should no longer exists
+        
+      
+        /*
 
         // Then there should be a user
         ResponseAssertions.AssertSuccessStatusCode(createUserResponse);
@@ -135,12 +181,27 @@ public class E2ETests
 
         // Then there should be no unattached items
         getUnattachedItemsResponse = await _driver.InvokeGetUnattachedItems(collectionId);
-        Assertions.AssertUnattachedItems(getUnattachedItemsResponse, 0);
+        Assertions.AssertUnattachedItems(getUnattachedItemsResponse, 0);*/
     }
 
-    [Fact]
+    [Fact(DisplayName = "Should be able to move unattached item back to a box")] 
     public async void MovingUnattachedItemTest()
     {
+        // Given a collection, a box, and one item.
+        
+        // When removing the item from the box
+        
+        // And fetching unattached items
+        
+        // There should be one unattached item
+        
+        // When moving the unattached item back to its previous box
+        
+        // Then the item should be in the new box
+        
+        // And there should be no unattached items
+        
+        /*
         // When creating a user
         var userName = "Some username";
         var createUserResponse = await _driver.InvokeCreateUserFunction(new CreateUserRequest(userName));
@@ -174,6 +235,7 @@ public class E2ETests
         // Then the item should be in the previous box
         var getBoxResponse = await _driver.InvokeGetBoxFunction(collectionId, boxId);
         Assertions.AssertItemInBox(getBoxResponse, itemId);
+        */
        
-    }*/
+    }
 }

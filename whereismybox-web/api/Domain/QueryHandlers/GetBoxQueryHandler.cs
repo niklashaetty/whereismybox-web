@@ -20,7 +20,7 @@ public class GetBoxQueryHandler : IQueryHandler<GetBoxQuery, Box>
     
     public async Task<Box> Handle(GetBoxQuery query)
     {
-        await _authorization.EnsureCollectionAccessAllowed(query.ExternalUserId, query.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(query.UserId, query.CollectionId);
         return await _boxRepository.Get(query.CollectionId, query.BoxId);
     }
 }

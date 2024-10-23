@@ -17,9 +17,9 @@ public class AuthorizationService : IAuthorizationService
         _collectionRepository = collectionRepository;
     }
 
-    public async Task EnsureCollectionAccessAllowed(ExternalUserId externalUserId, CollectionId collectionId)
+    public async Task EnsureCollectionAccessAllowed(UserId userId, CollectionId collectionId)
     {
-        var user = await _userRepository.SearchByExternalUserId(externalUserId);
+        var user = await _userRepository.Get(userId);
         var collection = await _collectionRepository.Get(collectionId);
 
         if (user is null || IsOwnerOrContributor(user, collection) is false)

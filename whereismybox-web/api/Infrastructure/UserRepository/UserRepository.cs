@@ -1,9 +1,6 @@
-using Domain.Exceptions;
 using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.Azure.Cosmos;
-using Microsoft.Azure.Cosmos.Linq;
-using Newtonsoft.Json;
 using InvalidOperationException = System.InvalidOperationException;
 using User = Domain.Models.User;
 
@@ -26,11 +23,18 @@ public class UserRepository : IUserRepository
         return response.Resource;
     }
 
-    public async Task<User> Get(UserId userId)
+    public async Task<User?> Get(UserId userId)
     {
-        var cosmosAware =
-            await _container.ReadItemAsync<CosmosAwareUser>(userId.ToString(), new PartitionKey(userId.ToString()));
-        return cosmosAware.Resource;
+        try
+        {
+            var cosmosAware =
+                await _container.ReadItemAsync<CosmosAwareUser>(userId.ToString(), new PartitionKey(userId.ToString()));
+            return cosmosAware.Resource;
+        }
+        catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return null;
+        }
     }
 
     public async Task<User?> SearchByUsername(string username)

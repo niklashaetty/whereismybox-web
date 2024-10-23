@@ -14,7 +14,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 
-namespace Functions.HttpTriggers.Boxes;
+namespace Functions.HttpTriggers.Boxes.Items;
 
 public class DeleteUnattachedItemV2Function
 {
@@ -46,13 +46,12 @@ public class DeleteUnattachedItemV2Function
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
                 return new BadRequestObjectResult(
                     new ErrorResponse("Validation error", "Invalid collectionId"));
 
             var command =
-                new DeleteUnattachedItemCommand(externalUser.ExternalUserId, domainCollectionId, new ItemId(itemId));
+                new DeleteUnattachedItemCommand(req.ParseUserId(), domainCollectionId, new ItemId(itemId));
             await _deleteUnattachedItemCommandHandler.Execute(command);
             return new NoContentResult();
         }

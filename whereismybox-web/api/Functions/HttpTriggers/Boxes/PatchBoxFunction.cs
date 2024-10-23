@@ -50,7 +50,6 @@ public class PatchBoxFunction
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var patchBoxRequest = JsonConvert.DeserializeObject<UpdateBoxRequest>(body);
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
@@ -58,7 +57,7 @@ public class PatchBoxFunction
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
             }
 
-            var command = new UpdateBoxCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId),
+            var command = new UpdateBoxCommand(req.ParseUserId(), domainCollectionId, new BoxId(boxId),
                 patchBoxRequest.Number, patchBoxRequest.Name);
 
             await _commandHandler.Execute(command);

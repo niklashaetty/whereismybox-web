@@ -1,33 +1,28 @@
 using Api;
 using Api.Auth;
-using Xunit;
+using NarrowIntegrationTests.Users;
 using Xunit.Abstractions;
 
-namespace NarrowIntegrationTests.Users;
+namespace NarrowIntegrationTests;
 
-public class UserTests
+public class TestDriver
 {
-    private readonly Fixture _fixture;
     private readonly UserDriver _driver;
 
-    public UserTests(ITestOutputHelper testOutputHelper)
+    public TestDriver(Fixture fixture)
     {
-        _fixture = new Fixture(testOutputHelper);
-        _driver = new UserDriver(_fixture);
+        _driver = new UserDriver(fixture);
     }
-
-    [Fact]
-    public async void ShouldCreateUserWhenAssigningRolesForTheFirstTime()
+    
+    public async Task<UserDto> GivenARegisteredUser()
     {
-        // Given an user authenticated through an external idp for the first time
         var authenticatedExternalUser = new RolesRequest()
         {
             UserId = Guid.NewGuid().ToString(),
             IdentityProvider = "github",
             UserDetails = "Something"
         };
-
-        // When assigning custom roles for authenticated user that does not exist
+        
         var assignUserRolesResponse = await _driver.InvokeAssignUserRolesFunction(authenticatedExternalUser);
 
         // Then a role with a new userId should be returned
@@ -49,5 +44,8 @@ public class UserTests
         
         // Then the user should be registered
         UserAssertions.AssertRegisteredUser(getLoggedInUserResponse, expectedUserId:roleUserId);
+        
+        // return it.
+        return getLoggedInUserResponse.GetContentOfType<UserDto>();
     }
 }

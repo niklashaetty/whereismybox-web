@@ -51,12 +51,11 @@ public class GetUnattachedItemsV2Function
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
 
             var unattachedItems =
-                await _queryHandler.Handle(new GetUnattachedItemsQuery(externalUser.ExternalUserId,
+                await _queryHandler.Handle(new GetUnattachedItemsQuery(req.ParseUserId(),
                     domainCollectionId));
             return new OkObjectResult(new UnattachedItemCollectionDto(domainCollectionId.Value,
                 unattachedItems.Select(b => b.ToApiModel()).ToList()));

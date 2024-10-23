@@ -10,8 +10,7 @@ public interface IUserRepository
     /// <summary>
     /// Gets a user
     /// </summary>
-    /// <throws>UserNotFoundException</throws>
-    public Task<User> Get(UserId userId);
+    public Task<User?> Get(UserId userId);
     
     /// <summary>
     /// Returns null if not found

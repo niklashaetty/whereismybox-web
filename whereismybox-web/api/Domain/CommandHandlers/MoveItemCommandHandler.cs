@@ -26,7 +26,7 @@ public class MoveItemCommandHandler : ICommandHandler<MoveItemCommand>
     public async Task Execute(MoveItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         var source = await _boxRepository.Get(command.CollectionId, command.SourceId);
         

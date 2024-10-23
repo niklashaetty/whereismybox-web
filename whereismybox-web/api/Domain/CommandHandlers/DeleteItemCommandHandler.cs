@@ -30,7 +30,7 @@ public class DeleteItemCommandHandler : ICommandHandler<DeleteItemCommand>
     public async Task Execute(DeleteItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         var box = await _boxRepository.Get(command.CollectionId, command.BoxId);
 

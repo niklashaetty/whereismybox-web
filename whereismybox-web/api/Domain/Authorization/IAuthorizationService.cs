@@ -4,5 +4,5 @@ namespace Domain.Authorization;
 
 public interface IAuthorizationService
 {
-    public Task EnsureCollectionAccessAllowed(ExternalUserId externalUserId, CollectionId collectionId);
+    public Task EnsureCollectionAccessAllowed(UserId userId, CollectionId collectionId);
 }

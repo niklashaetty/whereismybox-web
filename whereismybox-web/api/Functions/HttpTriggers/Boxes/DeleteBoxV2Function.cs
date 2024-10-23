@@ -43,12 +43,11 @@ public class DeleteBoxV2Function
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
                 return new BadRequestObjectResult(
                     new ErrorResponse("Validation error", "Invalid collectionId"));
 
-            await _commandHandler.Execute(new DeleteBoxCommand(externalUser.ExternalUserId, domainCollectionId,
+            await _commandHandler.Execute(new DeleteBoxCommand(req.ParseUserId(), domainCollectionId,
                 new BoxId(boxId)));
             return new NoContentResult();
         }

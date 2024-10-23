@@ -3,9 +3,9 @@ using Domain.Primitives;
 
 namespace Domain.Commands;
 
-public record CreateBoxCommand(ExternalUserId ExternalUserId, CollectionId CollectionId, BoxId BoxId, int BoxNumber, string BoxName) : ICommand
+public record CreateBoxCommand(UserId UserId, CollectionId CollectionId, BoxId BoxId, int BoxNumber, string BoxName) : ICommand
 {
-    public ExternalUserId ExternalUserId { get; } = ExternalUserId  ?? throw new ArgumentNullException(nameof(ExternalUserId));
+    public UserId UserId { get; } = UserId  ?? throw new ArgumentNullException(nameof(UserId));
     public readonly CollectionId CollectionId = CollectionId ?? throw new ArgumentNullException(nameof(CollectionId));
     public readonly BoxId BoxId = BoxId ?? throw new ArgumentNullException(nameof(BoxId));
     public readonly int BoxNumber = BoxNumber;

@@ -21,7 +21,7 @@ public class GetBoxCollectionQueryHandler : IQueryHandler<GetBoxCollectionQuery,
     
     public async Task<List<Box>> Handle(GetBoxCollectionQuery query)
     {
-        await _authorization.EnsureCollectionAccessAllowed(query.ExternalUserId, query.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(query.UserId, query.CollectionId);
         return await _boxRepository.GetCollection(query.CollectionId);
     }
 }

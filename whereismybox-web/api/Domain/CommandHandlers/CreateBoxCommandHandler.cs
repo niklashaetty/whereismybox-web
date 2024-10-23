@@ -2,7 +2,6 @@ using Domain.Authorization;
 using Domain.Commands;
 using Domain.Exceptions;
 using Domain.Models;
-using Domain.Primitives;
 using Domain.Repositories;
 
 namespace Domain.CommandHandlers;
@@ -23,7 +22,7 @@ public class CreateBoxCommandHandler : ICommandHandler<CreateBoxCommand>
     public async Task Execute(CreateBoxCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         var existingBoxes = await _boxRepository.GetCollection(command.CollectionId);
         if (existingBoxes.Any(b => b.Number == command.BoxNumber))

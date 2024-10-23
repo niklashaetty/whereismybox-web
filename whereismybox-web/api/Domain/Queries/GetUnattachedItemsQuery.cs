@@ -3,8 +3,8 @@ using Domain.QueryHandlers;
 
 namespace Domain.Queries;
 
-public record GetUnattachedItemsQuery(ExternalUserId ExternalUserId, CollectionId CollectionId) : IQuery
+public record GetUnattachedItemsQuery(UserId UserId, CollectionId CollectionId) : IQuery
 {
-    public ExternalUserId ExternalUserId { get; } = ExternalUserId  ?? throw new ArgumentNullException(nameof(ExternalUserId));
+    public readonly UserId UserId = UserId  ?? throw new ArgumentNullException(nameof(UserId));
     public CollectionId CollectionId { get; } = CollectionId ?? throw new ArgumentNullException(nameof(CollectionId));
 }

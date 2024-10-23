@@ -31,21 +31,21 @@ public class CollectionRepository : ICollectionRepository
     {
         await _container.DeleteItemAsync<CosmosAwareCollection>(collectionId.ToString(), PartitionKey.None);
     }
-    
+
     public async Task<Collection> Get(CollectionId collectionId)
     {
-        var queryAble = _container
-            .GetItemLinqQueryable<CosmosAwareCollection>()
-            .Where(c => c.CollectionId == collectionId);
-
-        var iterator = queryAble.ToFeedIterator();
-        var results = new List<Collection>();
-        while (iterator.HasMoreResults)
+        try
         {
-            results.AddRange(await iterator.ReadNextAsync());
+            var cosmosAware =
+                await _container.ReadItemAsync<CosmosAwareCollection>(collectionId.ToString(), PartitionKey.None);
+            return cosmosAware.Resource;
         }
-        return results.Single();
+        catch (CosmosException e) when (e.StatusCode is HttpStatusCode.NotFound)
+        {
+            throw new CollectionNotFoundException(collectionId);
+        }
     }
+
 
     public async Task<Collection> PersistUpdate(Collection updatedCollection)
     {
@@ -81,13 +81,14 @@ public class CollectionRepository : ICollectionRepository
         {
             results.AddRange(await iterator.ReadNextAsync());
         }
+
         return results;
     }
 
     public async Task<List<Collection>> GetCollectionsWhereUserIsContributor(UserId userId)
     {
         var query = new QueryDefinition(
-                $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.Contributors, '{userId.Value}')");
+            $@"SELECT * FROM c WHERE ARRAY_CONTAINS(c.Contributors, '{userId.Value}')");
         var iterator = _container.GetItemQueryIterator<Collection>(query);
 
         if (!iterator.HasMoreResults)

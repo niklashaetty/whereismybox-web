@@ -1,8 +1,5 @@
 using Domain.Authorization;
 using Domain.Commands;
-using Domain.Exceptions;
-using Domain.Models;
-using Domain.Primitives;
 using Domain.Repositories;
 
 namespace Domain.CommandHandlers;
@@ -23,7 +20,7 @@ public class DeleteBoxCommandHandler : ICommandHandler<DeleteBoxCommand>
     public async Task Execute(DeleteBoxCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         await _boxRepository.Delete(command.CollectionId, command.BoxId);
     }

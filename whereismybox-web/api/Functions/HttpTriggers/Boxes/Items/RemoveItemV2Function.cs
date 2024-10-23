@@ -55,8 +55,7 @@ public class RemoveItemV2Function
 
         try
         {
-            var externalUser = req.ParseExternalUser();
-            var command = new DeleteItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId),
+            var command = new DeleteItemCommand(req.ParseUserId(), domainCollectionId, new BoxId(boxId),
                 new ItemId(itemId), isHardDelete);
             await _deleteItemCommandHandler.Execute(command);
             return new NoContentResult();

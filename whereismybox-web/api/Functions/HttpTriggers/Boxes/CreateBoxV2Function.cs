@@ -46,7 +46,6 @@ public class CreateBoxV2Function
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createBoxRequest = JsonConvert.DeserializeObject<CreateBoxRequest>(body);
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
@@ -54,7 +53,7 @@ public class CreateBoxV2Function
                     new ErrorResponse("Validation error", "Invalid collectionId"));
 
             var boxId = new BoxId();
-            var command = new CreateBoxCommand(externalUser.ExternalUserId, domainCollectionId, boxId,
+            var command = new CreateBoxCommand(req.ParseUserId(), domainCollectionId, boxId,
                 createBoxRequest.Number, createBoxRequest.Name);
 
             await _commandHandler.Execute(command);

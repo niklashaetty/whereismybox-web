@@ -30,7 +30,7 @@ public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattached
     public async Task Execute(MoveUnattachedItemToBoxCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         var unattachedItems = await _unattachedItemRepository.GetCollection(command.CollectionId);
         var unattachedItem = unattachedItems.FirstOrDefault(i => i.ItemId == command.ItemId);

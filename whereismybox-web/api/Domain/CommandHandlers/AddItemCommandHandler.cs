@@ -21,7 +21,7 @@ public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
     public async Task Execute(AddItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         var newItem = new Item(command.ItemId, command.Name, command.Description);
         

@@ -23,6 +23,16 @@ public static class Assertions
         return response;
     }
     
+    public static List<CollectionDto> AssertCollections(IActionResult actionResult, int amount)
+    {
+        ResponseAssertions.AssertSuccessStatusCode(actionResult);
+        
+        var okResult = actionResult as OkObjectResult;
+        var response = okResult.Value as List<CollectionDto>;
+        Assert.Equal(amount, response.Count);
+        return response;
+    }
+    
     public static UnattachedItemCollectionDto AssertUnattachedItems(IActionResult actionResult, int amount)
     {
         ResponseAssertions.AssertSuccessStatusCode(actionResult);

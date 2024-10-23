@@ -47,11 +47,10 @@ public class GetBoxV2Function
     {
         try
         {
-            var externalUser = req.ParseExternalUser();
             if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
                 return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
 
-            var box = await _queryHandler.Handle(new GetBoxQuery(externalUser.ExternalUserId, domainCollectionId,
+            var box = await _queryHandler.Handle(new GetBoxQuery(req.ParseUserId(), domainCollectionId,
                 new BoxId(boxId)));
             return new OkObjectResult(box.ToApiModel());
         }

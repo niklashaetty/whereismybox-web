@@ -3,8 +3,8 @@ using Domain.QueryHandlers;
 
 namespace Domain.Queries;
 
-public record GetBoxCollectionQuery(CollectionId CollectionId, ExternalUserId ExternalUserId) : IQuery
+public record GetBoxCollectionQuery(CollectionId CollectionId, UserId UserId) : IQuery
 {
-    public ExternalUserId ExternalUserId { get; } = ExternalUserId  ?? throw new ArgumentNullException(nameof(ExternalUserId));
-    public CollectionId CollectionId { get; } = CollectionId ?? throw new ArgumentNullException(nameof(CollectionId));
+    public readonly UserId UserId = UserId  ?? throw new ArgumentNullException(nameof(UserId));
+    public readonly  CollectionId CollectionId = CollectionId ?? throw new ArgumentNullException(nameof(CollectionId));
 }

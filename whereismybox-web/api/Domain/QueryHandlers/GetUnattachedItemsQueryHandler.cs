@@ -24,7 +24,7 @@ public class GetUnattachedItemsQueryHandler : IQueryHandler<GetUnattachedItemsQu
 
     public async Task<List<UnattachedItem>> Handle(GetUnattachedItemsQuery query)
     {
-        await _authorization.EnsureCollectionAccessAllowed(query.ExternalUserId, query.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(query.UserId, query.CollectionId);
         var unattachedItems = await _unattachedItemRepository.GetCollection(query.CollectionId);
         await AttachPreviousBoxNumber(query, unattachedItems);
         return unattachedItems;

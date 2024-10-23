@@ -21,7 +21,7 @@ using Microsoft.OpenApi.Models;
 
 namespace Functions.HttpTriggers.Collections;
 
-public class GetCollectionsFunction
+public class GetOwnedCollectionsFunction
 {
     private const string OperationId = "GetMyCollectionOwnerFunction";
     private const string FunctionName = OperationId + "Function";
@@ -33,7 +33,7 @@ public class GetCollectionsFunction
 
     private readonly IQueryHandler<GetUserPermissionsQuery, Permissions> _permissionsQueryHandler;
 
-    public GetCollectionsFunction(ILoggerFactory loggerFactory,
+    public GetOwnedCollectionsFunction(ILoggerFactory loggerFactory,
         IQueryHandler<GetOwnedCollectionQuery, List<Collection>> ownedCollectionsQueryHandler,
         IQueryHandler<GetContributorCollectionsQuery, List<Collection>> contributedCollectionsQueryHandler,
         IQueryHandler<GetUserPermissionsQuery, Permissions> permissionsQueryHandler)
@@ -72,7 +72,7 @@ public class GetCollectionsFunction
                 var ownedCollections =
                     await _ownedCollectionsQueryHandler.Handle(
                         new GetOwnedCollectionQuery(permissions, pathUserId));
-                return new OkObjectResult(ownedCollections.Select(c => c.ToApiModel()));
+                return new OkObjectResult(ownedCollections.Select(c => c.ToApiModel()).ToList());
             }
 
             if (filter.Equals("contributor"))
@@ -80,7 +80,8 @@ public class GetCollectionsFunction
                 var collectionIContributeTo =
                     await _contributedCollectionsQueryHandler.Handle(
                         new GetContributorCollectionsQuery(permissions, pathUserId));
-                return new OkObjectResult(collectionIContributeTo.Select(c => c.ToApiModel()));
+                List<CollectionDto> x = collectionIContributeTo.Select(c => c.ToApiModel()).ToList();
+                return new OkObjectResult(x);
             }
 
             return new BadRequestObjectResult(new ErrorResponse("Validation error",

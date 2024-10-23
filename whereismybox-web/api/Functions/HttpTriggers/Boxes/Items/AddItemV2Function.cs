@@ -53,9 +53,8 @@ public class AddItemV2Function
 
         try
         {
-            var externalUser = req.ParseExternalUser();
             var itemId = new ItemId();
-            var command = new AddItemCommand(externalUser.ExternalUserId, domainCollectionId, new BoxId(boxId), itemId,
+            var command = new AddItemCommand(req.ParseUserId(), domainCollectionId, new BoxId(boxId), itemId,
                 addItemRequest.Name, addItemRequest.Description);
             await _commandHandler.Execute(command);
 

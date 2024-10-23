@@ -63,8 +63,7 @@ public class MoveItemFunction
 
         try
         {
-            var externalUser = req.ParseExternalUser();
-            var command = new MoveItemCommand(externalUser.ExternalUserId, domainCollectionId, new ItemId(itemId),
+            var command = new MoveItemCommand(req.ParseUserId(), domainCollectionId, new ItemId(itemId),
                 new BoxId(boxId), targetBoxId);
             await _moveItemCommandHandler.Execute(command);
             return new NoContentResult();

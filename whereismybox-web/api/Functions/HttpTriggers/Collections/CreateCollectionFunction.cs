@@ -40,15 +40,14 @@ public class CreateCollectionFunction
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "users/{userId}/collections")]
         HttpRequest req,
-        string userId)
+        Guid userId)
     {
         try
         {
             var body = await new StreamReader(req.Body).ReadToEndAsync();
             var createCollectionRequest = JsonConvert.DeserializeObject<CreateCollectionRequest>(body);
 
-            if (UserId.TryParse(userId, out var pathUserId) is false)
-                return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid userId"));
+            var pathUserId = new UserId(userId);
             var tokenUserId = req.ParseUserId();
             if (tokenUserId != pathUserId) return new ForbidResult();
 

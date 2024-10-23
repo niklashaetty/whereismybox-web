@@ -55,8 +55,7 @@ public class MoveUnattachedItemToBoxV2Function
 
         try
         {
-            var externalUser = req.ParseExternalUser();
-            var command = new MoveUnattachedItemToBoxCommand(externalUser.ExternalUserId, domainCollectionId,
+            var command = new MoveUnattachedItemToBoxCommand(req.ParseUserId(), domainCollectionId,
                 new BoxId(moveUnattachedItemToBoxRequest.BoxId), new ItemId(itemId));
             await _commandHandler.Execute(command);
 

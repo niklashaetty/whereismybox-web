@@ -23,15 +23,11 @@ public class FakeUserRepository : IUserRepository
         return Task.FromResult<User>(testableUser.AsCosmosAware());
     }
 
-    public Task<User> Get(UserId userId)
+    public Task<User?> Get(UserId userId)
     {
         var testableUser = _database.SingleOrDefault(u => u.UserId == userId);
-        if (testableUser is null)
-        {
-            throw new UserNotFoundException(userId);
-        }
 
-        return Task.FromResult<User>(testableUser.AsCosmosAware());
+        return Task.FromResult<User?>(testableUser?.AsCosmosAware());
     }
 
     public Task<User?> SearchByUsername(string username)

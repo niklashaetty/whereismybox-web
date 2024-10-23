@@ -26,7 +26,7 @@ public class DeleteUnattachedItemCommandHandler : ICommandHandler<DeleteUnattach
     public async Task Execute(DeleteUnattachedItemCommand command)
     {
         ArgumentNullException.ThrowIfNull(command);
-        await _authorization.EnsureCollectionAccessAllowed(command.ExternalUserId, command.CollectionId);
+        await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
         await _unattachedItemRepository.Delete(command.CollectionId, command.ItemId);
     }

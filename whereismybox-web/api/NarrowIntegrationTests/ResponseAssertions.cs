@@ -38,19 +38,9 @@ namespace NarrowIntegrationTests
 
         public static void AssertSuccessStatusCode(IActionResult actionResult)
         {
-            if (actionResult is FileStreamResult fileStreamResult)
-            {
-                Assert.NotNull(fileStreamResult.FileStream);
-                Assert.NotNull(fileStreamResult.FileDownloadName);
-                Assert.NotEmpty(fileStreamResult.FileDownloadName);
-                Assert.Equal(MediaTypeNames.Application.Pdf, fileStreamResult.ContentType);
-            }
-            else
-            {
-                var httpCode = GetHttpStatusCode(actionResult);
-                Assert.True(new HttpResponseMessage(httpCode).IsSuccessStatusCode,
-                    $"Expected SuccessStatusCode (2xx) but was {httpCode} ({(int)httpCode})");
-            }
+            var httpCode = GetHttpStatusCode(actionResult);
+            Assert.True(new HttpResponseMessage(httpCode).IsSuccessStatusCode,
+                $"Expected SuccessStatusCode (2xx) but was {httpCode} ({(int)httpCode})");
         }
 
         private static HttpStatusCode GetHttpStatusCode(IActionResult functionResult)
@@ -71,19 +61,6 @@ namespace NarrowIntegrationTests
         public static T GetContentOfType<T>(this IActionResult result)
         {
             return (T)((ObjectResult)result).Value;
-        }
-
-        public static T DeserialiseContentStreamOfType<T>(this IActionResult result,
-            JsonSerializerSettings settings = default)
-        {
-            var stream = (Stream)((ObjectResult)result).Value;
-            Assert.NotNull(stream);
-            using var streamReader = new StreamReader(stream);
-            using var jsonTextReader = new JsonTextReader(streamReader);
-            var loaded = JToken.Load(jsonTextReader);
-            var content = loaded.ToObject<T>(JsonSerializer.Create(settings));
-            Assert.NotNull(content);
-            return content;
         }
     }
 }
