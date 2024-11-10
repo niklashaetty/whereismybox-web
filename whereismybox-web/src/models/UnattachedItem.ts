@@ -3,9 +3,9 @@ export default class UnattachedItem{
     name: string = '';
     description: string = '';
     previousBoxId: string = '';
-    previousBoxNumber: string = ''
+    previousBoxNumber: number;
     
-    constructor(itemId: string, name:string, description:string, previousBoxId:string, previousBoxNumber:string){
+    constructor(itemId: string, name:string, description:string, previousBoxId:string, previousBoxNumber:number){
         this.itemId = itemId;
         this.name = name;
 

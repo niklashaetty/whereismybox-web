@@ -47,12 +47,12 @@ public class MoveItemFunction
         string collectionId,
         Guid boxId,
         Guid itemId)
-    {
+    {   
         if (CollectionId.TryParse(collectionId, out var domainCollectionId) is false)
         {
             return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid collectionId"));
         }
-        
+     
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var moveItemRequest = JsonConvert.DeserializeObject<MoveItemRequest>(body);
         

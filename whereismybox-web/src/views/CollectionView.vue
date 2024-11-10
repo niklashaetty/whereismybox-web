@@ -331,11 +331,13 @@ function pushToLogin(){
         <div class="c-ui-unattacheditems">
           <UnattachedItemAccordion v-if="loadingUnattachedItems" v-for="i in Array(4)"  :unattachedItem="Object()" :isLoading=loadingUnattachedItems >
           <template #name> <Skeleton style="margin:auto;" height="12px"></Skeleton></template>
+          <template #description> <Skeleton style="margin:auto;" height="12px"></Skeleton></template>
           </UnattachedItemAccordion>
     
           <!-- Unattached items -->
           <UnattachedItemAccordion v-else v-for="unattachedItem in unattachedItems"  :unattachedItem="unattachedItem">
             <template #name> <p :title="unattachedItem.name"> {{ trimString(40, unattachedItem.name) }}</p></template>
+            <template #description> <p :title="unattachedItem.description"> {{ trimString(40, unattachedItem.description) }}</p></template>
             <template #previousbox> <p> {{ unattachedItem.previousBoxNumber }}</p></template>
           </UnattachedItemAccordion>
         </div>

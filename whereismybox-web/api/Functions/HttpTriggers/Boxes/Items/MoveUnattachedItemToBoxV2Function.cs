@@ -42,7 +42,7 @@ public class MoveUnattachedItemToBoxV2Function
     [FunctionName(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post",
-            Route = "collections/{collectionId}/unattached-items/{itemId}")]
+            Route = "collections/{collectionId}/unattached-items/{itemId}/move")]
         HttpRequest req,
         string collectionId,
         Guid itemId)
@@ -56,7 +56,7 @@ public class MoveUnattachedItemToBoxV2Function
         try
         {
             var command = new MoveUnattachedItemToBoxCommand(req.ParseUserId(), domainCollectionId,
-                new BoxId(moveUnattachedItemToBoxRequest.BoxId), new ItemId(itemId));
+                moveUnattachedItemToBoxRequest.BoxNumber, new ItemId(itemId));
             await _commandHandler.Execute(command);
 
             return new NoContentResult();
@@ -68,6 +68,10 @@ public class MoveUnattachedItemToBoxV2Function
         catch (ForbiddenCollectionAccessException)
         {
             return new StatusCodeResult(403);
+        }
+        catch (BoxWithNumberNotFoundException)
+        {
+            return new BadRequestObjectResult(new ErrorResponse("Bad request", "Box with this number was not found"));
         }
         catch (BoxNotFoundException e)
         {

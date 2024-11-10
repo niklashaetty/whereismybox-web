@@ -119,7 +119,6 @@ function openStickerDialog() {
   displayStickerDialog.value = true;
 }
 
-
 function closeEditBoxDialog() {
   displayEditBoxDialog.value = false;
   updatedBoxName.value = box.value.name;

@@ -6,12 +6,11 @@ namespace Api;
 public class MoveUnattachedItemToBoxRequest
 {
     [JsonRequired]
-    [OpenApiProperty(Description = "The box identifier")]
-    public Guid BoxId { get; set; }
+    [OpenApiProperty(Description = "The box number")]
+    public int BoxNumber { get; set; }
 
-    public MoveUnattachedItemToBoxRequest(Guid boxId)
+    public MoveUnattachedItemToBoxRequest(int boxNumber)
     {
-        ArgumentNullException.ThrowIfNull(boxId);
-        BoxId = boxId;
+        BoxNumber = boxNumber;
     }
 }

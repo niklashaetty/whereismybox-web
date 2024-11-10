@@ -14,7 +14,8 @@ public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattached
     private readonly IUnattachedItemRepository _unattachedItemRepository;
     private readonly ILogger _logger;
 
-    public MoveUnattachedItemToCommandHandler(IAuthorizationService authorization,ILoggerFactory loggerFactory, IBoxRepository boxRepository,
+    public MoveUnattachedItemToCommandHandler(IAuthorizationService authorization, ILoggerFactory loggerFactory,
+        IBoxRepository boxRepository,
         IUnattachedItemRepository unattachedItemRepository)
     {
         ArgumentNullException.ThrowIfNull(authorization);
@@ -31,7 +32,7 @@ public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattached
     {
         ArgumentNullException.ThrowIfNull(command);
         await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
-        
+
         var unattachedItems = await _unattachedItemRepository.GetCollection(command.CollectionId);
         var unattachedItem = unattachedItems.FirstOrDefault(i => i.ItemId == command.ItemId);
         if (unattachedItem is null)
@@ -39,10 +40,17 @@ public class MoveUnattachedItemToCommandHandler : ICommandHandler<MoveUnattached
             throw new ItemNotFoundException(command.CollectionId, command.ItemId);
         }
 
-        var box = await _boxRepository.Get(command.CollectionId, command.BoxId);
+        var boxes = await _boxRepository.GetCollection(command.CollectionId);
+        var box = boxes.FirstOrDefault(box => box.Number == command.BoxNumber);
+
+        if (box is null)
+        {
+            throw new BoxWithNumberNotFoundException(command.CollectionId, command.BoxNumber);
+        }
+
         box.AddItem(unattachedItem);
         await _boxRepository.PersistUpdate(box);
-        
+
         await _unattachedItemRepository.Delete(command.CollectionId, unattachedItem.ItemId);
     }
 }

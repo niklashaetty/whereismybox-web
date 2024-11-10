@@ -35,11 +35,10 @@ export default new class BoxService {
     .then(() => EventService.BoxItemsChanged(boxId))
   }
 
-  async moveItem(collectionId:string, sourceBoxId:string,  itemId:string, targetBoxNumber:number,){
+  async moveItem(collectionId:string, sourceBoxId:string, itemId:string, targetBoxNumber:number){
     const requestBody = { TargetBoxNumber: targetBoxNumber };
     let path = `/api/collections/${collectionId}/boxes/${sourceBoxId}/items/${itemId}/move`
     return axios.post(path, requestBody)
-    .then(() => console.log("Done!!"))
     .then(() => EventService.BoxItemsChanged(sourceBoxId));
   }
 
@@ -60,11 +59,10 @@ export default new class BoxService {
     .then(() => EventService.UnattachedItemsChanged());
   }
 
-  async addBackUnattachedItem(collectionId:string, boxId:string, itemId: string){
-    let path = `/api/collections/${collectionId}/unattached-items/${itemId}`
-    const requestBody = { BoxId: boxId };
+  async moveUnattachedItem(collectionId:string, boxNumber:number, itemId: string){
+    let path = `/api/collections/${collectionId}/unattached-items/${itemId}/move`
+    const requestBody = { BoxNumber: boxNumber };
     return axios.post(path, requestBody)
-    .then(() => EventService.BoxItemsChanged(boxId))
     .then(() => EventService.UnattachedItemsChanged());
   }
 
