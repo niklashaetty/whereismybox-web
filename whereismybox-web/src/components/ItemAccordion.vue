@@ -20,6 +20,10 @@ const props = defineProps({
   boxId: {
     type: String,
     required: true
+  },
+  boxNumber: {
+    type: Number,
+    required: true
   }
 }
 );
@@ -29,8 +33,9 @@ const confirm = useConfirm();
 const collectionId = router.currentRoute.value.params.collectionId as string;
 const item = computed(() => props.item);
 const boxId = computed(() => props.boxId);
+const boxNumber = computed(() => props.boxNumber);
 const displayMoveItemDialog = ref(false);
-const targetBoxNumber = ref(99);
+const targetBoxNumber = ref(0);
 
 const menu: any = ref(null);
 const menuItems = ref([
@@ -85,10 +90,12 @@ function toggleItemMenu(event: MouseEvent)  {
 }
 
 function openMoveItemDialog() {
+  targetBoxNumber.value = boxNumber.value;
   displayMoveItemDialog.value = true;
 }
 
 function closeMoveItemDialog() {
+  targetBoxNumber.value = boxNumber.value;
   displayMoveItemDialog.value = false;
 }
 

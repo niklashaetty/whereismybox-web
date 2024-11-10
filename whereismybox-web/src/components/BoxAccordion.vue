@@ -258,7 +258,7 @@ onMounted(async () => {
 
 <div v-show="expanded" class="accordion-content">
     <ItemAccordionDescription :boxId="box.boxId" />
-    <ItemAccordion :boxId="box.boxId" :item="item" v-for="item in filter()">
+    <ItemAccordion :boxNumber="box.number" :boxId="box.boxId" :item="item" v-for="item in filter()">
       <template #name> <p :title="item.name"> {{trimString(40, item.name)}}</p></template>
       <template #description> <p :title="item.description">{{trimString(50, item.description)}} </p></template>
     </ItemAccordion>
