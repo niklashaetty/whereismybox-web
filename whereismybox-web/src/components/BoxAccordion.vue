@@ -14,6 +14,8 @@ import Box from '@/models/Box';
 import ItemAccordionDescription from '@/components/ItemAccordionDescription.vue'
 import Sticker from '@/components/Sticker.vue'
 import Skeleton from 'primevue/skeleton';
+import InputText from 'primevue/inputtext';
+import InputNumber from 'primevue/inputnumber';
 import Dialog from 'primevue/dialog'
 
 import { usePaperizer } from 'paperizer'
@@ -64,8 +66,11 @@ const searchQuery = computed(() => {
   }
 });
 const displayStickerDialog = ref(false);
+const displayEditBoxDialog = ref(false);
 const linkToBox = ref("");
 const isClicked = ref(false)
+const updatedBoxName = ref(box.value.name);
+const updatedBoxNumber = ref(box.value.number);
 
 const expanded = computed(() => {
   return alwaysExpandedItems.value || isClicked.value
@@ -83,10 +88,15 @@ const menu: any = ref(null);
 const menuItems = ref([
     {
         items: [
-        {label: 'Go to box', icon: 'pi pi-qrcode',
+        {label: 'Go to box', icon: 'pi pi-box',
         command: () => {
             router.push({path: `/collections/${collectionId}/boxes/${box.value.boxId}`})
           }
+        },
+        {label: 'Edit box details', icon: 'pi pi-pencil',
+        command: () => {
+          openEditBoxDialog();
+        }
         },
         {label: 'Show printable sticker', icon: 'pi pi-qrcode',
         command: () => {
@@ -107,6 +117,17 @@ function closeStickerDialog() {
 
 function openStickerDialog() {
   displayStickerDialog.value = true;
+}
+
+
+function closeEditBoxDialog() {
+  displayEditBoxDialog.value = false;
+  updatedBoxName.value = box.value.name;
+  updatedBoxNumber.value = box.value.number;
+}
+
+function openEditBoxDialog() {
+  displayEditBoxDialog.value = true;
 }
 
 function confirmDeleteBox(){
@@ -148,6 +169,20 @@ function trimString(maxLength: number, text: string) {
   return text.length > maxLength ? text.substring(0, maxLength - 3) + "..." : text;
 }
 
+async function updateBoxDetails() {
+  BoxService.updateBoxDetails(collectionId, box.value.boxId, updatedBoxNumber.value, updatedBoxName.value)
+    .then(closeEditBoxDialog)
+    .then(() => toast.add({ severity: 'success', summary: 'Updated', detail: `Box ${updatedBoxName.value} updated`, life: 3000 }))
+    .catch(e => {
+      if(e.status == 409){
+        toast.add({ severity: 'warn', summary: 'Error', detail: `Sorry, there is already a box with this number in this collection`, life: 3000 })
+      }
+      else {
+        toast.add({ severity: 'error', summary: 'Error', detail: `Oops, something went wrong. Try again later!`, life: 3000 })
+      }
+    })
+  }
+
 onMounted(async () => {
   linkToBox.value = window.location.origin + router.currentRoute.value.path + "/boxes/" + box.value.boxId + "/";
 });
@@ -164,7 +199,24 @@ onMounted(async () => {
           <Button severity="success" label="Print" icon="pi pi-print" class="p-button-text" @click="print()" />
           <Button severity="secondary" label="Close" icon="pi pi-times" class="p-button-text" @click="closeStickerDialog()" />
         </template>
-      </Dialog>
+    </Dialog>
+    <Dialog @update:visible="closeEditBoxDialog" v-model:visible="displayEditBoxDialog" :style="{ width: '450px' }" header="Edit box" :modal="true">
+      <div class="card">
+        <div class="field">
+          <InputText v-model="updatedBoxName" type="text" placeholder="Name" />
+        </div>
+        <div class="field">
+          <InputNumber v-model="updatedBoxNumber" :min="0" :max="100" placeholder="2" />
+        </div>
+        
+      </div>
+      <template #footer>
+        <Button severity="success" text icon="pi pi-plus" label="Update box" type="submit"  @click="updateBoxDetails" />
+        <Button severity="secondary" text icon="pi pi-times" label="Close" @click="closeEditBoxDialog" />
+      </template>
+    </Dialog>
+    
+    
 <div v-if="isFullyLoaded" class="accordion-container">
   <div class="accordion-icon" @click="expandBox">
     <i v-if="!alwaysExpandedItems && expanded" class="pi pi-angle-down accordion-icon-icon" style="color: slateblue; padding-right: 5px;"></i>

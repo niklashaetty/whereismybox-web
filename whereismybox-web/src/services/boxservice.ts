@@ -1,7 +1,6 @@
 import type Item from '@/models/Item';
 import axios from 'axios';
 import EventService from '@/services/eventservice';
-import type Box from '@/models/Box';
 
 export default new class BoxService {
 
@@ -72,6 +71,13 @@ export default new class BoxService {
     let boxesPath = `/api/collections/${collectionId}/boxes`
     return axios.post(boxesPath, postBoxRequest)
     .then((response) => EventService.BoxAdded(response.data.boxId))
+  }
+
+  async updateBoxDetails(collectionId:string, boxId:string, updatedBoxNumber: number, updatedBoxName: string){
+    const postBoxRequest = { Number: updatedBoxNumber, Name: updatedBoxName };
+    let boxesPath = `/api/collections/${collectionId}/boxes/${boxId}`
+    return axios.patch(boxesPath, postBoxRequest)
+    .then((response) => EventService.BoxItemsChanged(response.data.boxId))
   }
 }
 
