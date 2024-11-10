@@ -35,6 +35,14 @@ export default new class BoxService {
     .then(() => EventService.BoxItemsChanged(boxId))
   }
 
+  async moveItem(collectionId:string, sourceBoxId:string,  itemId:string, targetBoxNumber:number,){
+    const requestBody = { TargetBoxNumber: targetBoxNumber };
+    let path = `/api/collections/${collectionId}/boxes/${sourceBoxId}/items/${itemId}/move`
+    return axios.post(path, requestBody)
+    .then(() => console.log("Done!!"))
+    .then(() => EventService.BoxItemsChanged(sourceBoxId));
+  }
+
   async deleteItem(collectionId:string, boxId:string, itemId: string, hardDelete: boolean){
     let path = `/api/collections/${collectionId}/boxes/${boxId}/items/${itemId}?hardDelete=${hardDelete}`
     return axios.delete(path)

@@ -55,22 +55,21 @@ public class MoveItemFunction
         
         var body = await new StreamReader(req.Body).ReadToEndAsync();
         var moveItemRequest = JsonConvert.DeserializeObject<MoveItemRequest>(body);
-
-        if (BoxId.TryParse(moveItemRequest.TargetBoxId, out var targetBoxId) is false)
-        {
-            return new BadRequestObjectResult(new ErrorResponse("Validation error", "Invalid targetBoxId"));
-        }
-
+        
         try
         {
             var command = new MoveItemCommand(req.ParseUserId(), domainCollectionId, new ItemId(itemId),
-                new BoxId(boxId), targetBoxId);
+                new BoxId(boxId), moveItemRequest.TargetBoxNumber);
             await _moveItemCommandHandler.Execute(command);
             return new NoContentResult();
         }
         catch (BoxNotFoundException e)
         {
             return new NotFoundResult();
+        }
+        catch (BoxWithNumberNotFoundException e)
+        {
+            return new BadRequestObjectResult("No box with this number was found");
         }
         catch (UnparsableExternalUserException e)
         {

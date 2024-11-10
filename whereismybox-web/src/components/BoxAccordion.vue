@@ -170,7 +170,7 @@ function trimString(maxLength: number, text: string) {
 }
 
 async function updateBoxDetails() {
-  BoxService.updateBoxDetails(collectionId, box.value.boxId, updatedBoxNumber.value, updatedBoxName.value)
+  await BoxService.updateBoxDetails(collectionId, box.value.boxId, updatedBoxNumber.value, updatedBoxName.value)
     .then(closeEditBoxDialog)
     .then(() => toast.add({ severity: 'success', summary: 'Updated', detail: `Box ${updatedBoxName.value} updated`, life: 3000 }))
     .catch(e => {

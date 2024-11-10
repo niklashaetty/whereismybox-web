@@ -6,13 +6,12 @@ namespace Api;
 public class MoveItemRequest
 {
     [JsonRequired]
-    [OpenApiProperty(Description = "The identifier of the new box")]
-    public string TargetBoxId { get; set; }
+    [OpenApiProperty(Description = "The number of the new box")]
+    public int TargetBoxNumber { get; set; }
     
 
-    public MoveItemRequest(string targetBoxId)
+    public MoveItemRequest(int targetBoxNumber)
     {
-        ArgumentNullException.ThrowIfNull(targetBoxId);
-        TargetBoxId = targetBoxId;
+        TargetBoxNumber = targetBoxNumber;
     }
 }

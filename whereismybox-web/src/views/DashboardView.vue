@@ -113,12 +113,10 @@ async function createCollection(ownerUserId: string, name: string) {
   CollectionService.createCollection(ownerUserId, name)
   .then(() => {
     toast.add({ severity: 'success', summary: 'Created', detail: `Created new collection ${name}`, life: 3000 })
-    console.log("toast")})
+  })
   .then(() => createCollectionButtonEnabled.value = true)
   .then(() => {
-
     closeCreateCollectionsDialog()
-    console.log("Close")
   });
 }
 

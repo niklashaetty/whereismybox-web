@@ -28,11 +28,22 @@ public class MoveItemCommandHandler : ICommandHandler<MoveItemCommand>
         ArgumentNullException.ThrowIfNull(command);
         await _authorization.EnsureCollectionAccessAllowed(command.UserId, command.CollectionId);
         
-        var source = await _boxRepository.Get(command.CollectionId, command.SourceId);
+        var existingBoxes = await _boxRepository.GetCollection(command.CollectionId);
+        var source = existingBoxes.Find(box => box.BoxId == command.SourceId);
+        var target = existingBoxes.Find(box => box.Number == command.TargetBoxNumber);
+        
+        if (source is null)
+        {
+            throw new BoxNotFoundException(command.CollectionId, command.SourceId);
+        }
+
+        if (target is null)
+        {
+            throw new BoxWithNumberNotFoundException(command.CollectionId, command.TargetBoxNumber);
+        }
         
         if (source.TryGetItem(command.ItemId, out var item))
         {
-            var target = await _boxRepository.Get(command.CollectionId, command.TargetId);
             target.AddItem(item);
             source.RemoveItem(item.ItemId);
             
