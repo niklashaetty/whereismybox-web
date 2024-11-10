@@ -296,13 +296,13 @@ function pushToLogin(){
         <div class="sectiontitle">
           <SectionTitle v-show="!unauthorizedAccess" v-if="collectionMetadataLoaded && isMyCollection()" :title="`My collection ` + currentCollectionName "  >
             <template #right>
-              <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
+              <i style="margin-right: 10px;" class="pi pi-bars boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItemsForOwner" :popup="true" />
             </template>
           </SectionTitle>
           <SectionTitle v-show="!unauthorizedAccess" v-if="collectionMetadataLoaded && !isMyCollection()" :title="`Shared collection ` + currentCollectionName " >
             <template #right>
-              <i style="margin-right: 10px;" class="pi pi-cog boxie-icon clickable" @click="toggleBoxMenu($event)" />
+              <i style="margin-right: 10px;" class="pi pi-bars boxie-icon clickable" @click="toggleBoxMenu($event)" />
               <Menu id="overlay_menu" ref="menu" :model="menuItemsForContributor" :popup="true" />
             </template>
           </SectionTitle>
