@@ -168,7 +168,7 @@ public class Driver
     public async Task<IActionResult> InvokePatchBoxFunction(UpdateBoxRequest request, string collectionId, Guid boxId)
     {
         var sut = new PatchBoxFunction(_fixture.UpdateBoxCommandCommandHandler);
-        var httpRequest = RequestHelper.CreateHttpRequest();
+        var httpRequest = RequestHelper.CreateHttpRequest(request);
         
         if (authenticatedUserId.HasValue)
         {
