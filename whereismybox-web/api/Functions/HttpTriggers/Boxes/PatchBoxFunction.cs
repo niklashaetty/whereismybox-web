@@ -11,8 +11,7 @@ using Domain.Exceptions;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -41,7 +40,7 @@ public class PatchBoxFunction
         typeof(ErrorResponse), Summary = "Invalid request")]
     [OpenApiResponseWithBody(HttpStatusCode.Conflict, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "The new box number is already taken")]
-    [FunctionName(FunctionName)]
+    [Function(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "patch", Route = "collections/{collectionId}/boxes/{boxId}")]
         HttpRequest req,

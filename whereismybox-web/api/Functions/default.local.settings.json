@@ -2,7 +2,7 @@
     "IsEncrypted": false,
     "Values": {
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+        "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
         "GITHUB_CLIENT_ID": "change_me_get_value_from_azure_portal",
         "GITHUB_CLIENT_SECRET": "change_me_get_value_from_azure_portal",
         "GOOGLE_CLIENT_ID": "change_me_get_value_from_azure_portal",

@@ -13,8 +13,7 @@ using Domain.QueryHandlers;
 using Functions.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -47,7 +46,7 @@ public class GetCollectionContributorsFunction
     [OpenApiResponseWithBody(HttpStatusCode.OK, MediaTypeNames.Application.Json, typeof(List<CollectionContributor>))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
-    [FunctionName(FunctionName)]
+    [Function(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "collections/{collectionId}/contributors")]
         HttpRequest req,

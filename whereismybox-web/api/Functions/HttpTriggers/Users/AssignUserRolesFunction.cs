@@ -14,8 +14,7 @@ using Domain.Queries;
 using Domain.QueryHandlers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Newtonsoft.Json;
 
@@ -42,7 +41,7 @@ public class AssignUserRolesFunction
         Summary = "Invalid request")]
     [OpenApiResponseWithBody(HttpStatusCode.NotFound, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "User was not found")]
-    [FunctionName("GetRoles")]
+    [Function("GetRoles")]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "GetRoles")]
         HttpRequest req)

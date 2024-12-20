@@ -12,8 +12,7 @@ using Domain.QueryHandlers;
 using Functions.Mappers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 
@@ -44,7 +43,7 @@ public class GetLoggedInUserFunction
         Summary = "Invalid request")]
     [OpenApiResponseWithBody(HttpStatusCode.Unauthorized, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "User was not logged in")]
-    [FunctionName(FunctionName)]
+    [Function(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "users/me")]
         HttpRequest req)

@@ -11,8 +11,7 @@ using Domain.Exceptions;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
@@ -39,7 +38,7 @@ public class MoveItemFunction
     [OpenApiResponseWithoutBody(HttpStatusCode.NoContent)]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
-    [FunctionName(FunctionName)]
+    [Function(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post",
             Route = "collections/{collectionId}/boxes/{boxId}/items/{itemId}/move")]

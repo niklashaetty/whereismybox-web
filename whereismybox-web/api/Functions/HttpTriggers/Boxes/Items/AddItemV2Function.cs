@@ -11,11 +11,10 @@ using Domain.Exceptions;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 
 namespace Functions.HttpTriggers.Boxes.Items;
 
@@ -33,12 +32,12 @@ public class AddItemV2Function
 
     [OpenApiOperation(OperationId, new[] {"Items"}, Summary = "Create new item and add it to box")]
     [OpenApiRequestBody(MediaTypeNames.Application.Json, typeof(AddItemRequest))]
-    [OpenApiParameter("collectionId", In = ParameterLocation.Path, Required = true, Type = typeof(string))]
+    [OpenApiParameter(nameof(collectionId), In = ParameterLocation.Path, Required = true, Type = typeof(string))]
     [OpenApiParameter("boxId", In = ParameterLocation.Path, Required = true, Type = typeof(Guid))]
     [OpenApiResponseWithBody(HttpStatusCode.Created, MediaTypeNames.Application.Json, typeof(ItemDto))]
     [OpenApiResponseWithBody(HttpStatusCode.BadRequest, MediaTypeNames.Application.Json, typeof(ErrorResponse),
         Summary = "Invalid request")]
-    [FunctionName(FunctionName)]
+    [Function(FunctionName)]
     public async Task<IActionResult> RunAsync(
         [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "collections/{collectionId}/boxes/{boxId}/items")]
         HttpRequest req,
