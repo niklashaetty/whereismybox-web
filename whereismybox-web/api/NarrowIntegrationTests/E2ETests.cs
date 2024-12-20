@@ -16,7 +16,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be able to create and delete a collection")]
-    public async void CollectionTests()
+    public async Task CollectionTests()
     {
         // Given a registered user
         var user = await _testDriver.GivenARegisteredUser();
@@ -52,7 +52,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be able to create, update and delete a box")]
-    public async void BoxTest()
+    public async Task BoxTest()
     {
         // Given a collection
         var user = await _testDriver.GivenARegisteredUser();
@@ -97,7 +97,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be able to create, update, and delete an item")]
-    public async void ItemTest()
+    public async Task ItemTest()
     {
         // Given a collection and a box
         var user = await _testDriver.GivenARegisteredUser();
@@ -115,7 +115,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be able to move item to another box")]
-    public async void MovingItemTest()
+    public async Task MovingItemTest()
     {
         // Given a collection with a box with an item
 
@@ -127,7 +127,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be add and delete unattached item")]
-    public async void UnattachedItemScenarioTests()
+    public async Task UnattachedItemScenarioTests()
     {
         // Given a collection, a box, and one item
 
@@ -212,7 +212,7 @@ public class E2ETests
     }
 
     [Fact(DisplayName = "Should be able to move unattached item back to a box")]
-    public async void MovingUnattachedItemTest()
+    public async Task MovingUnattachedItemTest()
     {
         // Given a collection, a box, and one item.
 

@@ -17,7 +17,7 @@ public class UserTests
     }
 
     [Fact]
-    public async void ShouldCreateUserWhenAssigningRolesForTheFirstTime()
+    public async Task ShouldCreateUserWhenAssigningRolesForTheFirstTime()
     {
         // Given an user authenticated through an external idp for the first time
         var authenticatedExternalUser = new RolesRequest()
