@@ -21,7 +21,7 @@ Welcome to [Boxie.se](https://www.boxie.se), a simple web application to help or
 You can run the applications locally together in two different ways.
 
 ### Pre-requisites
-* .NET 6.0
+* .NET 8.0
 * Azure core functions tools version 4
 * @azure/static-web-apps-cli version 1.1.7 (higher might not work!!)
 * Npm v 16.*
