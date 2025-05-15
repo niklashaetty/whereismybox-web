@@ -13,10 +13,9 @@ public class CollectionRepository : ICollectionRepository
 {
     private readonly Container _container;
 
-    public CollectionRepository(CollectionRepositoryConfiguration config)
+    public CollectionRepository(CosmosClient cosmosClient, CollectionRepositoryConfiguration config)
     {
         ArgumentNullException.ThrowIfNull(config);
-        var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
 

@@ -7,10 +7,14 @@ using Domain.Models;
 using Domain.Queries;
 using Domain.QueryHandlers;
 using Domain.Repositories;
+using Functions.Middleware;
 using Infrastructure.BoxRepository;
 using Infrastructure.CollectionRepository;
 using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +22,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
+using User = Domain.Models.User;
 
 
 // Config
@@ -37,18 +42,17 @@ var host = new HostBuilder()
         services.AddLogging();
         
         // Cosmos
-        services.AddSingleton(new BoxRepositoryConfiguration(
-            config["CosmosConnectionString"], 
-            "WhereIsMyBox", "BoxesV2"));
+        services.AddSingleton(s => new CosmosClient(config["CosmosConnectionString"]));
+        services.AddSingleton(new BoxRepositoryConfiguration("WhereIsMyBox", "BoxesV2"));
         services.AddSingleton(new UserRepositoryConfiguration(
-            config["CosmosConnectionString"], 
             "WhereIsMyBox", "UsersV2"));
         services.AddSingleton(new UnattachedItemRepositoryConfiguration(
-            config["CosmosConnectionString"], 
             "WhereIsMyBox", "UnattachedItemsV2"));
         services.AddSingleton(new CollectionRepositoryConfiguration(
-            config["CosmosConnectionString"], 
             "WhereIsMyBox", "Collections"));
+        
+        services.AddSingleton(new RateLimitingMiddleWareConfiguration(
+            "WhereIsMyBox", "RateLimit"));
         
         // Authorization
         services.AddSingleton<IAuthorizationService, AuthorizationService>();
@@ -98,6 +102,13 @@ var host = new HostBuilder()
             options.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
         });
         
+    })
+    .ConfigureWebHostDefaults(webBuilder =>
+    {
+        webBuilder.Configure(app =>
+        {
+            app.UseMiddleware<RateLimitingMiddleware>();
+        });
     })
     .Build();
 

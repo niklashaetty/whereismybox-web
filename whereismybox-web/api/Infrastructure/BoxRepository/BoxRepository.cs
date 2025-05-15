@@ -12,10 +12,9 @@ public class BoxRepository : IBoxRepository
 {
     private readonly Container _container;
 
-    public BoxRepository(BoxRepositoryConfiguration config)
+    public BoxRepository(CosmosClient cosmosClient, BoxRepositoryConfiguration config)
     {
         ArgumentNullException.ThrowIfNull(config);
-        var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
 

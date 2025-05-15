@@ -1,11 +1,13 @@
-namespace Infrastructure.UserRepository;
+using System;
 
-public class UserRepositoryConfiguration
+namespace Functions.Middleware;
+
+public class RateLimitingMiddleWareConfiguration
 {
     public string DatabaseName { get; }
     public string ContainerName { get; }
 
-    public UserRepositoryConfiguration(string databaseName, string containerName)
+    public RateLimitingMiddleWareConfiguration(string databaseName, string containerName)
     {
         ArgumentNullException.ThrowIfNull(databaseName);
         ArgumentNullException.ThrowIfNull(containerName);

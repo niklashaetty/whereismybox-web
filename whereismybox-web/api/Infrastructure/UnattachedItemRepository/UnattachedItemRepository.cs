@@ -10,10 +10,9 @@ public class UnattachedItemRepository : IUnattachedItemRepository
 {
     private readonly Container _container;
 
-    public UnattachedItemRepository(UnattachedItemRepositoryConfiguration config)
+    public UnattachedItemRepository(CosmosClient cosmosClient, UnattachedItemRepositoryConfiguration config)
     {
         ArgumentNullException.ThrowIfNull(config);
-        var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
     

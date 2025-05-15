@@ -10,9 +10,8 @@ public class UserRepository : IUserRepository
 {
     private readonly Container _container;
 
-    public UserRepository(UserRepositoryConfiguration config)
+    public UserRepository(CosmosClient cosmosClient, UserRepositoryConfiguration config)
     {
-        var cosmosClient = new CosmosClient(config.ConnectionString);
         _container = cosmosClient.GetContainer(config.DatabaseName, config.ContainerName);
     }
     
