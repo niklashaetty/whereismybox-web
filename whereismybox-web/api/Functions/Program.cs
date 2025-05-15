@@ -34,6 +34,10 @@ var config = new ConfigurationBuilder()
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
+    .ConfigureFunctionsWorkerDefaults(worker =>
+    {
+        worker.UseMiddleware<RateLimitingMiddleware>();
+    })
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
@@ -103,13 +107,7 @@ var host = new HostBuilder()
         });
         
     })
-    .ConfigureWebHostDefaults(webBuilder =>
-    {
-        webBuilder.Configure(app =>
-        {
-            app.UseMiddleware<RateLimitingMiddleware>();
-        });
-    })
+   
     .Build();
 
 host.Run();

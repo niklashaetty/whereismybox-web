@@ -7,6 +7,7 @@ using Api.Auth;
 using Domain.Models;
 using Domain.Primitives;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Azure.Functions.Worker.Http;
 
 namespace Functions;
 
@@ -44,6 +45,30 @@ public static class Auth
             try
             {
                 var data = header[0];
+                var decoded = Convert.FromBase64String(data);
+                var json = Encoding.UTF8.GetString(decoded);
+                var principal = JsonSerializer.Deserialize<ExternalUserDto>(json,
+                    new JsonSerializerOptions {PropertyNameCaseInsensitive = true});
+                var userId = principal.UserRoles.FirstOrDefault(r => r.StartsWith("userId.")).Split(".")[1];
+                return new UserId(Guid.Parse(userId));
+            }
+            catch
+            {
+                throw new UnparsableExternalUserException();
+            }
+        }
+
+        throw new UnparsableExternalUserException();
+    }
+    
+    public static UserId ParseUserId(this HttpRequestData req)
+    {
+        var header = req.Headers.FirstOrDefault(h => h.Key == "x-ms-client-principal");
+        if (header.Value.FirstOrDefault() is not null)
+        {
+            try
+            {
+                var data = header.Value.First();
                 var decoded = Convert.FromBase64String(data);
                 var json = Encoding.UTF8.GetString(decoded);
                 var principal = JsonSerializer.Deserialize<ExternalUserDto>(json,
