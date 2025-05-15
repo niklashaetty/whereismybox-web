@@ -61,7 +61,6 @@ public class GetLoggedInUserFunction
         }
         catch (UnparsableExternalUserException e)
         {
-            return new NotFoundObjectResult(new ErrorResponse("Not found", "User not found"));
             return new UnauthorizedResult();
         }
     }
