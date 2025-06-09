@@ -7,13 +7,10 @@ using Domain.Models;
 using Domain.Queries;
 using Domain.QueryHandlers;
 using Domain.Repositories;
-using Functions.Middleware;
 using Infrastructure.BoxRepository;
 using Infrastructure.CollectionRepository;
 using Infrastructure.UnattachedItemRepository;
 using Infrastructure.UserRepository;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Configuration;
@@ -34,10 +31,6 @@ var config = new ConfigurationBuilder()
 
 var host = new HostBuilder()
     .ConfigureFunctionsWebApplication()
-    .ConfigureFunctionsWorkerDefaults(worker =>
-    {
-        worker.UseMiddleware<RateLimitingMiddleware>();
-    })
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
@@ -54,9 +47,6 @@ var host = new HostBuilder()
             "WhereIsMyBox", "UnattachedItemsV2"));
         services.AddSingleton(new CollectionRepositoryConfiguration(
             "WhereIsMyBox", "Collections"));
-        
-        services.AddSingleton(new RateLimitingMiddleWareConfiguration(
-            "WhereIsMyBox", "RateLimit"));
         
         // Authorization
         services.AddSingleton<IAuthorizationService, AuthorizationService>();
@@ -107,7 +97,6 @@ var host = new HostBuilder()
         });
         
     })
-   
     .Build();
 
 host.Run();

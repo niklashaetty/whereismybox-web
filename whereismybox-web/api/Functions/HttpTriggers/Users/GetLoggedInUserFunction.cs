@@ -50,7 +50,6 @@ public class GetLoggedInUserFunction
     {
         try
         {
-            Console.WriteLine("Get logged in user");
             var externalUser = req.ParseExternalUser();
 
             var user = await _queryHandler.Handle(new GetUserByExternalUserIdQuery(externalUser.ExternalUserId));
